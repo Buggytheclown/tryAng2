@@ -1,0 +1,14 @@
+from django.db import models
+
+
+class Posts(models.Model):
+    title = models.CharField(max_length=120)
+    content = models.TextField()
+    updated = models.DateTimeField('Was updated', auto_now=True, auto_now_add=False)
+    timestamp = models.DateTimeField('Was created', auto_now=False, auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+    class Meta:
+        ordering = ["-updated", "-timestamp"]
