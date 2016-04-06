@@ -1,0 +1,42 @@
+<form>
+    <div class="form-group">
+        <label for="myContent">Content</label>
+        <input #content id="myContent" class="form-control" rows="3" placeholder="Content"/>
+    </div>
+    <div class="form-group">
+        <label for="myRemark">Remark</label>
+        <input #remark id="myRemark" class="form-control" rows="3" placeholder="Remark"/>
+    </div>
+    <div class="form-group">
+        <label>
+            <input type="checkbox" value="">
+            Select position
+        </label>
+        <button (click)="addNext(content.value, remark.value)" class="btn btn-primary">Add next</button>
+    </div>
+</form>
+
+<hr>
+
+<table class="table table-striped table-hover">
+    <tr>
+        <td>
+            <b>№</b>
+        </td>
+        <td>
+            <b>Content</b>
+        </td>
+        <td>
+            <b>Remark</b>
+        </td>
+    </tr>
+
+    <tr *ngFor="#mynote of notes">
+        <td><input class="readonly input-number" type="text" value="{{ mynote.number }}" readonly ></td>
+        <td><input class="readonly" type="text" value="{{ mynote.content }}" readonly ></td>
+        <td><input class="readonly" type="text" value="{{ mynote.remark }}" readonly ></td>
+    </tr>
+
+</table>
+
+

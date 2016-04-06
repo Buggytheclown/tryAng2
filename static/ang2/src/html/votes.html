@@ -1,0 +1,45 @@
+<div class="wrapper" [ngSwitch]="switchValue">
+
+    <!-- Votes list -->
+    <div *ngSwitchDefault>
+        <h3> Vote list: </h3>
+        <ul class="first">
+            <li class="choices" *ngFor="#vote of votes" (click)="onSelectVote(vote)">
+                {{ vote.question_text }}
+            </li>
+        </ul>
+    </div>
+
+    <!-- Choices list -->
+    <div *ngSwitchWhen="'voteSelected'">
+        <h3>{{ SelectedVote.question_text }}</h3>
+        <div class="row" *ngFor="#choice of SelectedVote.choices">
+            <div class="col-sm-6">
+                <ul class="first">
+                    <li class="choices" (click)="doVotes(SelectedVote.id, choice.id)">
+                        {{ choice.choice_text }}
+                    </li>
+                </ul>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar"
+                         style="width: {{ getChoicePercent(SelectedVote, choice.votes) }}%">
+                        {{ choice.votes }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <button class="btn btn-default" (click)="onBack()">Back</button>
+    </div>
+
+    <!-- After vote -->
+    <div *ngSwitchWhen="'voted'">
+        <h3>Thank you for voting</h3>
+        <button class="btn btn-default" (click)="onBack()">Back</button>
+    </div>
+
+</div>
+<!-- end ngswitch -->

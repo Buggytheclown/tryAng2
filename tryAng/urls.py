@@ -18,15 +18,16 @@ from django.contrib import admin
 from rest_framework import routers
 from Posts import views as PostsView
 from Polls import views as PollsView
+from Angular2 import views as Angular2View
 
 router = routers.DefaultRouter()
-router.register(r'posts', PostsView.PostsViewSet)
+router.register(r'posts', PostsView.PostsViewSet, base_name="Posts")
 router.register(r'polls', PollsView.PollsViewSet)
-
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^api/polls/(?P<question_id>[0-9]+)/(?P<choice_id>[0-9]+)$', PollsView.PollsVoteUp),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'api/polls/(?P<question_id>[0-9]+)/(?P<choice_id>[0-9]+)$', PollsView.PollsVoteUp),
+    url(r'^$', Angular2View.AngIndex),
 ]
