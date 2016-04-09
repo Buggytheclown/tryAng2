@@ -6,7 +6,7 @@ import 'rxjs/add/operator/map';
 export class VotesService {
     constructor(private _http:Http) {};
 
-    getVotes() {return this._http.get('/api/polls')
+    getVotes() {return this._http.get('/api/polls/')
             // Call map on the response observable to get the parsed people object
             .map(res => res.json());
             // Subscribe to the observable to get the parsed people object and attach it to the

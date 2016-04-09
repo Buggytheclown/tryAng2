@@ -26,7 +26,7 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map'], fun
                 }
                 ;
                 VotesService.prototype.getVotes = function () {
-                    return this._http.get('/api/polls')
+                    return this._http.get('/api/polls/')
                         .map(function (res) { return res.json(); });
                     // Subscribe to the observable to get the parsed people object and attach it to the
                     // component

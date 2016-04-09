@@ -131,6 +131,22 @@ System.register([], function(exports_1) {
                     return this.scrollOffset.verticalOffset;
                 };
                 ;
+                sb_windowTools.prototype.findPosY = function (obj) {
+                    var curtop = 0;
+                    if (obj.offsetParent) {
+                        while (1) {
+                            curtop += obj.offsetTop;
+                            if (!obj.offsetParent) {
+                                break;
+                            }
+                            obj = obj.offsetParent;
+                        }
+                    }
+                    else if (obj.y) {
+                        curtop += obj.y;
+                    }
+                    return curtop;
+                };
                 return sb_windowTools;
             })();
             exports_1("sb_windowTools", sb_windowTools);

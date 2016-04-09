@@ -29,5 +29,5 @@ urlpatterns = [
     url(r'^api/polls/(?P<question_id>[0-9]+)/(?P<choice_id>[0-9]+)$', PollsView.PollsVoteUp),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^$', Angular2View.AngIndex),
+    url(r'^', Angular2View.AngIndex),
 ]
