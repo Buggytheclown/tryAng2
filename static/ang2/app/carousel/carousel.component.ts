@@ -8,7 +8,7 @@ declare var jQuery:any;
 
 @Component({
     selector: 'my-carousel',
-    templateUrl: SrcURL + 'html/carousel.html',
+    templateUrl: SrcURL + 'carousel/carousel.html',
     styles: [`
     `],
     directives: [],

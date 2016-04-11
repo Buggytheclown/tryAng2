@@ -8,7 +8,7 @@ import {NgSwitchDefault} from "angular2/common";
 
 @Component({
     selector: 'my-votes',
-    templateUrl: SrcURL + 'html/votes.html',
+    templateUrl: SrcURL + 'votes/votes.html',
     styles:[`
     .wrapper{
     }

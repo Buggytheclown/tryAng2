@@ -1,6 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
 
 from Polls.models import Question, Choice
 from Polls.serializers import PollsSerializer
@@ -12,6 +13,7 @@ class PollsViewSet(viewsets.ModelViewSet):
     """
     queryset = Question.objects.all()
     serializer_class = PollsSerializer
+    permission_classes = (IsAuthenticated,)
 
 
 def PollsVoteUp(request, *args, **kwargs):

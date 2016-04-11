@@ -31,7 +31,7 @@ System.register(["angular2/core", "../../static"], function(exports_1) {
                 CarouselComponent = __decorate([
                     core_1.Component({
                         selector: 'my-carousel',
-                        templateUrl: static_1.SrcURL + 'html/carousel.html',
+                        templateUrl: static_1.SrcURL + 'carousel/carousel.html',
                         styles: ["\n    "],
                         directives: [],
                         providers: [],

@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map'], function(exports_1) {
+System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'angular2-jwt'], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map'], fun
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, http_1;
+    var core_1, http_1, angular2_jwt_1, http_2;
     var VotesService;
     return {
         setters:[
@@ -17,16 +17,23 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map'], fun
             },
             function (http_1_1) {
                 http_1 = http_1_1;
+                http_2 = http_1_1;
             },
-            function (_1) {}],
+            function (_1) {},
+            function (angular2_jwt_1_1) {
+                angular2_jwt_1 = angular2_jwt_1_1;
+            }],
         execute: function() {
             VotesService = (function () {
-                function VotesService(_http) {
+                function VotesService(_http, _AuthHttp) {
                     this._http = _http;
+                    this._AuthHttp = _AuthHttp;
                 }
                 ;
                 VotesService.prototype.getVotes = function () {
-                    return this._http.get('/api/polls/')
+                    var myHeader = new http_2.Headers();
+                    myHeader.append('Content-Type', 'application/json');
+                    return this._AuthHttp.get('/api/polls/', { headers: myHeader })
                         .map(function (res) { return res.json(); });
                     // Subscribe to the observable to get the parsed people object and attach it to the
                     // component
@@ -37,7 +44,7 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map'], fun
                 };
                 VotesService = __decorate([
                     core_1.Injectable(), 
-                    __metadata('design:paramtypes', [http_1.Http])
+                    __metadata('design:paramtypes', [http_1.Http, angular2_jwt_1.AuthHttp])
                 ], VotesService);
                 return VotesService;
             })();

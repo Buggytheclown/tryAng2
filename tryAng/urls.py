@@ -19,6 +19,7 @@ from rest_framework import routers
 from Posts import views as PostsView
 from Polls import views as PollsView
 from Angular2 import views as Angular2View
+from rest_framework_jwt.views import obtain_jwt_token
 
 router = routers.DefaultRouter()
 router.register(r'posts', PostsView.PostsViewSet, base_name="Posts")
@@ -29,5 +30,7 @@ urlpatterns = [
     url(r'^api/polls/(?P<question_id>[0-9]+)/(?P<choice_id>[0-9]+)$', PollsView.PollsVoteUp),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-token-auth/', obtain_jwt_token),
+    url(r'^api-register/$', Angular2View.Register),
     url(r'^', Angular2View.AngIndex),
 ]

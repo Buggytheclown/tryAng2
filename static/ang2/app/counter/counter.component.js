@@ -41,7 +41,7 @@ System.register(["angular2/core", "../../static"], function(exports_1) {
                 CounterComponent = __decorate([
                     core_1.Component({
                         selector: 'my-counter',
-                        templateUrl: static_1.SrcURL + 'html/counter.html',
+                        templateUrl: static_1.SrcURL + 'counter/counter.html',
                         styles: [""],
                         directives: [],
                         providers: [],

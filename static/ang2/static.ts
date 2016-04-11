@@ -1,2 +1,2 @@
-export const SrcURL = './static/ang2/src/';
+export const SrcURL = './static/ang2/app/';
 export const TempURL = './template/tryAng/';

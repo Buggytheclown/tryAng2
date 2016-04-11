@@ -7,7 +7,7 @@ import {Input} from "angular2/core";
 
 @Component({
     selector: 'my-counter',
-    templateUrl: SrcURL + 'html/counter.html',
+    templateUrl: SrcURL + 'counter/counter.html',
     styles: [``],
     directives: [],
     providers: [],

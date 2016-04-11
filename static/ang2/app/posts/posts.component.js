@@ -37,6 +37,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.gettingPosts = true;
                     this.scrollPass = false;
                     this.postsOffsetDelta = 20; //concat posts offset for unbreakable change currentPost
+                    this.keyEventPass = false;
                     this.truncateWord = 300;
                     this.getPostsEnd = 10;
                     this.getPostsStart = 0;
@@ -146,28 +147,34 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     console.log('Current Post:', this.posts[newPosition].title);
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
+                    var _this = this;
                     //console.log(event.keyCode);
-                    this.onScroll();
-                    if (event.keyCode === 100) {
-                        if (this.nativePostsPosition[this.currentPost + 1]) {
-                            //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
-                            var from = this._sb_windowTools.verticalOffset();
-                            var to = this.nativePostsPosition[this.currentPost + 1][0];
-                            this.smoothYScrollFromTo(from, to + 1, 50);
+                    if (!this.keyEventPass) {
+                        this.keyEventPass = true;
+                        this.onScroll();
+                        if (event.keyCode === 100) {
+                            if (this.nativePostsPosition[this.currentPost + 1]) {
+                                //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
+                                var from = this._sb_windowTools.verticalOffset();
+                                var to = this.nativePostsPosition[this.currentPost + 1][0];
+                                this.smoothYScrollFromTo(from, to + 1, 50);
+                            }
                         }
-                    }
-                    if (event.keyCode === 97) {
-                        if (this.nativePostsPosition[this.currentPost - 1]) {
-                            //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
-                            var from = this._sb_windowTools.verticalOffset();
-                            var to = this.nativePostsPosition[this.currentPost - 1][0];
-                            this.smoothYScrollFromTo(to + 1, from, -50);
+                        if (event.keyCode === 97) {
+                            if (this.nativePostsPosition[this.currentPost - 1]) {
+                                //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
+                                var from = this._sb_windowTools.verticalOffset();
+                                var to = this.nativePostsPosition[this.currentPost - 1][0];
+                                this.smoothYScrollFromTo(to + 1, from, -50);
+                            }
                         }
+                        setTimeout(function () { _this.keyEventPass = false; }, 200);
                     }
                 };
+                ;
                 PostsComponent.prototype.smoothYScrollFromTo = function (from, to, rate) {
                     var _this = this;
-                    if (Math.abs(to - from) < Math.abs(rate)) {
+                    if (to - from < Math.abs(rate)) {
                         if (rate > 0) {
                             this.setCurrentPostPosition(this.currentPost + 1);
                             window.scrollBy(0, to - from);
@@ -175,7 +182,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                             return;
                         }
                         else {
-                            //this.setCurrentPostPosition(this.currentPost - 1);  //couse we move from bot to top and steped on our posr multiple timses
+                            this.setCurrentPostPosition(this.currentPost - 1);
                             window.scrollBy(0, from - to);
                             //console.log('set -1');
                             return;
@@ -218,7 +225,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 PostsComponent = __decorate([
                     core_1.Component({
                         selector: 'my-posts',
-                        templateUrl: static_1.SrcURL + 'html/posts.html',
+                        templateUrl: static_1.SrcURL + 'posts/posts.html',
                         styles: ["\n    pre{\n        white-space: pre-line;\n    }\n    "],
                         directives: [],
                         providers: [posts_service_1.PostsService, sb_windowTools_1.sb_windowTools],

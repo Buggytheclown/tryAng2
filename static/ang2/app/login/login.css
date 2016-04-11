@@ -1,0 +1,9 @@
+.loginform {
+    border: 2px ridge rgba(70, 52, 66, 0.25); /* Параметры границы */
+    /*background: rgba(24, 166, 233, 0.75); !* Цвет фона *!*/
+    background-color: #F7F7F7
+    /*padding: 10px; !* Поля вокруг текста *!*/
+}
+.loginform ul li{
+    cursor: pointer;
+}

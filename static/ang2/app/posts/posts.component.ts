@@ -8,7 +8,7 @@ import {ChangeDetectorRef} from "angular2/core";
 
 @Component({
     selector: 'my-posts',
-    templateUrl: SrcURL + 'html/posts.html',
+    templateUrl: SrcURL + 'posts/posts.html',
     styles: [`
     pre{
         white-space: pre-line;
@@ -31,6 +31,7 @@ export class PostsComponent implements OnInit {
     scrollPass:boolean = false;
     currentPost:number;
     postsOffsetDelta:number = 20;  //concat posts offset for unbreakable change currentPost
+    keyEventPass:boolean = false;
 
     constructor(public element:ElementRef,
                 private _postsService:PostsService,
@@ -149,35 +150,41 @@ export class PostsComponent implements OnInit {
 
     onKeyPress(event){
         //console.log(event.keyCode);
-        this.onScroll();
+        if(!this.keyEventPass) {
+            this.keyEventPass = true;
+            this.onScroll();
 
-        if(event.keyCode === 100){
-            if(this.nativePostsPosition[this.currentPost + 1]) {
-                //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
-                let from = this._sb_windowTools.verticalOffset();
-                let to = this.nativePostsPosition[this.currentPost + 1][0];
-                this.smoothYScrollFromTo(from, to + 1, 50 );
+            if (event.keyCode === 100) {
+                if (this.nativePostsPosition[this.currentPost + 1]) {
+                    //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
+                    let from = this._sb_windowTools.verticalOffset();
+                    let to = this.nativePostsPosition[this.currentPost + 1][0];
+                    this.smoothYScrollFromTo(from, to + 1, 50);
+                }
             }
-        }
-        if(event.keyCode === 97) {
-            if(this.nativePostsPosition[this.currentPost - 1]) {
-                //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
-                let from = this._sb_windowTools.verticalOffset();
-                let to = this.nativePostsPosition[this.currentPost - 1][0];
-                this.smoothYScrollFromTo(to + 1, from, -50 );
+
+            if (event.keyCode === 97) {
+                if (this.nativePostsPosition[this.currentPost - 1]) {
+                    //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
+                    let from = this._sb_windowTools.verticalOffset();
+                    let to = this.nativePostsPosition[this.currentPost - 1][0];
+                    this.smoothYScrollFromTo(to + 1, from, -50);
+                }
             }
+
+            setTimeout(()=>{this.keyEventPass = false}, 200);
         }
-    }
+    };
 
     smoothYScrollFromTo(from, to, rate){
-        if(Math.abs(to - from) < Math.abs(rate)){
+        if(to - from < Math.abs(rate)){
             if(rate > 0) {
                 this.setCurrentPostPosition(this.currentPost + 1);
                 window.scrollBy(0, to - from);
                 //console.log('set +1');
                 return;
             }else{
-                //this.setCurrentPostPosition(this.currentPost - 1);  //couse we move from bot to top and steped on our posr multiple timses
+                this.setCurrentPostPosition(this.currentPost - 1);
                 window.scrollBy(0, from - to);
                 //console.log('set -1');
                 return;

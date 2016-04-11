@@ -65,7 +65,7 @@ System.register(["angular2/core", "../../static", "./votes.service", "angular2/c
                 VotesComponent = __decorate([
                     core_1.Component({
                         selector: 'my-votes',
-                        templateUrl: static_1.SrcURL + 'html/votes.html',
+                        templateUrl: static_1.SrcURL + 'votes/votes.html',
                         styles: ["\n    .wrapper{\n    }\n\n    .first  {\n    list-style: none;\n    padding: 0;\n    }\n\n    .first li {\n    text-align: center;\n    border-radius: 15px;\n    padding: 10px 30px;\n    background: linear-gradient(to left, #f8ab8d 0%, white, #f8ab8d);\n    border-bottom: 1px solid grey;\n    color: #506a6b;\n    box-shadow: 0 5px 5px 0 rgba(0,0,0, .2);\n    margin-bottom: 5px;\n    }\n\n    .first li:last-child {\n    border-bottom: none;\n    }\n\n    .choices {\n    cursor: pointer;\n    }\n\n    .choices:hover {\n    color: blue;\n    border-left: 3px solid green;\n    border-right: 3px solid green;\n    }\n    "],
                         directives: [common_1.NgSwitch, common_2.NgSwitchWhen, common_3.NgSwitchDefault],
                         providers: [votes_service_1.VotesService],

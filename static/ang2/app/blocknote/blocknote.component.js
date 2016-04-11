@@ -33,7 +33,7 @@ System.register(["angular2/core", "../../static"], function(exports_1) {
                 BlocknoteComponent = __decorate([
                     core_1.Component({
                         selector: 'my-blocknote',
-                        templateUrl: static_1.SrcURL + 'html/blocknote.html',
+                        templateUrl: static_1.SrcURL + 'blocknote/blocknote.html',
                         styles: ["\n    .readonly{\n        border-width:0px;\n        border:none;\n    }\n\n    .input-number{\n        width:4em;\n    }\n    "],
                         directives: [],
                         providers: [],

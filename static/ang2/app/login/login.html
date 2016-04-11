@@ -1,0 +1,68 @@
+<div class="col-sm-8">  <!-- TEMPORARY -->
+    <div class="loginform">
+        <ul class="nav nav-tabs nav-justified">
+            <li role="presentation" [class.active]="showFormContent===0"><a (click)="showFormContent=0">Login</a></li>
+            <li role="presentation" [class.active]="showFormContent===1"><a (click)="showFormContent=1">Register</a>
+            </li>
+        </ul>
+        <div *ngIf="showFormContent===0">
+            <div [hidden]="!loginErr" class="alert alert-danger">
+                <i class="fa fa-exclamation-triangle"></i> Sorry, unrecognized username or password.
+            </div>
+            <form class="form-signin" (submit)="login(logLog.value, logPass.value)" #loginForm>
+                <h2 class="form-signin-heading text-center">Please sign in</h2>
+
+                <label for="inputLogin" class="sr-only">Login</label>
+                <input #logLog type="text" id="inputLogin" class="form-control" placeholder="Login" required autofocus>
+                <br>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input #logPass type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+            </form>
+        </div>
+
+        <div *ngIf="showFormContent===1"
+             (submit)="register(regLog.value, regPass1.value, regPass2.value, regEmail.value)">
+            <div [hidden]="!registerErr" class="alert alert-danger">
+                <i class="fa fa-exclamation-triangle"></i> {{ registerErr }}
+            </div>
+            <form class="form-register" #registerForm>
+                <h2 class="form-signin-heading text-center">Please register</h2>
+                <label for="inputLogin" class="sr-only">Login</label>
+                <input #regLog type="text" id="inputLogin" class="form-control" placeholder="Login" required autofocus>
+                <br>
+
+                <label for="inputEmail" class="sr-only">Email</label>
+                <input #regEmail type="email" id="inputEmail" class="form-control" placeholder="Email" required>
+
+                <br>
+                <label for="inputPassword" class="sr-only">Password</label>
+                <input #regPass1 (keyup)="pass1(regPass1.value)" type="password" id="inputPassword" class="form-control"
+                       placeholder="Password"
+                       required>
+
+                <label for="inputConfirmPassword" class="sr-only">Confirm password</label>
+                <div class="input-group">
+                    <input #regPass2 (keyup)="pass2(regPass2.value)" type="password" id="inputConfirmPassword"
+                           class="form-control"
+                           placeholder="Confirm password"
+                           required>
+                    <div class="input-group-addon"><i [style.color]="pass2CleanColor" class="fa fa-check"></i></div>
+                </div>
+
+                <button [class.disabled]="!canRegister" class="btn btn-lg btn-primary btn-block" type="submit">
+                    Register
+                </button>
+            </form>
+        </div>
+    </div>
+    <button (click)="Test()" class="btn btn-info">Test</button>
+    <button (click)="Logout()" class="btn btn-danger">Logout</button>
+    <hr>
+    <p>Token not expired: <strong>{{ loggedin() }}</strong></p>
+    <br>
+    <p>Token expiration date: <strong>{{ expDate() }}</strong></p>
+    <br>
+    <p>Token Decode: <strong>{{ decodeToken() |json }}</strong></p>
+</div> <!-- END TEMPORARY -->

@@ -4,21 +4,20 @@
         <i class="fa fa-spinner fa-4x fa-spin"></i>
     </div>
 
-    <div *ngFor="#post of posts" class="blog-post _mypost"  #myPre>
+    <div *ngFor="#post of posts" class="blog-post _mypost" #myPre>
         <div *ngIf="post">
             <!-- post's head -->
             <h2 class="blog-post-title">{{ post.title }}</h2>
             <p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}} by <a href="#">NONAME!!!</a></p>
 
             <!-- post's content -->
-        <pre>
-          {{ post.Meta.doTrunk ? getTrunkedContent(post.content) : post.content }}
-            <button class="btn btn-info"
-                    (click)="post.Meta.doTrunk = !post.Meta.doTrunk ">Toggle view
-            </button>
-        </pre>
-            <strong>saw? - {{ post.Meta.saw }}</strong>
-            <hr>
+            <pre>
+              {{ post.Meta.doTrunk ? getTrunkedContent(post.content) : post.content }}
+                <button class="btn btn-info"
+                        (click)="post.Meta.doTrunk = !post.Meta.doTrunk ">Toggle view
+                </button>
+                <strong>saw? - {{ post.Meta.saw }}</strong>
+            </pre>
         </div>
     </div><!-- endFor post  /.blog-post -->
 

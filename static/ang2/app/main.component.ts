@@ -7,12 +7,13 @@ import {VotesComponent} from "./votes/votes.component";
 import {CarouselComponent} from "./carousel/carousel.component";
 import {CounterMainComponent} from "./counter/main-counter.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
+import {LoginComponent} from "./login/login.component";
 
 
 
 @Component({
     selector: 'my-main',
-    templateUrl: SrcURL+'html/myMain.html',
+    templateUrl: SrcURL+'myMain.html',
     directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent],
     providers: [ROUTER_PROVIDERS,]
 })
@@ -35,6 +36,11 @@ import {BlocknoteComponent} from "./blocknote/blocknote.component";
       path: '/blocknote',
       name: 'Blocknote',
       component: BlocknoteComponent
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: LoginComponent
     },
 
 ])

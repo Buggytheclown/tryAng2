@@ -5,7 +5,7 @@ import {NgForm} from "angular2/common";
 
 @Component({
     selector: 'my-blocknote',
-    templateUrl:SrcURL+'html/blocknote.html',
+    templateUrl:SrcURL+'blocknote/blocknote.html',
     styles: [`
     .readonly{
         border-width:0px;
