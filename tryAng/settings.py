@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     #3rd
     'rest_framework',
     # myApp
-    'Posts', 'Polls', 'Angular2',
+    'Posts', 'Polls', 'Angular2', 'PiParse',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -121,7 +121,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

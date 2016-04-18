@@ -26,8 +26,14 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
                     this._http = _http;
                 }
                 ;
+                //getPosts(from, to) {return this._http.get('/api/posts/'+'?postFrom=' + from + '&postTo=' + to).delay(500)
+                //        // Call map on the response observable to get the parsed people object
+                //        .map(res => res.json());
+                //        // Subscribe to the observable to get the parsed people object and attach it to the
+                //        // component
+                //}
                 PostsService.prototype.getPosts = function (from, to) {
-                    return this._http.get('/api/posts/' + '?postFrom=' + from + '&postTo=' + to).delay(500)
+                    return this._http.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to)
                         .map(function (res) { return res.json(); });
                     // Subscribe to the observable to get the parsed people object and attach it to the
                     // component

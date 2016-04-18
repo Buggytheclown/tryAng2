@@ -16,6 +16,8 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
+
+from PiParse.views import PiPostsViewSet
 from Posts import views as PostsView
 from Polls import views as PollsView
 from Angular2 import views as Angular2View
@@ -24,6 +26,7 @@ from rest_framework_jwt.views import obtain_jwt_token
 router = routers.DefaultRouter()
 router.register(r'posts', PostsView.PostsViewSet, base_name="Posts")
 router.register(r'polls', PollsView.PollsViewSet)
+router.register(r'PiParse', PiPostsViewSet, base_name="PiPosts")
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

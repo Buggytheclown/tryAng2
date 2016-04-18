@@ -4,20 +4,73 @@
         <i class="fa fa-spinner fa-4x fa-spin"></i>
     </div>
 
-    <div *ngFor="#post of posts" class="blog-post _mypost" #myPre>
+    <div *ngFor="#post of posts" class="blog-post _mypost">
         <div *ngIf="post">
             <!-- post's head -->
             <h2 class="blog-post-title">{{ post.title }}</h2>
-            <p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}} by <a href="#">NONAME!!!</a></p>
+            <p>Rating:{{ post.rating }}</p>
+            <p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</p>
 
             <!-- post's content -->
-            <pre>
-              {{ post.Meta.doTrunk ? getTrunkedContent(post.content) : post.content }}
-                <button class="btn btn-info"
-                        (click)="post.Meta.doTrunk = !post.Meta.doTrunk ">Toggle view
-                </button>
-                <strong>saw? - {{ post.Meta.saw }}</strong>
-            </pre>
+            <div [style.maxHeight]="post.Meta.doTrunk ? 1000 : 999999" class="contentWrapper" #contentWrapper>
+                <div *ngFor="#content of post.contents">
+
+                    <!-- P -->
+                    <div *ngIf="content.type==='p'">
+                        <div  [outerHTML]=content.content></div>
+                    </div>
+
+                    <!-- gif -->
+                    <div *ngIf="content.type==='gif'">
+                        <div *ngIf="!content.Meta.play">
+                            <img src="{{ content.pre_content }}" #myPlay >
+                            <div (click)="content.Meta.play = !content.Meta.play"
+                                 [style.margin-top]="myPlay.offsetHeight/2 - 30"
+                                 [style.margin-left]="myPlay.offsetWidth/2 - 30" class="content-play">
+                                <span class="fa-stack fa-3x">
+                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
+                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div *ngIf="content.Meta.play">
+                            <img (click)="content.Meta.play = !content.Meta.play" src="{{ content.content }}">
+                        </div>
+                    </div>
+
+                    <!-- img -->
+                    <img *ngIf="content.type==='img'" src="{{ content.content }}">
+
+                    <!-- video/coub -->
+                    <div *ngIf="content.type==='video'">
+                        <div *ngIf="!content.Meta.play">
+                            <img src="{{ content.pre_content }}" #myPlay2>
+                            <div (click)="content.Meta.play = !content.Meta.play"
+                                 [style.margin-top]="myPlay2.offsetHeight/2 - 30"
+                                 [style.margin-left]="myPlay2.offsetWidth/2 - 30" class="content-play">
+                                <span class="fa-stack fa-3x">
+                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
+                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="content.Meta.play">
+                            <iframe frameborder="0" allowfullscreen="1"
+                                    title="YouTube video player"
+                                    width="570"
+                                    height="428.57142857142856"
+                                    src="{{ content.content + '?autoplay=1' }}"></iframe>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="show-full" *ngIf="post.Meta.height > 1000 && post.Meta.doTrunk "
+                 (click)="post.Meta.doTrunk = false">
+                <p>show full <br>
+                    <i class="fa fa-sort-desc fa-2x" aria-hidden="true"></i></p>
+            </div>
         </div>
     </div><!-- endFor post  /.blog-post -->
 

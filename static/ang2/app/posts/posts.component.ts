@@ -5,15 +5,12 @@ import {OnInit} from "angular2/core";
 import {sb_windowTools} from "../helpers/sb_windowTools";
 import {ElementRef} from "angular2/core";
 import {ChangeDetectorRef} from "angular2/core";
+import {AfterViewInit} from "angular2/core";
 
 @Component({
     selector: 'my-posts',
     templateUrl: SrcURL + 'posts/posts.html',
-    styles: [`
-    pre{
-        white-space: pre-line;
-    }
-    `],
+    styleUrls: [SrcURL + 'posts/posts.css'],
     directives: [],
     providers: [PostsService, sb_windowTools],
 })
@@ -32,6 +29,8 @@ export class PostsComponent implements OnInit {
     currentPost:number;
     postsOffsetDelta:number = 20;  //concat posts offset for unbreakable change currentPost
     keyEventPass:boolean = false;
+    smoothIntervalPx:number = 100;
+    smoothIntervalTime:number = 20;
 
     constructor(public element:ElementRef,
                 private _postsService:PostsService,
@@ -47,7 +46,6 @@ export class PostsComponent implements OnInit {
         this.getPosts(this.getPostsStart, this.getPostsEnd);
     };
 
-
     getPosts(from, to) {
         this._postsService.getPosts(from, to)
             .subscribe
@@ -60,9 +58,16 @@ export class PostsComponent implements OnInit {
 
     addMeta(posts) {
         for (let i = 0; i < posts.length; i++) {
-            posts[i]['Meta'] = {
+            var curPost = posts[i];
+            curPost['Meta'] = {
                 'doTrunk': true,
                 'saw': false,
+            };
+            //console.log(curPost.contents[0]);
+            for (let i2 = 0; i2 < curPost.contents.length; i2++){
+                curPost.contents[i2]['Meta'] = {
+                    'play': false,
+                }
             }
         }
     };
@@ -86,6 +91,8 @@ export class PostsComponent implements OnInit {
             let postPosY:number = this._sb_windowTools.findPosY(nativePosts[i]);
             let postInterval:Array<number> = [postPosY - this.postsOffsetDelta, postPosY + nativePosts[i].offsetHeight ];
             this.nativePostsPosition.push(postInterval);
+            //got to know if post was 'doTrunked'
+            this.posts[i].Meta['height'] = nativePosts[i].offsetHeight;
         }
         this.nativePostsPosition[0][0] = 0; //for 1st post start position
     };
@@ -159,7 +166,7 @@ export class PostsComponent implements OnInit {
                     //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
                     let from = this._sb_windowTools.verticalOffset();
                     let to = this.nativePostsPosition[this.currentPost + 1][0];
-                    this.smoothYScrollFromTo(from, to + 1, 50);
+                    this.smoothYScrollFromTo(from, to + 1, this.smoothIntervalPx);
                 }
             }
 
@@ -168,7 +175,7 @@ export class PostsComponent implements OnInit {
                     //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
                     let from = this._sb_windowTools.verticalOffset();
                     let to = this.nativePostsPosition[this.currentPost - 1][0];
-                    this.smoothYScrollFromTo(to + 1, from, -50);
+                    this.smoothYScrollFromTo(to + 1, from, -this.smoothIntervalPx);
                 }
             }
 
@@ -191,7 +198,7 @@ export class PostsComponent implements OnInit {
             }
         }else{
             window.scrollBy(0, rate);
-            setTimeout(()=>{this.smoothYScrollFromTo(from, to - Math.abs(rate), rate);}, 25);
+            setTimeout(()=>{this.smoothYScrollFromTo(from, to - Math.abs(rate), rate);}, this.smoothIntervalTime);
         }
     }
 
@@ -221,5 +228,8 @@ export class PostsComponent implements OnInit {
     };
 
 
+    isloading(){
+        console.log('LOADING....')
+    }
 
 }

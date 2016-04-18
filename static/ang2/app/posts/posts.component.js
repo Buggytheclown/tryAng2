@@ -38,6 +38,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.scrollPass = false;
                     this.postsOffsetDelta = 20; //concat posts offset for unbreakable change currentPost
                     this.keyEventPass = false;
+                    this.smoothIntervalPx = 100;
+                    this.smoothIntervalTime = 20;
                     this.truncateWord = 300;
                     this.getPostsEnd = 10;
                     this.getPostsStart = 0;
@@ -60,10 +62,17 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 ;
                 PostsComponent.prototype.addMeta = function (posts) {
                     for (var i = 0; i < posts.length; i++) {
-                        posts[i]['Meta'] = {
+                        var curPost = posts[i];
+                        curPost['Meta'] = {
                             'doTrunk': true,
                             'saw': false,
                         };
+                        //console.log(curPost.contents[0]);
+                        for (var i2 = 0; i2 < curPost.contents.length; i2++) {
+                            curPost.contents[i2]['Meta'] = {
+                                'play': false,
+                            };
+                        }
                     }
                 };
                 ;
@@ -87,6 +96,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         var postPosY = this._sb_windowTools.findPosY(nativePosts[i]);
                         var postInterval = [postPosY - this.postsOffsetDelta, postPosY + nativePosts[i].offsetHeight];
                         this.nativePostsPosition.push(postInterval);
+                        //got to know if post was 'doTrunked'
+                        this.posts[i].Meta['height'] = nativePosts[i].offsetHeight;
                     }
                     this.nativePostsPosition[0][0] = 0; //for 1st post start position
                 };
@@ -157,7 +168,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
                                 var from = this._sb_windowTools.verticalOffset();
                                 var to = this.nativePostsPosition[this.currentPost + 1][0];
-                                this.smoothYScrollFromTo(from, to + 1, 50);
+                                this.smoothYScrollFromTo(from, to + 1, this.smoothIntervalPx);
                             }
                         }
                         if (event.keyCode === 97) {
@@ -165,7 +176,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
                                 var from = this._sb_windowTools.verticalOffset();
                                 var to = this.nativePostsPosition[this.currentPost - 1][0];
-                                this.smoothYScrollFromTo(to + 1, from, -50);
+                                this.smoothYScrollFromTo(to + 1, from, -this.smoothIntervalPx);
                             }
                         }
                         setTimeout(function () { _this.keyEventPass = false; }, 200);
@@ -190,7 +201,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     }
                     else {
                         window.scrollBy(0, rate);
-                        setTimeout(function () { _this.smoothYScrollFromTo(from, to - Math.abs(rate), rate); }, 25);
+                        setTimeout(function () { _this.smoothYScrollFromTo(from, to - Math.abs(rate), rate); }, this.smoothIntervalTime);
                     }
                 };
                 PostsComponent.prototype.isCurrentPost = function (postIndex) {
@@ -222,11 +233,14 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     }
                 };
                 ;
+                PostsComponent.prototype.isloading = function () {
+                    console.log('LOADING....');
+                };
                 PostsComponent = __decorate([
                     core_1.Component({
                         selector: 'my-posts',
                         templateUrl: static_1.SrcURL + 'posts/posts.html',
-                        styles: ["\n    pre{\n        white-space: pre-line;\n    }\n    "],
+                        styleUrls: [static_1.SrcURL + 'posts/posts.css'],
                         directives: [],
                         providers: [posts_service_1.PostsService, sb_windowTools_1.sb_windowTools],
                     }), 
