@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     #3rd
     'rest_framework',
     # myApp
-    'Posts', 'Polls', 'Angular2', 'PiParse',
+    'Posts', 'Polls', 'Angular2', 'PiParse', 'myLogger',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -115,13 +115,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = False
+TIME_ZONE = "Europe/Minsk"
 
 
 # Static files (CSS, JavaScript, Images)

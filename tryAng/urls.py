@@ -23,10 +23,13 @@ from Polls import views as PollsView
 from Angular2 import views as Angular2View
 from rest_framework_jwt.views import obtain_jwt_token
 
+from myLogger.views import myLoggerGroupViewSet
+
 router = routers.DefaultRouter()
 router.register(r'posts', PostsView.PostsViewSet, base_name="Posts")
 router.register(r'polls', PollsView.PollsViewSet)
 router.register(r'PiParse', PiPostsViewSet, base_name="PiPosts")
+router.register(r'logger', myLoggerGroupViewSet, base_name='Logger')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),

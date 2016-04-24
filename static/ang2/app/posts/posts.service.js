@@ -32,8 +32,8 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
                 //        // Subscribe to the observable to get the parsed people object and attach it to the
                 //        // component
                 //}
-                PostsService.prototype.getPosts = function (from, to) {
-                    return this._http.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to)
+                PostsService.prototype.getPosts = function (from, to, date) {
+                    return this._http.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date)
                         .map(function (res) { return res.json(); });
                     // Subscribe to the observable to get the parsed people object and attach it to the
                     // component

@@ -4,7 +4,7 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/delay';
 
 @Injectable()
-export class PostsService {
+export class LoggerService {
     constructor(private _http:Http) {
     };
 
@@ -14,8 +14,8 @@ export class PostsService {
     //        // Subscribe to the observable to get the parsed people object and attach it to the
     //        // component
     //}
-    getPosts(from, to, date) {
-        return this._http.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date )
+    getLog() {
+        return this._http.get('/api/logger/')
             // Call map on the response observable to get the parsed people object
             .map(res => res.json());
         // Subscribe to the observable to get the parsed people object and attach it to the

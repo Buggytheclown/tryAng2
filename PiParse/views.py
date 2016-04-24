@@ -1,7 +1,9 @@
+import datetime
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from PiParse.models import PiPosts
+from PiParse.parseScript import ParsePikabu
 from PiParse.serializers import PiPostsSerializer
 
 
@@ -19,8 +21,37 @@ class PiPostsViewSet(viewsets.ModelViewSet):
         queryset = PiPosts.objects.all()
         postFrom = self.request.query_params.get('postFrom', None)
         postTo = self.request.query_params.get('postTo', None)
-        if postFrom is not None and postTo is not None:
+        date = self.request.query_params.get('date', None)
+        dateGot = False
+        try:
+            day, month, year = str(date).split('-')
+            dateFrom = datetime.date(int(year), int(month), int(day))
+            delta = datetime.date.today() - dateFrom
+            if delta.days <= 0:
+                raise AttributeError
+            if len(day) == 1:
+                day = '0' + day
+            if len(month) == 1:
+                month = '0' + month
+            dateTo = dateFrom + datetime.timedelta(days=1)
+            dateGot = True
+        except:
+            dateTo = datetime.datetime.now()
+            dateFrom = dateTo - datetime.timedelta(days=1)
+
+        queryset = queryset.filter(timestamp__gte=dateFrom)
+        queryset = queryset.filter(timestamp__lte=dateTo)
+
+        if queryset.count() == 0:
+            dateParse = ''
+            if dateGot:
+                dateParse = day + '-' + month + '-' + year
+            newParser = ParsePikabu(date=dateParse, tillPage=1)
+            newParser.findAndSetStoryes()
+
+        if postFrom and postTo:
             postFrom = int(postFrom)
             postTo = int(postTo)
-            queryset = queryset.order_by('id')[postFrom:postTo]
+            queryset = queryset.order_by('-rating')[postFrom:postTo]
+        print(date,dateFrom,dateTo)
         return queryset

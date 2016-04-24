@@ -7,10 +7,12 @@
     <div *ngFor="#post of posts" class="blog-post _mypost">
         <div *ngIf="post">
             <!-- post's head -->
-            <h2 class="blog-post-title">{{ post.title }}</h2>
-            <p>Rating:{{ post.rating }}</p>
-            <p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</p>
-
+            <div>
+                <h2 class="blog-post-title">{{ post.title }}</h2>
+                <p>Rating:{{ post.rating }}</p>
+                <p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</p>
+                <p *ngIf="post.description"> <b>DESCRIPTION:</b> {{ post.description }}</p>
+            </div>
             <!-- post's content -->
             <div [style.maxHeight]="post.Meta.doTrunk ? 1000 : 999999" class="contentWrapper" #contentWrapper>
                 <div *ngFor="#content of post.contents">

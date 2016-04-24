@@ -13,4 +13,4 @@ class PiPostsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PiPosts
-        fields = ('p_id', 'rating', 'post_link', 'title', 'timestamp', 'contents')
+        fields = ('p_id', 'rating', 'post_link', 'title', 'timestamp', 'description', 'contents')

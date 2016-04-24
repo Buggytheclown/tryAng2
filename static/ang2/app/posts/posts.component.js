@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowTools"], function(exports_1) {
+System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowTools", "angular2/router"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowTools_1, core_2, core_3;
+    var core_1, static_1, posts_service_1, sb_windowTools_1, core_2, core_3, router_1;
     var PostsComponent;
     return {
         setters:[
@@ -25,10 +25,13 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             },
             function (sb_windowTools_1_1) {
                 sb_windowTools_1 = sb_windowTools_1_1;
+            },
+            function (router_1_1) {
+                router_1 = router_1_1;
             }],
         execute: function() {
             PostsComponent = (function () {
-                function PostsComponent(element, _postsService, _sb_windowTools, _ChangeDetectorRef) {
+                function PostsComponent(element, _postsService, _sb_windowTools, _ChangeDetectorRef, params) {
                     this.element = element;
                     this._postsService = _postsService;
                     this._sb_windowTools = _sb_windowTools;
@@ -40,6 +43,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.keyEventPass = false;
                     this.smoothIntervalPx = 100;
                     this.smoothIntervalTime = 20;
+                    this.routeDate = params.get('date');
                     this.truncateWord = 300;
                     this.getPostsEnd = 10;
                     this.getPostsStart = 0;
@@ -47,17 +51,17 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 }
                 ;
                 PostsComponent.prototype.ngOnInit = function () {
-                    this.getPosts(this.getPostsStart, this.getPostsEnd);
+                    this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
                 };
                 ;
-                PostsComponent.prototype.getPosts = function (from, to) {
+                PostsComponent.prototype.getPosts = function (from, to, date) {
                     var _this = this;
-                    this._postsService.getPosts(from, to)
+                    this._postsService.getPosts(from, to, date)
                         .subscribe(function (posts) {
                         _this.addMeta(posts);
                         Array.prototype.push.apply(_this.posts, posts);
                         _this.gettingPosts = false;
-                    });
+                    }, function (error) { return console.error('Error to load Posts: ' + error); });
                 };
                 ;
                 PostsComponent.prototype.addMeta = function (posts) {
@@ -106,7 +110,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.scrollPercent = (this._sb_windowTools.windowHeight() + this._sb_windowTools.verticalOffset()) / this._sb_windowTools.pageHeight();
                     if (this.scrollPercent > 0.90 && !this.gettingPosts) {
                         this.getPostsEnd += this.getPostsDelta;
-                        this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd);
+                        this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
                         this.gettingPosts = true;
                     }
                 };
@@ -159,7 +163,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
                     var _this = this;
-                    //console.log(event.keyCode);
+                    //console.log(this.routeDate);
                     if (!this.keyEventPass) {
                         this.keyEventPass = true;
                         this.onScroll();
@@ -244,7 +248,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         directives: [],
                         providers: [posts_service_1.PostsService, sb_windowTools_1.sb_windowTools],
                     }), 
-                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowTools_1.sb_windowTools, core_3.ChangeDetectorRef])
+                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowTools_1.sb_windowTools, core_3.ChangeDetectorRef, router_1.RouteParams])
                 ], PostsComponent);
                 return PostsComponent;
             })();

@@ -1,0 +1,70 @@
+<form (submit)="parseIt(parePage.value, pareRating.value, pareDate.value)">
+    <p><b>Parse Pikabu:</b></p>
+    <p>Till page (primary):<input type="number" min="0" #parePage></p>
+    <p>Till rating <input type="number" min="0" #pareRating></p>
+    <p>Date: <input type="date" #pareDate></p>
+    <p><input class="btn btn-default" type="submit" value="Get it"></p>
+</form>
+
+<form (submit)="filterLog()">
+    <p><b>Logger:</b></p>
+    <p><input class="btn btn-default" type="submit" value="Get it"></p>
+</form>
+
+<table class="table table-striped">
+    <caption>PiParse Logger</caption>
+    <tr>
+        <th>id</th>
+        <th>timestamp</th>
+        <th>title</th>
+        <th>error</th>
+        <th>info</th>
+        <th>warning</th>
+    </tr>
+    <template ngFor #onelogs [ngForOf]="logs">
+        <tr (dblclick)="onelogs.Meta.doTrunk = !onelogs.Meta.doTrunk" [ngClass]="{error: onelogs.Meta.infoCount/onelogs.Meta.errorCount < 20}" class="logsTr">
+            <td>{{ onelogs.id }}</td>
+            <td>{{ onelogs.timestamp }}</td>
+            <td>{{ onelogs.title }}</td>
+            <td> {{ onelogs.Meta.errorCount }} </td>
+            <td> {{ onelogs.Meta.infoCount }} </td>
+            <td> {{ onelogs.Meta.warningCount }} </td>
+        </tr>
+        <tr *ngIf="!onelogs.Meta.doTrunk" >
+            <td colspan="6" class="inLogsTr">
+                <div class="inLogsTable">
+                    <table class="table table-striped">
+                        <caption>Loggs</caption>
+                        <tr>
+                            <th>id</th>
+                            <th>type</th>
+                            <th>error</th>
+                            <th>message</th>
+                        </tr>
+                        <tr *ngFor="#log of onelogs.logs"
+                            [ngClass]="{error:log.type==='error', warning:log.type==='warning'}">
+                            <td>{{ log.id }}</td>
+                            <td>{{ log.type }}</td>
+                            <td>
+                                <div [innerHTML]="log.error" class="error"></div>
+                            </td>
+                            <td>
+                                <div class="message">{{ log.message }}</div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+
+        </tr>
+    </template>
+    <!--
+    <tr *ngFor="#log of onelogs" [ngClass]="{error:log.type==='error', warning:log.type==='warning'}">
+        <td>{{ log.id }}</td>
+        <td>{{ log.type }}</td>
+        <td class="timestamp">{{ stringAsDate(log.timestamp) | date:'medium' }}</td>
+        <td><div [innerHTML]="log.error" class="error"></div></td>
+        <td><div class="message">{{ log.message }}</div></td>
+    </tr>
+    -->
+</table>

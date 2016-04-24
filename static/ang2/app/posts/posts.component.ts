@@ -6,6 +6,7 @@ import {sb_windowTools} from "../helpers/sb_windowTools";
 import {ElementRef} from "angular2/core";
 import {ChangeDetectorRef} from "angular2/core";
 import {AfterViewInit} from "angular2/core";
+import {RouteParams} from "angular2/router";
 
 @Component({
     selector: 'my-posts',
@@ -31,11 +32,14 @@ export class PostsComponent implements OnInit {
     keyEventPass:boolean = false;
     smoothIntervalPx:number = 100;
     smoothIntervalTime:number = 20;
+    routeDate:string;
 
     constructor(public element:ElementRef,
                 private _postsService:PostsService,
                 private _sb_windowTools:sb_windowTools,
-                private _ChangeDetectorRef:ChangeDetectorRef) {
+                private _ChangeDetectorRef:ChangeDetectorRef,
+                params: RouteParams) {
+        this.routeDate = params.get('date');
         this.truncateWord = 300;
         this.getPostsEnd = 10;
         this.getPostsStart = 0;
@@ -43,17 +47,18 @@ export class PostsComponent implements OnInit {
     };
 
     ngOnInit() {
-        this.getPosts(this.getPostsStart, this.getPostsEnd);
+        this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
     };
 
-    getPosts(from, to) {
-        this._postsService.getPosts(from, to)
+    getPosts(from, to, date) {
+        this._postsService.getPosts(from, to, date)
             .subscribe
             (posts=> {
                 this.addMeta(posts);
                 Array.prototype.push.apply(this.posts, posts);
                 this.gettingPosts = false;
-            });
+            },
+            error => console.error('Error to load Posts: ' + error));
     };
 
     addMeta(posts) {
@@ -101,7 +106,7 @@ export class PostsComponent implements OnInit {
         this.scrollPercent = (this._sb_windowTools.windowHeight() + this._sb_windowTools.verticalOffset()) / this._sb_windowTools.pageHeight();
         if (this.scrollPercent > 0.90 && !this.gettingPosts) {
             this.getPostsEnd += this.getPostsDelta;
-            this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd);
+            this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
             this.gettingPosts = true;
         }
     }
@@ -156,7 +161,7 @@ export class PostsComponent implements OnInit {
     }
 
     onKeyPress(event){
-        //console.log(event.keyCode);
+        //console.log(this.routeDate);
         if(!this.keyEventPass) {
             this.keyEventPass = true;
             this.onScroll();

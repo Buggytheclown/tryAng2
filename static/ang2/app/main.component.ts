@@ -8,6 +8,7 @@ import {CarouselComponent} from "./carousel/carousel.component";
 import {CounterMainComponent} from "./counter/main-counter.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
 import {LoginComponent} from "./login/login.component";
+import {LoggerComponent} from "./logger/logger.component";
 
 
 
@@ -41,6 +42,11 @@ import {LoginComponent} from "./login/login.component";
       path: '/login',
       name: 'Login',
       component: LoginComponent
+    },
+    {
+      path: '/logger',
+      name: 'Logger',
+      component: LoggerComponent
     },
 
 ])

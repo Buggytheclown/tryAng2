@@ -1,0 +1,36 @@
+.timestamp {
+    font-size: 12px;
+}
+
+td > div.error, td > div.message {
+    white-space: pre-wrap;
+    max-height: 88px;
+    overflow-y: scroll;
+    min-width: 300px;
+}
+
+tr.error {
+    background-color: rgba(186, 36, 38, 0.59) !important;
+    max-width: 400px;
+}
+
+tr.warning {
+    background-color: #82ff80 !important;
+}
+
+.inLogsTable {
+    margin-left: 25px;
+}
+
+.inLogsTr {
+    background-color: rgba(148, 44, 93, 0.32) !important;
+}
+
+.logsTr {
+    cursor: pointer;
+}
+
+tr.logsTr:hover td{
+    border-top: 2px solid green;
+    border-bottom: 2px solid green;
+}

@@ -7,6 +7,7 @@ class PiPosts(models.Model):
     post_link = models.TextField()
     title = models.TextField()
     timestamp = models.DateTimeField()
+    description = models.TextField(blank=True, default='')
 
     def __str__(self):
         return self.title
