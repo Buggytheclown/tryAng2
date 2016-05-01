@@ -5,10 +5,10 @@ System.register([], function(exports_1) {
         execute: function() {
             sb_windowTools = (function () {
                 function sb_windowTools() {
-                    var scrollBarPadding = 17; // padding to assume for scroll bars
-                    var pageSize = {};
-                    var windowSize = {};
-                    var scrollOffset = {};
+                    this.scrollBarPadding = 17; // padding to assume for scroll bars
+                    this.pageSize = {};
+                    this.windowSize = {};
+                    this.scrollOffset = {};
                 }
                 ;
                 sb_windowTools.prototype.centerElementOnScreen = function (element) {
@@ -42,7 +42,6 @@ System.register([], function(exports_1) {
                         viewportWidth = document.body.offsetWidth;
                         viewportHeight = document.body.offsetHeight;
                     }
-                    ;
                     this.pageSize = {
                         viewportWidth: viewportWidth,
                         viewportHeight: viewportHeight
@@ -68,7 +67,6 @@ System.register([], function(exports_1) {
                         windowWidth = document.body.clientWidth;
                         windowHeight = document.body.clientHeight;
                     }
-                    ;
                     this.windowSize = {
                         windowWidth: windowWidth,
                         windowHeight: windowHeight
@@ -93,7 +91,6 @@ System.register([], function(exports_1) {
                         horizontalOffset = document.body.scrollLeft;
                         verticalOffset = document.body.scrollTop;
                     }
-                    ;
                     this.scrollOffset = {
                         horizontalOffset: horizontalOffset,
                         verticalOffset: verticalOffset
@@ -131,6 +128,10 @@ System.register([], function(exports_1) {
                     return this.scrollOffset.verticalOffset;
                 };
                 ;
+                sb_windowTools.prototype.scrollPercent = function () {
+                    return ((this.windowSize.windowHeight + this.scrollOffset.verticalOffset) / this.pageHeight());
+                };
+                ;
                 sb_windowTools.prototype.findPosY = function (obj) {
                     var curtop = 0;
                     if (obj.offsetParent) {
@@ -150,7 +151,6 @@ System.register([], function(exports_1) {
                 return sb_windowTools;
             })();
             exports_1("sb_windowTools", sb_windowTools);
-            ;
         }
     }
 });

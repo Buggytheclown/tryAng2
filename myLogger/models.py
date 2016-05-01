@@ -11,6 +11,7 @@ class myLoggerGroup(models.Model):
 
 
 class myLogger(models.Model):
+    timestamp = models.DateTimeField(auto_now_add=True)
     group = models.ForeignKey(myLoggerGroup, related_name='logs')
     type = models.CharField(max_length=20)
     message = models.TextField()

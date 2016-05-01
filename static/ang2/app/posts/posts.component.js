@@ -39,15 +39,17 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.posts = [];
                     this.gettingPosts = true;
                     this.scrollPass = false;
-                    this.postsOffsetDelta = 20; //concat posts offset for unbreakable change currentPost
                     this.keyEventPass = false;
-                    this.smoothIntervalPx = 100;
-                    this.smoothIntervalTime = 20;
-                    this.routeDate = params.get('date');
-                    this.truncateWord = 300;
+                    this.outOfPosts = false;
+                    // ____CONFIG____
+                    this.smoothIntervalPx = 50;
+                    this.smoothIntervalTime = 200;
                     this.getPostsEnd = 10;
                     this.getPostsStart = 0;
                     this.getPostsDelta = 5;
+                    this.scrollTimeout = 150;
+                    this.postsOffsetDelta = 0; // !!!DEPRECATED!!!! concat posts offset for unbreakable change currentPost
+                    this.routeDate = params.get('date');
                 }
                 ;
                 PostsComponent.prototype.ngOnInit = function () {
@@ -58,10 +60,19 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var _this = this;
                     this._postsService.getPosts(from, to, date)
                         .subscribe(function (posts) {
-                        _this.addMeta(posts);
-                        Array.prototype.push.apply(_this.posts, posts);
-                        _this.gettingPosts = false;
-                    }, function (error) { return console.error('Error to load Posts: ' + error); });
+                        if (posts.length > 0) {
+                            _this.addMeta(posts);
+                            Array.prototype.push.apply(_this.posts, posts);
+                            _this.gettingPosts = false;
+                        }
+                        else
+                            (_this.outOfPosts = true);
+                    }, 
+                    // make sure to reget posts
+                    function (error) {
+                        console.error('Error to load Posts: ' + error);
+                        setTimeout(function () { return _this.gettingPosts = false; }, 500);
+                    });
                 };
                 ;
                 PostsComponent.prototype.addMeta = function (posts) {
@@ -83,13 +94,25 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 PostsComponent.prototype.onScroll = function () {
                     var _this = this;
                     if (!this.scrollPass) {
-                        //console.log('onScroll');
+                        //console.log(this._sb_windowTools.scrollPercent());
                         this.scrollPass = true;
                         this._sb_windowTools.updateDimensions();
-                        this.checkLoadNewPosts();
-                        this.checkPostsPosition();
-                        this.updateCurrentPost();
-                        setTimeout(function () { _this.scrollPass = false; }, 200);
+                        this.initPosts();
+                        if (this._sb_windowTools.scrollPercent() > 0.90 && !this.gettingPosts) {
+                            this.getPostsEnd += this.getPostsDelta;
+                            this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
+                            this.gettingPosts = true;
+                        }
+                        if (this.pageHeight !== this._sb_windowTools.pageHeight()) {
+                            this.setNewPostsPosition();
+                            this.pageHeight = this._sb_windowTools.pageHeight();
+                        }
+                        if (!this.isCurrentPost(this.currentPost)) {
+                            this.setCurrentPostPosition(this.findCurrentPost());
+                        }
+                        setTimeout(function () {
+                            _this.scrollPass = false;
+                        }, this.scrollTimeout);
                     }
                 };
                 ;
@@ -97,25 +120,22 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var nativePosts = this.element.nativeElement.getElementsByClassName("_mypost");
                     this.nativePostsPosition = [];
                     for (var i = 0; i < nativePosts.length; i++) {
-                        var postPosY = this._sb_windowTools.findPosY(nativePosts[i]);
-                        var postInterval = [postPosY - this.postsOffsetDelta, postPosY + nativePosts[i].offsetHeight];
+                        var currentPost = nativePosts[i];
+                        var currentPostOffset = currentPost.offsetHeight;
+                        var postPosY = this._sb_windowTools.findPosY(currentPost);
+                        var style = currentPost.currentStyle || window.getComputedStyle(currentPost);
+                        // style.marginBottom return 'Xpx' and due to margin collapse
+                        var styleMargin = Math.max(style.marginBottom.slice(0, -2), style.marginTop.slice(0, -2));
+                        var postInterval = [postPosY - styleMargin, postPosY + currentPostOffset];
                         this.nativePostsPosition.push(postInterval);
                         //got to know if post was 'doTrunked'
-                        this.posts[i].Meta['height'] = nativePosts[i].offsetHeight;
+                        this.posts[i].Meta['height'] = currentPostOffset;
                     }
                     this.nativePostsPosition[0][0] = 0; //for 1st post start position
                 };
                 ;
-                PostsComponent.prototype.checkLoadNewPosts = function () {
-                    this.scrollPercent = (this._sb_windowTools.windowHeight() + this._sb_windowTools.verticalOffset()) / this._sb_windowTools.pageHeight();
-                    if (this.scrollPercent > 0.90 && !this.gettingPosts) {
-                        this.getPostsEnd += this.getPostsDelta;
-                        this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
-                        this.gettingPosts = true;
-                    }
-                };
-                PostsComponent.prototype.checkPostsPosition = function () {
-                    //initializing move (dont know how to do else, ngOnViewInit didnt work)
+                PostsComponent.prototype.initPosts = function () {
+                    // __init__ move (dont know how to do else, ngOnViewInit didn't work for that)
                     if (this.currentPost == null) {
                         this.setCurrentPostPosition(0);
                     }
@@ -125,41 +145,52 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     if (!this.pageHeight) {
                         this.pageHeight = this._sb_windowTools.pageHeight();
                     }
-                    if (this.pageHeight !== this._sb_windowTools.pageHeight()) {
-                        this.setNewPostsPosition();
-                        this.pageHeight = this._sb_windowTools.pageHeight();
+                };
+                PostsComponent.prototype.isCurrentPost = function (postIndex) {
+                    try {
+                        var post = this.nativePostsPosition[postIndex];
+                        var postY1 = post[0];
+                        var postY2 = post[1];
+                        if (this._sb_windowTools.verticalOffset() > postY1 && this._sb_windowTools.verticalOffset() < postY2) {
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                    catch (err) {
+                        console.log('catched', err);
                     }
                 };
-                PostsComponent.prototype.updateCurrentPost = function () {
+                PostsComponent.prototype.findCurrentPost = function () {
                     //console.log('updated');
-                    if (this.isCurrentPost(this.currentPost)) {
-                        return;
-                    }
                     for (var i = 1; i < 4; i++) {
                         if (this.nativePostsPosition[this.currentPost + i] && this.isCurrentPost(this.currentPost + i)) {
                             //this.currentPost+=i;
-                            this.setCurrentPostPosition(this.currentPost + i);
-                            return;
+                            //this.setCurrentPostPosition(this.currentPost + i);
+                            return (this.currentPost + i);
                         }
                         if (this.nativePostsPosition[this.currentPost + i] && this.currentPost !== 0 && this.isCurrentPost(this.currentPost - i)) {
                             //this.currentPost-=i;
-                            this.setCurrentPostPosition(this.currentPost - i);
-                            return;
+                            //this.setCurrentPostPosition(this.currentPost - i);
+                            return (this.currentPost - i);
                         }
                     }
                     for (var i = 0; i < this.nativePostsPosition.length; i++) {
                         if (this.isCurrentPost(i)) {
                             //this.currentPost=i;
-                            this.setCurrentPostPosition(i);
-                            return;
+                            //this.setCurrentPostPosition(i);
+                            return i;
                         }
                     }
                 };
                 ;
                 PostsComponent.prototype.setCurrentPostPosition = function (newPosition) {
-                    this.currentPost = newPosition;
-                    this.posts[this.currentPost].Meta.saw = true;
-                    console.log('Current Post:', this.posts[newPosition].title);
+                    if (this.posts[newPosition]) {
+                        this.currentPost = newPosition;
+                        this.posts[this.currentPost].Meta.saw = true;
+                        console.log('Current Post:', this.posts[newPosition].title);
+                    }
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
                     var _this = this;
@@ -183,12 +214,15 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 this.smoothYScrollFromTo(to + 1, from, -this.smoothIntervalPx);
                             }
                         }
-                        setTimeout(function () { _this.keyEventPass = false; }, 200);
+                        setTimeout(function () {
+                            _this.keyEventPass = false;
+                        }, 200);
                     }
                 };
                 ;
                 PostsComponent.prototype.smoothYScrollFromTo = function (from, to, rate) {
                     var _this = this;
+                    var smoothTimeout = Math.abs(this.smoothIntervalTime / ((from - to) / rate));
                     if (to - from < Math.abs(rate)) {
                         if (rate > 0) {
                             this.setCurrentPostPosition(this.currentPost + 1);
@@ -205,40 +239,32 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     }
                     else {
                         window.scrollBy(0, rate);
-                        setTimeout(function () { _this.smoothYScrollFromTo(from, to - Math.abs(rate), rate); }, this.smoothIntervalTime);
-                    }
-                };
-                PostsComponent.prototype.isCurrentPost = function (postIndex) {
-                    try {
-                        var post = this.nativePostsPosition[postIndex];
-                        var postY1 = post[0];
-                        var postY2 = post[1];
-                        if (this._sb_windowTools.verticalOffset() > postY1 && this._sb_windowTools.verticalOffset() < postY2) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    }
-                    catch (err) {
-                        console.log('catched', err);
+                        setTimeout(function () {
+                            _this.smoothYScrollFromTo(from, to - Math.abs(rate), rate);
+                        }, smoothTimeout);
                     }
                 };
                 PostsComponent.prototype.stringAsDate = function (dateStr) {
                     return new Date(dateStr);
                 };
                 ;
-                PostsComponent.prototype.getTrunkedContent = function (post_content) {
-                    if (post_content.length > this.truncateWord) {
-                        return post_content.slice(0, this.truncateWord);
+                PostsComponent.prototype.contentPlay = function (ipost, icontent) {
+                    for (var i = 0; i < this.posts.length; i++) {
+                        var curPost = this.posts[i];
+                        for (var i2 = 0; i2 < curPost.contents.length; i2++) {
+                            curPost.contents[i2]['Meta'] = {
+                                'play': false,
+                            };
+                        }
                     }
-                    else {
-                        return post_content;
-                    }
+                    this.posts[ipost].contents[icontent]['Meta'] = {
+                        'play': true,
+                    };
                 };
-                ;
-                PostsComponent.prototype.isloading = function () {
-                    console.log('LOADING....');
+                PostsComponent.prototype.contentStop = function (ipost, icontent) {
+                    this.posts[ipost].contents[icontent]['Meta'] = {
+                        'play': false,
+                    };
                 };
                 PostsComponent = __decorate([
                     core_1.Component({

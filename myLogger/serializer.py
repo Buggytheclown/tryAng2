@@ -5,7 +5,7 @@ from myLogger.models import myLogger, myLoggerGroup
 class myLoggerSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = myLogger
-        fields = ('id', 'type', 'error', 'message')
+        fields = ('id', 'timestamp', 'type', 'error', 'message')
 
 
 class myLoggerGroupSerializer(serializers.HyperlinkedModelSerializer):

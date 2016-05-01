@@ -33,7 +33,7 @@ class ParsePikabu:
         http.headers['user_name'] = 'Tidjei'
         http.headers['password'] = 'buggy2497672'
         response = http.request('GET', parseUrl)
-        return BeautifulSoup(response.data, "html.parser")
+        return BeautifulSoup(response.data, "html5lib")
 
     def createPost(self, p_id, link, theme, rating, timestamp, description):
         try:
@@ -50,22 +50,23 @@ class ParsePikabu:
 
     @logger_try_or_none(type='error', message='setPost fail to set a post date')
     def setPost(self, table):
-        link = ''
-        theme = ''
-        timestamp = ''
+        # link = ''
+        # theme = ''
+        # timestamp = ''
         story_description = ''
         p_id = table['data-story-id']
-        story_link = table.find(class_='story__title-link')
+        story_link = table.find("a", class_='story__title-link')
         link = story_link['href']
         theme = story_link.contents[0]
-        _story_description = table.find(class_='story__description')
+        _story_description = table.find("div", class_='story__description')
         if _story_description and _story_description.contents:
             story_description = _story_description.contents[0]
-        story_rating = table.find(class_='story__rating-count')
-        timestamp = table.find(class_='story__date')['title']
-        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp))
-        if len(p_id) > 3 and link and theme and story_rating and timestamp:
-            story_rating = story_rating.contents[0]
+        story_rating = table.find("div", class_='story__rating-count').contents[0]
+        timestamp = table.find("div", class_='story__date')['title']
+        timestamp = datetime.datetime.utcfromtimestamp(int(timestamp)) + datetime.timedelta(hours=3) + datetime.timedelta(minutes=30)
+
+        if len(p_id) > 3:
+            # story_rating = story_rating.contents[0]
             self.lastRating = story_rating
             newPost = self.createPost(p_id=p_id, link=link, theme=theme, rating=story_rating, timestamp=timestamp, description=story_description)
             return newPost
@@ -104,11 +105,11 @@ class ParsePikabu:
 
             elif content.find(class_='b-video'):
                 post_content = content.find(class_='b-video')['data-url']
-                # style="background-image: url(http://s8.pikabu.ru/video/2016/04/13/9/1460557993222931830.jpg); "
+                # style="background-image: url(http://s8.pikabu.ru/video/2016/04/13/9/1460552931830.jpg); " or url('')
                 pre_video = content.find(class_='b-video__preview')['style']
                 http_start = pre_video.find('http')
-                http_end = pre_video.find(');')
-                post_pre_content = pre_video[http_start:http_end]
+                http_end = pre_video.find('.jpg')
+                post_pre_content = pre_video[http_start:http_end+4]
                 post_content_type = 'video'
 
             else:

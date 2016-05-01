@@ -7,6 +7,9 @@ import {ElementRef} from "angular2/core";
 import {ChangeDetectorRef} from "angular2/core";
 import {AfterViewInit} from "angular2/core";
 import {RouteParams} from "angular2/router";
+import {AfterViewChecked} from "angular2/core";
+import {AfterContentInit} from "angular2/core";
+import {Posts} from "./posts.interface";
 
 @Component({
     selector: 'my-posts',
@@ -17,59 +20,64 @@ import {RouteParams} from "angular2/router";
 })
 
 export class PostsComponent implements OnInit {
-    posts:any = [];
-    truncateWord:number;
-    scrollPercent:number;
+    posts:Array<Posts> = [];
     gettingPosts:boolean = true;
-    getPostsEnd:number;
-    getPostsStart:number;
-    getPostsDelta:number;
     pageHeight:number;
     nativePostsPosition:Array<Array<number>>;
     scrollPass:boolean = false;
     currentPost:number;
-    postsOffsetDelta:number = 20;  //concat posts offset for unbreakable change currentPost
     keyEventPass:boolean = false;
-    smoothIntervalPx:number = 100;
-    smoothIntervalTime:number = 20;
     routeDate:string;
+    outOfPosts:boolean = false;
+    // ____CONFIG____
+    smoothIntervalPx:number = 50;
+    smoothIntervalTime:number = 200;
+    getPostsEnd:number = 10;
+    getPostsStart:number = 0;
+    getPostsDelta:number = 5;
+    scrollTimeout:number = 150;
+    postsOffsetDelta:number = 0;  // !!!DEPRECATED!!!! concat posts offset for unbreakable change currentPost
 
     constructor(public element:ElementRef,
                 private _postsService:PostsService,
                 private _sb_windowTools:sb_windowTools,
                 private _ChangeDetectorRef:ChangeDetectorRef,
-                params: RouteParams) {
+                params:RouteParams) {
         this.routeDate = params.get('date');
-        this.truncateWord = 300;
-        this.getPostsEnd = 10;
-        this.getPostsStart = 0;
-        this.getPostsDelta = 5;
+
     };
 
     ngOnInit() {
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
     };
 
-    getPosts(from, to, date) {
+    getPosts(from:number, to:number, date:string) {
         this._postsService.getPosts(from, to, date)
             .subscribe
-            (posts=> {
-                this.addMeta(posts);
-                Array.prototype.push.apply(this.posts, posts);
-                this.gettingPosts = false;
-            },
-            error => console.error('Error to load Posts: ' + error));
+            ((posts:Array<Posts>)=> {
+                    if (posts.length > 0) {
+                        this.addMeta(posts);
+                        Array.prototype.push.apply(this.posts, posts);
+                        this.gettingPosts = false;
+                    } else (this.outOfPosts = true)
+                },
+                // make sure to reget posts
+                error=> {
+                    console.error('Error to load Posts: ' + error);
+                    setTimeout(()=>this.gettingPosts = false, 500);
+                }
+            );
     };
 
-    addMeta(posts) {
+    addMeta(posts:Array<Posts>) {
         for (let i = 0; i < posts.length; i++) {
-            var curPost = posts[i];
+            let curPost = posts[i];
             curPost['Meta'] = {
                 'doTrunk': true,
                 'saw': false,
             };
             //console.log(curPost.contents[0]);
-            for (let i2 = 0; i2 < curPost.contents.length; i2++){
+            for (let i2 = 0; i2 < curPost.contents.length; i2++) {
                 curPost.contents[i2]['Meta'] = {
                     'play': false,
                 }
@@ -78,91 +86,109 @@ export class PostsComponent implements OnInit {
     };
 
     onScroll() {
-        if(!this.scrollPass) {
-            //console.log('onScroll');
+        if (!this.scrollPass) {
+            //console.log(this._sb_windowTools.scrollPercent());
             this.scrollPass = true;
             this._sb_windowTools.updateDimensions();
-            this.checkLoadNewPosts();
-            this.checkPostsPosition();
-            this.updateCurrentPost();
-            setTimeout(()=>{this.scrollPass = false}, 200);
+            this.initPosts();
+            if (this._sb_windowTools.scrollPercent() > 0.90 && !this.gettingPosts) {
+                this.getPostsEnd += this.getPostsDelta;
+                this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
+                this.gettingPosts = true;
+            }
+            if (this.pageHeight !== this._sb_windowTools.pageHeight()) {
+                this.setNewPostsPosition();
+                this.pageHeight = this._sb_windowTools.pageHeight();
+            }
+            if (!this.isCurrentPost(this.currentPost)) {
+                this.setCurrentPostPosition(this.findCurrentPost());
+            }
+            setTimeout(()=> {
+                this.scrollPass = false
+            }, this.scrollTimeout);
         }
     };
 
-    setNewPostsPosition(){
+    setNewPostsPosition() {
         let nativePosts = this.element.nativeElement.getElementsByClassName("_mypost");
         this.nativePostsPosition = [];
-        for(let i = 0; i < nativePosts.length; i++){
-            let postPosY:number = this._sb_windowTools.findPosY(nativePosts[i]);
-            let postInterval:Array<number> = [postPosY - this.postsOffsetDelta, postPosY + nativePosts[i].offsetHeight ];
+        for (let i = 0; i < nativePosts.length; i++) {
+            let currentPost = nativePosts[i];
+            let currentPostOffset = currentPost.offsetHeight;
+            let postPosY:number = this._sb_windowTools.findPosY(currentPost);
+            let style = currentPost.currentStyle || window.getComputedStyle(currentPost);
+            // style.marginBottom return 'Xpx' and due to margin collapse
+            let styleMargin = Math.max(style.marginBottom.slice(0, -2), style.marginTop.slice(0, -2));
+            let postInterval:Array<number> = [postPosY - styleMargin, postPosY + currentPostOffset];
             this.nativePostsPosition.push(postInterval);
             //got to know if post was 'doTrunked'
-            this.posts[i].Meta['height'] = nativePosts[i].offsetHeight;
+            this.posts[i].Meta['height'] = currentPostOffset;
         }
         this.nativePostsPosition[0][0] = 0; //for 1st post start position
     };
 
-    checkLoadNewPosts(){
-        this.scrollPercent = (this._sb_windowTools.windowHeight() + this._sb_windowTools.verticalOffset()) / this._sb_windowTools.pageHeight();
-        if (this.scrollPercent > 0.90 && !this.gettingPosts) {
-            this.getPostsEnd += this.getPostsDelta;
-            this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
-            this.gettingPosts = true;
-        }
-    }
-
-    checkPostsPosition(){
-        //initializing move (dont know how to do else, ngOnViewInit didnt work)
-        if(this.currentPost==null){
+    initPosts() {
+        // __init__ move (dont know how to do else, ngOnViewInit didn't work for that)
+        if (this.currentPost == null) {
             this.setCurrentPostPosition(0);
         }
         if (!this.nativePostsPosition) {
-                this.setNewPostsPosition();
+            this.setNewPostsPosition();
         }
         if (!this.pageHeight) {
             this.pageHeight = this._sb_windowTools.pageHeight();
         }
-        if (this.pageHeight !== this._sb_windowTools.pageHeight()) {
-            this.setNewPostsPosition();
-            this.pageHeight = this._sb_windowTools.pageHeight();
+    }
+
+    isCurrentPost(postIndex:number) {
+        try {
+            let post:Array<number> = this.nativePostsPosition[postIndex];
+            let postY1:number = post[0];
+            let postY2:number = post[1];
+            if (this._sb_windowTools.verticalOffset() > postY1 && this._sb_windowTools.verticalOffset() < postY2) {
+                return true;
+            } else {
+                return false
+            }
+        } catch (err) {
+            console.log('catched', err)
         }
     }
 
-    updateCurrentPost(){
+    findCurrentPost() {
         //console.log('updated');
-        if(this.isCurrentPost(this.currentPost) ){
-            return;
-        }
-        for(let i = 1; i < 4; i++) {
-            if (this.nativePostsPosition[this.currentPost + i] && this.isCurrentPost(this.currentPost + i) ) {
+        for (let i = 1; i < 4; i++) {
+            if (this.nativePostsPosition[this.currentPost + i] && this.isCurrentPost(this.currentPost + i)) {
                 //this.currentPost+=i;
-                this.setCurrentPostPosition(this.currentPost + i);
-                return;
+                //this.setCurrentPostPosition(this.currentPost + i);
+                return (this.currentPost + i);
             }
-            if (this.nativePostsPosition[this.currentPost + i] && this.currentPost !== 0 && this.isCurrentPost(this.currentPost - i) ) {
+            if (this.nativePostsPosition[this.currentPost + i] && this.currentPost !== 0 && this.isCurrentPost(this.currentPost - i)) {
                 //this.currentPost-=i;
-                this.setCurrentPostPosition(this.currentPost - i);
-                return;
+                //this.setCurrentPostPosition(this.currentPost - i);
+                return (this.currentPost - i);
             }
         }
-        for(let i = 0; i < this.nativePostsPosition.length; i++ ){
-            if (this.isCurrentPost(i) ) {
+        for (let i = 0; i < this.nativePostsPosition.length; i++) {
+            if (this.isCurrentPost(i)) {
                 //this.currentPost=i;
-                this.setCurrentPostPosition(i);
-                return;
+                //this.setCurrentPostPosition(i);
+                return i;
             }
         }
     };
 
-    setCurrentPostPosition(newPosition){
-        this.currentPost = newPosition;
-        this.posts[this.currentPost].Meta.saw = true;
-        console.log('Current Post:',this.posts[newPosition].title);
+    setCurrentPostPosition(newPosition:number) {
+        if (this.posts[newPosition]) {
+            this.currentPost = newPosition;
+            this.posts[this.currentPost].Meta.saw = true;
+            console.log('Current Post:', this.posts[newPosition].title);
+        }
     }
 
-    onKeyPress(event){
+    onKeyPress(event) {
         //console.log(this.routeDate);
-        if(!this.keyEventPass) {
+        if (!this.keyEventPass) {
             this.keyEventPass = true;
             this.onScroll();
 
@@ -184,57 +210,55 @@ export class PostsComponent implements OnInit {
                 }
             }
 
-            setTimeout(()=>{this.keyEventPass = false}, 200);
+            setTimeout(()=> {
+                this.keyEventPass = false
+            }, 200);
         }
     };
 
-    smoothYScrollFromTo(from, to, rate){
-        if(to - from < Math.abs(rate)){
-            if(rate > 0) {
+    smoothYScrollFromTo(from:number, to:number, rate:number) {
+        let smoothTimeout = Math.abs(this.smoothIntervalTime / ((from - to) / rate));
+        if (to - from < Math.abs(rate)) {
+            if (rate > 0) {
                 this.setCurrentPostPosition(this.currentPost + 1);
                 window.scrollBy(0, to - from);
                 //console.log('set +1');
                 return;
-            }else{
+            } else {
                 this.setCurrentPostPosition(this.currentPost - 1);
                 window.scrollBy(0, from - to);
                 //console.log('set -1');
                 return;
             }
-        }else{
+        } else {
             window.scrollBy(0, rate);
-            setTimeout(()=>{this.smoothYScrollFromTo(from, to - Math.abs(rate), rate);}, this.smoothIntervalTime);
+            setTimeout(()=> {
+                this.smoothYScrollFromTo(from, to - Math.abs(rate), rate);
+            }, smoothTimeout);
         }
-    }
-
-    isCurrentPost(postIndex){
-        try {
-            let post:Array<number> = this.nativePostsPosition[postIndex];
-            let postY1:number = post[0];
-            let postY2:number = post[1];
-            if (this._sb_windowTools.verticalOffset() > postY1 && this._sb_windowTools.verticalOffset() < postY2) {
-                return true;
-            } else {
-                return false
-            }
-        }catch (err){console.log('catched', err)}
     }
 
     stringAsDate(dateStr) {
         return new Date(dateStr);
     };
 
-    getTrunkedContent(post_content) {
-        if (post_content.length > this.truncateWord) {
-            return post_content.slice(0, this.truncateWord);
-        } else {
-            return post_content;
+    contentPlay(ipost:number, icontent:number) {
+        for (let i = 0; i < this.posts.length; i++) {
+            let curPost = this.posts[i];
+            for (let i2 = 0; i2 < curPost.contents.length; i2++) {
+                curPost.contents[i2]['Meta'] = {
+                    'play': false,
+                }
+            }
         }
-    };
-
-
-    isloading(){
-        console.log('LOADING....')
+        this.posts[ipost].contents[icontent]['Meta'] = {
+            'play': true,
+        }
     }
 
+    contentStop(ipost:number, icontent:number) {
+        this.posts[ipost].contents[icontent]['Meta'] = {
+            'play': false,
+        }
+    }
 }

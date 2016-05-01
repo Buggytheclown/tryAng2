@@ -79,4 +79,11 @@ export class LoggerComponent {
         console.log('page:',page,'rating:', rating, 'date:', date)
     }
 
+    getTimeDelta(log){
+        let len = log.logs.length;
+        let firstLogs:any = new Date(log.logs[0].timestamp);
+        let lastLogs:any = new Date(log.logs[len-1].timestamp);
+        return lastLogs - firstLogs;
+    }
+
 }

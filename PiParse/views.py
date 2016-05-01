@@ -39,8 +39,9 @@ class PiPostsViewSet(viewsets.ModelViewSet):
             dateTo = datetime.datetime.now()
             dateFrom = dateTo - datetime.timedelta(days=1)
 
-        queryset = queryset.filter(timestamp__gte=dateFrom)
-        queryset = queryset.filter(timestamp__lte=dateTo)
+        # queryset = queryset.filter(timestamp__gte=dateFrom)
+        # queryset = queryset.filter(timestamp__lte=dateTo)
+        queryset = queryset.filter(timestamp__range=(dateFrom, dateTo))
 
         if queryset.count() == 0:
             dateParse = ''
@@ -53,5 +54,4 @@ class PiPostsViewSet(viewsets.ModelViewSet):
             postFrom = int(postFrom)
             postTo = int(postTo)
             queryset = queryset.order_by('-rating')[postFrom:postTo]
-        print(date,dateFrom,dateTo)
         return queryset

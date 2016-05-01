@@ -20,6 +20,7 @@
         <th>error</th>
         <th>info</th>
         <th>warning</th>
+        <th>time-delta</th>
     </tr>
     <template ngFor #onelogs [ngForOf]="logs">
         <tr (dblclick)="onelogs.Meta.doTrunk = !onelogs.Meta.doTrunk" [ngClass]="{error: onelogs.Meta.infoCount/onelogs.Meta.errorCount < 20}" class="logsTr">
@@ -29,14 +30,16 @@
             <td> {{ onelogs.Meta.errorCount }} </td>
             <td> {{ onelogs.Meta.infoCount }} </td>
             <td> {{ onelogs.Meta.warningCount }} </td>
+            <td>{{ getTimeDelta(onelogs) }}</td>
         </tr>
         <tr *ngIf="!onelogs.Meta.doTrunk" >
-            <td colspan="6" class="inLogsTr">
+            <td colspan="7" class="inLogsTr">
                 <div class="inLogsTable">
                     <table class="table table-striped">
                         <caption>Loggs</caption>
                         <tr>
                             <th>id</th>
+                            <th>time</th>
                             <th>type</th>
                             <th>error</th>
                             <th>message</th>
@@ -44,6 +47,7 @@
                         <tr *ngFor="#log of onelogs.logs"
                             [ngClass]="{error:log.type==='error', warning:log.type==='warning'}">
                             <td>{{ log.id }}</td>
+                            <td>{{ log.timestamp }}</td>
                             <td>{{ log.type }}</td>
                             <td>
                                 <div [innerHTML]="log.error" class="error"></div>

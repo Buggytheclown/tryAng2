@@ -1,14 +1,19 @@
 export class sb_windowTools {
-    scrollBarPadding:any;
-    pageSize:any;
-    windowSize:any;
-    scrollOffset:any;
+    scrollBarPadding:number = 17; // padding to assume for scroll bars
+    pageSize:{
+        "viewportWidth"?: number;
+        "viewportHeight"?: number;
+    } = {};
+    windowSize:{
+        "windowWidth"?: number;
+        "windowHeight"?: number;
+    } = {};
+    scrollOffset:{
+        "horizontalOffset"?: number;
+        "verticalOffset"?: number;
+    } = {};
 
     constructor() {
-        let scrollBarPadding = 17;  // padding to assume for scroll bars
-        let pageSize = {};
-        let windowSize = {};
-        let scrollOffset = {};
     };
 
 
@@ -40,7 +45,7 @@ export class sb_windowTools {
             // explorer mac...would also work in explorer 6 strict, mozilla and safari
             viewportWidth = document.body.offsetWidth;
             viewportHeight = document.body.offsetHeight;
-        };
+        }
 
         this.pageSize = {
             viewportWidth: viewportWidth,
@@ -64,7 +69,7 @@ export class sb_windowTools {
             // other explorers
             windowWidth = document.body.clientWidth;
             windowHeight = document.body.clientHeight;
-        };
+        }
 
         this.windowSize = {
             windowWidth: windowWidth,
@@ -87,7 +92,8 @@ export class sb_windowTools {
             // all other Explorers
             horizontalOffset = document.body.scrollLeft;
             verticalOffset = document.body.scrollTop;
-        };
+        }
+
 
         this.scrollOffset = {
             horizontalOffset: horizontalOffset,
@@ -108,7 +114,7 @@ export class sb_windowTools {
             this.windowSize.windowWidth;
     };
 
-    pageHeight() {
+    pageHeight():number {
         return this.pageSize.viewportHeight > this.windowSize.windowHeight ?
             this.pageSize.viewportHeight :
             this.windowSize.windowHeight;
@@ -130,6 +136,10 @@ export class sb_windowTools {
         return this.scrollOffset.verticalOffset;
     };
 
+    scrollPercent():number {
+        return ((this.windowSize.windowHeight + this.scrollOffset.verticalOffset) / this.pageHeight())
+    };
+
     findPosY(obj) {
         var curtop = 0;
         if (obj.offsetParent) {
@@ -146,4 +156,4 @@ export class sb_windowTools {
         return curtop;
     }
 
-};
+}
