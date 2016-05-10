@@ -10,16 +10,21 @@ import {RouteParams} from "angular2/router";
 import {AfterViewChecked} from "angular2/core";
 import {AfterContentInit} from "angular2/core";
 import {Posts} from "./posts.interface";
+import {PostComponent} from "./post/post.component";
+import {ViewChildren} from "angular2/core";
+import {QueryList} from "angular2/core";
+import {SearchbarComponent} from "./searchbar/searchbar.component";
+import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 
 @Component({
     selector: 'my-posts',
     templateUrl: SrcURL + 'posts/posts.html',
     styleUrls: [SrcURL + 'posts/posts.css'],
-    directives: [],
+    directives: [PostComponent, SearchbarComponent],
     providers: [PostsService, sb_windowTools],
 })
 
-export class PostsComponent implements OnInit {
+export class PostsComponent implements OnInit, AfterViewInit {
     posts:Array<Posts> = [];
     gettingPosts:boolean = true;
     pageHeight:number;
@@ -29,6 +34,8 @@ export class PostsComponent implements OnInit {
     keyEventPass:boolean = false;
     routeDate:string;
     outOfPosts:boolean = false;
+    viewedPosts:Array<number> = [];
+    newViewedPosts:Array<number> = [];
     // ____CONFIG____
     smoothIntervalPx:number = 50;
     smoothIntervalTime:number = 200;
@@ -50,6 +57,21 @@ export class PostsComponent implements OnInit {
     ngOnInit() {
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
     };
+
+    @ViewChildren(PostComponent) PostsChildren:QueryList<PostComponent>;
+
+    ngAfterViewInit() {
+        this.initMove();
+    }
+
+    initMove() {
+        if (this.PostsChildren.length > 0) {
+            this._sb_windowTools.updateDimensions();
+            this.initPosts();
+        } else {
+            setTimeout(()=>this.initMove(), 50)
+        }
+    }
 
     getPosts(from:number, to:number, date:string) {
         this._postsService.getPosts(from, to, date)
@@ -90,8 +112,7 @@ export class PostsComponent implements OnInit {
             //console.log(this._sb_windowTools.scrollPercent());
             this.scrollPass = true;
             this._sb_windowTools.updateDimensions();
-            this.initPosts();
-            if (this._sb_windowTools.scrollPercent() > 0.90 && !this.gettingPosts) {
+            if (this._sb_windowTools.scrollPercent() > 0.85 && !this.gettingPosts) {
                 this.getPostsEnd += this.getPostsDelta;
                 this.getPosts(this.getPostsEnd - this.getPostsDelta, this.getPostsEnd, this.routeDate);
                 this.gettingPosts = true;
@@ -110,10 +131,13 @@ export class PostsComponent implements OnInit {
     };
 
     setNewPostsPosition() {
-        let nativePosts = this.element.nativeElement.getElementsByClassName("_mypost");
+        //let nativePosts = this.element.nativeElement.getElementsByClassName("_mypost");
+        //let nativePosts = this.PostsChildren.forEach(post=>post.getNativeElement());
+        //nativePosts.forEach(post=>{console.log(post.getNativeElement())});
         this.nativePostsPosition = [];
-        for (let i = 0; i < nativePosts.length; i++) {
-            let currentPost = nativePosts[i];
+        //for (let i = 0; i < nativePosts.length; i++) {
+        this.PostsChildren.forEach((post, i)=> {
+            let currentPost = post.getNativeElement();
             let currentPostOffset = currentPost.offsetHeight;
             let postPosY:number = this._sb_windowTools.findPosY(currentPost);
             let style = currentPost.currentStyle || window.getComputedStyle(currentPost);
@@ -123,12 +147,12 @@ export class PostsComponent implements OnInit {
             this.nativePostsPosition.push(postInterval);
             //got to know if post was 'doTrunked'
             this.posts[i].Meta['height'] = currentPostOffset;
-        }
+        });
         this.nativePostsPosition[0][0] = 0; //for 1st post start position
-    };
+    }
 
     initPosts() {
-        // __init__ move (dont know how to do else, ngOnViewInit didn't work for that)
+        // __init__ move
         if (this.currentPost == null) {
             this.setCurrentPostPosition(0);
         }
@@ -176,13 +200,27 @@ export class PostsComponent implements OnInit {
                 return i;
             }
         }
-    };
+    }
 
     setCurrentPostPosition(newPosition:number) {
         if (this.posts[newPosition]) {
             this.currentPost = newPosition;
             this.posts[this.currentPost].Meta.saw = true;
             console.log('Current Post:', this.posts[newPosition].title);
+            let currentPID = this.posts[this.currentPost]['p_id'];
+            if (tokenNotExpired() && !this.viewedPosts.find((x)=>x === currentPID)) {
+                this.viewedPosts.push(currentPID);
+                this.newViewedPosts.push(currentPID);
+                if (this.newViewedPosts.length > 5) {
+                    //newViewedPosts to server
+                    this._postsService.saveViewed(this.newViewedPosts).subscribe(suc => {
+                        console.log(suc);
+                    }, err => {
+                        console.log(err);
+                    });
+                    this.newViewedPosts = [];
+                }
+            }
         }
     }
 
@@ -214,7 +252,7 @@ export class PostsComponent implements OnInit {
                 this.keyEventPass = false
             }, 200);
         }
-    };
+    }
 
     smoothYScrollFromTo(from:number, to:number, rate:number) {
         let smoothTimeout = Math.abs(this.smoothIntervalTime / ((from - to) / rate));
@@ -238,10 +276,6 @@ export class PostsComponent implements OnInit {
         }
     }
 
-    stringAsDate(dateStr) {
-        return new Date(dateStr);
-    };
-
     contentPlay(ipost:number, icontent:number) {
         for (let i = 0; i < this.posts.length; i++) {
             let curPost = this.posts[i];
@@ -256,9 +290,5 @@ export class PostsComponent implements OnInit {
         }
     }
 
-    contentStop(ipost:number, icontent:number) {
-        this.posts[ipost].contents[icontent]['Meta'] = {
-            'play': false,
-        }
-    }
+
 }

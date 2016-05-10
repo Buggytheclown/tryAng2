@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework import routers
 
-from PiParse.views import PiPostsViewSet
+from PiParse.views import PiPostsViewSet, saveViewed
 from Posts import views as PostsView
 from Polls import views as PollsView
 from Angular2 import views as Angular2View
@@ -38,5 +38,6 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', obtain_jwt_token),
     url(r'^api-register/$', Angular2View.Register),
+    url(r'^api/viewed/$', saveViewed.as_view()),
     url(r'^', Angular2View.AngIndex),
 ]

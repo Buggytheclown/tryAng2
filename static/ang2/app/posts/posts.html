@@ -1,77 +1,12 @@
 <div (window:scroll)="onScroll()" (window:keypress)="onKeyPress($event)">
-    <h3>Posts:</h3>
+    <my-searchbar></my-searchbar>
     <div *ngIf="!posts" style="margin-left: 50%">
         <i class="fa fa-spinner fa-4x fa-spin"></i>
     </div>
 
     <div *ngFor="#post of posts; #ipost = index" class="blog-post _mypost">
         <div *ngIf="post">
-            <!-- post's head -->
-            <div class="post-head">
-                <h2>{{ post.title }}</h2>
-                <p class="rating">Rating:<b>{{ post.rating }}</b></p>
-                <small><p class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</p></small>
-                <p *ngIf="post.description">{{ post.description }}</p>
-            </div>
-            <!-- post's content -->
-            <div [style.maxHeight]="post.Meta.doTrunk ? 1000 : 999999" class="contentWrapper">
-                <div *ngFor="#content of post.contents; #icontent = index">
-
-                    <!-- P -->
-                    <div *ngIf="content.type==='p'">
-                        <div class="p-wrapper" [innerHTML]=content.content></div>
-                    </div>
-
-                    <!-- gif  - make gif responsive -->
-                    <div *ngIf="content.type==='gif'" class="gif-wrapper">
-                        <img src="{{ content.pre_content }}" class="myimg-responsive">
-                        <div *ngIf="!content.Meta.play" (click)="contentPlay(ipost, icontent)"
-                             class="content-play">
-                                <span class="fa-stack fa-3x">
-                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
-                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
-                                </span>
-                        </div>
-
-                        <div *ngIf="content.Meta.play" class="img-boss">
-                            <img class="myimg-responsive" (click)="contentStop(ipost, icontent)" src="{{ content.content }}">
-                        </div>
-                    </div>
-
-                    <!-- img -->
-                    <div *ngIf="content.type==='img'">
-                        <img class="myimg-responsive" src="{{ content.content }}">
-                    </div>
-
-                    <!-- video/coub -->
-                    <div *ngIf="content.type==='video'" class="gif-wrapper youtube">
-                        <img src="{{ content.pre_content }}" class="youtube">
-                        <div *ngIf="!content.Meta.play" (click)="contentPlay(ipost, icontent)"
-                             class="content-play">
-                                <span class="fa-stack fa-3x">
-                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
-                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
-                                </span>
-                        </div>
-
-
-                        <div *ngIf="content.Meta.play" class="img-boss">
-                            <iframe frameborder="0" allowfullscreen="1"
-                                    title="YouTube video player"
-                                    width="570"
-                                    height="428.57142857142856"
-                                    src="{{ content.content + '?autoplay=1' }}"></iframe>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="show-full" *ngIf="post.Meta.height > 1000 && post.Meta.doTrunk "
-                 (click)="post.Meta.doTrunk = false">
-                <p>show full <br>
-                    <i class="fa fa-sort-desc fa-2x" aria-hidden="true"></i></p>
-            </div>
+            <my-post [post]="post" (contentToPlay)="contentPlay(ipost, $event)"></my-post>
         </div>
     </div><!-- endFor post  /.blog-post -->
 
@@ -80,7 +15,7 @@
         <i class="fa fa-spinner fa-4x fa-spin"></i>
     </div>
     <div *ngIf="outOfPosts" class="bg-info">
-        <p class="text-center pinfo">Congratulations you saw all posts for this day!</p>
+        <p class="text-center pinfo">Congratulations! You have seen all posts for this day!</p>
     </div>
 
 </div>
