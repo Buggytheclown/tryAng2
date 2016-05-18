@@ -27,7 +27,20 @@ System.register(["../../../static", "angular2/core"], function(exports_1) {
                 function PostComponent(element) {
                     this.element = element;
                     this.contentToPlay = new core_4.EventEmitter();
+                    this.postShow = 'content';
                 }
+                PostComponent.prototype.ngAfterViewInit = function () {
+                    var _this = this;
+                    //this.initMove();
+                    setTimeout(function () { return _this.height = _this.getNativeElement().offsetHeight; }, 0);
+                };
+                //initMove() {
+                //    this.height = this.getNativeElement().offsetHeight;
+                //    console.log( this.height);
+                //    if (this.height === undefined) {
+                //        setTimeout(()=>this.initMove(), 50)
+                //    }
+                //}
                 PostComponent.prototype.ngOnInit = function () { };
                 PostComponent.prototype.getNativeElement = function () {
                     //for parent bindings, firstChild is needed (<my-post> is inline element)

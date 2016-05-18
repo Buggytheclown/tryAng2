@@ -1,4 +1,6 @@
 export interface Posts {
+    'id':number;
+    'viewed': boolean;
     "p_id": number;
     "rating": number;
     "post_link": string;
@@ -7,7 +9,6 @@ export interface Posts {
     "description": string;
     "Meta"?: {
         "height"?:number;
-        "saw"?:boolean;
         "doTrunk"?:boolean;
     }
     "contents": Array<{
@@ -17,5 +18,12 @@ export interface Posts {
         "Meta"?: {
             "play"?:boolean;
         }
+    }>
+    "userGroups": Array<{
+         "name"?: string,
+         "users"?: Array <{
+            "id": number,
+            "username": string,
+         }>
     }>
 }

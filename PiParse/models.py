@@ -9,7 +9,7 @@ class PiPosts(models.Model):
     title = models.TextField()
     timestamp = models.DateTimeField()
     description = models.TextField(blank=True, default='')
-    viewed = models.ManyToManyField(User)
+    viewed = models.ManyToManyField(User, related_name='viewed')
 
     def __str__(self):
         return self.title
@@ -26,3 +26,8 @@ class PostContents(models.Model):
 
     class Meta:
         ordering = ["id", ]
+
+
+class FriendList(models.Model):
+    owner = models.OneToOneField(User, related_name='owner')
+    friends = models.ManyToManyField(User, related_name='friends')

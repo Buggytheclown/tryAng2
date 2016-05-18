@@ -6,6 +6,7 @@ import {Posts} from "../posts.interface";
 import {Output} from "angular2/core";
 import {EventEmitter} from "angular2/core";
 import {ElementRef} from "angular2/core";
+import {AfterViewInit} from "angular2/core";
 
 @Component({
     selector: 'my-post',
@@ -15,15 +16,31 @@ import {ElementRef} from "angular2/core";
     providers: [],
 })
 
-export class PostComponent implements OnInit {
+export class PostComponent implements OnInit, AfterViewInit {
     @Input() post:Posts;
     @Output() contentToPlay = new EventEmitter();
+    postShow:string = 'content';
+    height:number;
 
-    constructor(public element:ElementRef){}
+    constructor(public element:ElementRef) {
+    }
+
+    ngAfterViewInit() {
+        //this.initMove();
+         setTimeout(()=>this.height = this.getNativeElement().offsetHeight, 0)
+    }
+
+    //initMove() {
+    //    this.height = this.getNativeElement().offsetHeight;
+    //    console.log( this.height);
+    //    if (this.height === undefined) {
+    //        setTimeout(()=>this.initMove(), 50)
+    //    }
+    //}
 
     ngOnInit() {}
 
-    getNativeElement(){
+    getNativeElement() {
         //for parent bindings, firstChild is needed (<my-post> is inline element)
         return this.element.nativeElement.firstChild;
     }

@@ -17,7 +17,7 @@ export class PostsService {
     //        // component
     //}
     getPosts(from, to, date) {
-        return this._http.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date )
+        return this._AuthHttp.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date )
             // Call map on the response observable to get the parsed people object
             .map(res => res.json());
         // Subscribe to the observable to get the parsed people object and attach it to the
