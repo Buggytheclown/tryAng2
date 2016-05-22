@@ -13,19 +13,19 @@ System.register([], function(exports_1) {
                 ;
                 sb_windowTools.prototype.centerElementOnScreen = function (element) {
                     var pageDimensions = this.updateDimensions();
-                    element.style.top = ((this.verticalOffset() + this.windowHeight() / 2) - (this.scrollBarPadding + element.offsetHeight / 2)) + 'px';
+                    element.style.top = ((this._verticalOffset() + this._windowHeight() / 2) - (this.scrollBarPadding + element.offsetHeight / 2)) + 'px';
                     element.style.left = ((this.windowWidth() / 2) - (this.scrollBarPadding + element.offsetWidth / 2)) + 'px';
                     element.style.position = 'absolute';
                 };
                 ;
                 // load the page size, view port position and vertical scroll offset
                 sb_windowTools.prototype.updateDimensions = function () {
-                    this.updatePageSize();
+                    this.updateViewportHeight();
                     this.updateWindowSize();
                     this.updateScrollOffset();
                 };
                 ;
-                sb_windowTools.prototype.updatePageSize = function () {
+                sb_windowTools.prototype.updateViewportHeight = function () {
                     // document dimensions
                     var viewportWidth, viewportHeight;
                     if (window.innerHeight && window.scrollMaxY) {
@@ -116,7 +116,7 @@ System.register([], function(exports_1) {
                     return this.windowSize.windowWidth;
                 };
                 ;
-                sb_windowTools.prototype.windowHeight = function () {
+                sb_windowTools.prototype._windowHeight = function () {
                     return this.windowSize.windowHeight;
                 };
                 ;
@@ -124,7 +124,7 @@ System.register([], function(exports_1) {
                     return this.scrollOffset.horizontalOffset;
                 };
                 ;
-                sb_windowTools.prototype.verticalOffset = function () {
+                sb_windowTools.prototype._verticalOffset = function () {
                     return this.scrollOffset.verticalOffset;
                 };
                 ;

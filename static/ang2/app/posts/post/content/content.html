@@ -1,0 +1,53 @@
+<!-- P -->
+<div *ngIf="content.type==='p'">
+    <div class="p-wrapper" [innerHTML]=content.content></div>
+</div>
+
+<!-- gif  -->
+<div *ngIf="content.type==='gif'" class="gif-wrapper">
+    <img src="{{ content.pre_content }}" class="myimg-responsive" (load)="imgLoaded()">
+    <div *ngIf="!content.Meta.play">
+        <div (click)="contentPlay()" class="content-play">
+            <span class="fa-stack fa-3x">
+              <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
+              <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
+            </span>
+        </div>
+    </div>
+
+    <div *ngIf="content.Meta.play" class="img-boss">
+        <img class="myimg-responsive" (click)="content.Meta.play=false"
+             src="{{ content.content }}">
+    </div>
+</div>
+
+<!-- img -->
+<div *ngIf="content.type==='img'">
+    <img class="myimg-responsive" src="{{ content.content }}" (load)="imgLoaded()">
+</div>
+
+<!-- video/coub -->
+<!--TODO test the coub -->
+<div *ngIf="content.type==='video'" class="video-wrapper">
+    <img src="{{ content.pre_content }}" class="myimg-responsive" (load)="imgLoaded()" #videoimg>
+    <div *ngIf="!content.Meta.play">
+        <div class="type-marker">
+            <i class="fa fa-youtube fa-3x" aria-hidden="true"></i>
+        </div>
+        <div class="content-play" (click)="contentPlay()">
+            <span class="fa-stack fa-3x">
+              <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
+              <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
+            </span>
+        </div>
+    </div>
+
+
+    <div *ngIf="content.Meta.play" class="img-boss">
+        <iframe frameborder="0" allowfullscreen="1"
+                title="YouTube video player"
+                width="{{ videoimg.clientWidth }}"
+                height="{{ videoimg.clientHeight }}"
+                src="{{ content.content + '?autoplay=1' }}"></iframe>
+    </div>
+</div>

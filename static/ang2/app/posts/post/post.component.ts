@@ -7,12 +7,13 @@ import {Output} from "angular2/core";
 import {EventEmitter} from "angular2/core";
 import {ElementRef} from "angular2/core";
 import {AfterViewInit} from "angular2/core";
+import {PostContentComponent} from "./content/content.component";
 
 @Component({
     selector: 'my-post',
     templateUrl: SrcURL + 'posts/post/post.html',
     styleUrls: [SrcURL + 'posts/post/post.css'],
-    directives: [],
+    directives: [PostContentComponent],
     providers: [],
 })
 
@@ -21,25 +22,27 @@ export class PostComponent implements OnInit, AfterViewInit {
     @Output() contentToPlay = new EventEmitter();
     postShow:string = 'content';
     height:number;
+    doTrunk:boolean = true;
+    contentImgLoadedDo:boolean = true;
 
     constructor(public element:ElementRef) {
     }
 
     ngAfterViewInit() {
-        //this.initMove();
-         setTimeout(()=>this.height = this.getNativeElement().offsetHeight, 0)
+        this.updatePostHeight();
     }
 
-    //initMove() {
-    //    this.height = this.getNativeElement().offsetHeight;
-    //    console.log( this.height);
-    //    if (this.height === undefined) {
-    //        setTimeout(()=>this.initMove(), 50)
-    //    }
-    //}
+    ngOnInit() {
+    }
 
-    ngOnInit() {}
+    updatePostHeight() {
+        setTimeout(()=> {
+            this.height = this.getNativeElement().offsetHeight;
+        }, 0);
 
+    }
+
+    //used for parent call!!!
     getNativeElement() {
         //for parent bindings, firstChild is needed (<my-post> is inline element)
         return this.element.nativeElement.firstChild;
@@ -53,9 +56,23 @@ export class PostComponent implements OnInit, AfterViewInit {
         this.contentToPlay.emit(icontent)
     }
 
-    contentStop(icontent:number) {
-        this.post.contents[icontent]['Meta'] = {
-            'play': false,
+    postShowIt() {
+        this.post.viewed = false;
+    }
+
+    contentImgLoaded() {
+        if (this.contentImgLoadedDo) {
+            this.contentImgLoadedDo = false;
+            setTimeout(()=> {
+                this.contentImgLoadedDo = true;
+                this.updatePostHeight();
+            }, 200);
+
         }
     }
+
+    friendsViewed():number{
+        return this.post.friendsViewed.length
+    }
+
 }

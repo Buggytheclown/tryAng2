@@ -19,11 +19,5 @@ export interface Posts {
             "play"?:boolean;
         }
     }>
-    "userGroups": Array<{
-         "name"?: string,
-         "users"?: Array <{
-            "id": number,
-            "username": string,
-         }>
-    }>
+    "friendsViewed": Array<string>
 }

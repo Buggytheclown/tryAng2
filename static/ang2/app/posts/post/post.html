@@ -2,7 +2,7 @@
     <div class="post-head">
         <h3>{{ post.title }}</h3>
         <button class="btn btn-default btn-sm" (click)="postShow='content'">Content</button>
-        <button class="btn btn-default btn-sm" (click)="postShow='userGroup'">userGroup</button>
+        <button class="btn btn-default btn-sm" (click)="postShow='userGroup'">Viewed: {{ friendsViewed() }}</button>
 
         <p class="rating">Rating:<b>{{ post.rating }}</b>
             <small class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</small>
@@ -13,86 +13,44 @@
     <!-- post's content -->
     <div [ngSwitch]="postShow">
         <div *ngSwitchWhen="'content'">
+
             <div *ngIf="!post.viewed">
-                <div [style.maxHeight]="post.Meta.doTrunk ? 1000 : 999999" class="contentWrapper">
+                <div [style.maxHeight]="doTrunk ? 1000 : 999999" class="contentWrapper">
                     <div *ngFor="#content of post.contents; #icontent = index">
 
-                        <!-- P -->
-                        <div *ngIf="content.type==='p'">
-                            <div class="p-wrapper" [innerHTML]=content.content></div>
-                        </div>
-
-                        <!-- gif  -->
-                        <div *ngIf="content.type==='gif'" class="gif-wrapper">
-                            <img src="{{ content.pre_content }}" class="myimg-responsive">
-                            <div *ngIf="!content.Meta.play" (click)="contentPlay(icontent)"
-                                 class="content-play">
-                                <span class="fa-stack fa-3x">
-                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
-                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
-                                </span>
-                            </div>
-
-                            <div *ngIf="content.Meta.play" class="img-boss">
-                                <img class="myimg-responsive" (click)="contentStop(icontent)"
-                                     src="{{ content.content }}">
-                            </div>
-                        </div>
-
-                        <!-- img -->
-                        <div *ngIf="content.type==='img'">
-                            <img class="myimg-responsive" src="{{ content.content }}">
-                        </div>
-
-                        <!-- video/coub -->
-                        <!--TODO test the coub -->
-                        <div *ngIf="content.type==='video'" class="video-wrapper">
-                            <img src="{{ content.pre_content }}" class="myimg-responsive" #videoimg>
-                            <div *ngIf="!content.Meta.play" (click)="contentPlay(icontent)"
-                                 class="content-play">
-                                <span class="fa-stack fa-3x">
-                                  <i class="fa fa-circle fa-stack-2x" style="margin-left: -5px"></i>
-                                  <i class="fa fa-play fa-stack-1x" aria-hidden="true" style="color: white"></i>
-                                </span>
-                            </div>
-
-
-                            <div *ngIf="content.Meta.play" class="img-boss">
-                                <iframe frameborder="0" allowfullscreen="1"
-                                        title="YouTube video player"
-                                        width="{{ videoimg.clientWidth }}"
-                                        height="{{ videoimg.clientHeight }}"
-                                        src="{{ content.content + '?autoplay=1' }}"></iframe>
-                            </div>
-                        </div>
+                        <my-post-content [content]="content" (contentToPlay)="contentPlay(icontent)" (contentImgLoaded)="contentImgLoaded()"></my-post-content>
 
                     </div>
                 </div>
-                <div class="show-full" *ngIf="height > 1000 && post.Meta.doTrunk "
-                     (click)="post.Meta.doTrunk = false">
+                <div class="show-full" *ngIf="height > 1000 && doTrunk "
+                     (click)="doTrunk = false">
                     <p>show full <br>
                         <i class="fa fa-sort-desc fa-2x" aria-hidden="true"></i></p>
                 </div>
             </div>
+
             <div class="show-full" *ngIf="post.viewed"
-                 (click)="post.viewed = false">
+                 (click)="postShowIt()">
                 <p>show<br>
                     <i class="fa fa-sort-desc fa-2x" aria-hidden="true"></i></p>
             </div>
+
         </div>
+
         <div *ngSwitchWhen="'userGroup'">
             <div *ngIf="post.friendsViewed">
 
-                <ul class="usergroup-list">
+                <ol class="usergroup-list">
                     <li *ngFor="#user of post.friendsViewed" >
                         {{ user }}
                     </li>
-                </ul>
-
+                </ol>
             </div>
-            <div *ngIf="!post.userGroups">
-                <p>Create a group and add some your friend to see if they saw it!</p>
+
+            <div *ngIf="!friendsViewed()">
+                <p class="bg-info text-center pinfo">None of your friends saw it!</p>
             </div>
         </div>
+
     </div>
 </div>

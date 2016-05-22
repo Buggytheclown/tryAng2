@@ -23,59 +23,7 @@
     padding-right:15px;
 }
 
-.video-wrapper{
-    position: relative;
-    /*display: table;*/
-}
 
-.gif-wrapper{
-    position: relative;
-    display: table;
-    /*margin-bottom: 20px;*/
-}
-
-/*.youtube {*/
-    /*width: 570px;*/
-    /*height: 429px;*/
-/*}*/
-
-.img-boss {
-    cursor: pointer;
-    position: absolute;
-    /*margin: auto;*/
-    top: 0;
-    left: 0;
-    z-index: 999;
-}
-
-.content-play {
-    display: inline-block;
-    position: absolute;
-    margin-left: -30px;
-    margin-top: -30px;
-    left: 50%;
-    top: 50%;
-    cursor: pointer;
-    overflow: hidden;
-    opacity: 0.65;
-    width: 100%;
-    height: auto;
-}
-
-.content-play :hover {
-    color: green;
-}
-
-/* and hover for it (*/
-
-.contentWrapper {
-    overflow: hidden;
-    text-align: left;
-    padding: 8px 16px;
-    border: 1px solid #d0dde5;
-    background-color: #fbfbfb;
-    max-width: 583px;
-}
 
 /* WARNING pWrapper broke PLAY button*/
 .p-wrapper {
@@ -88,23 +36,68 @@
 .rating {
 }
 
-.myimg-responsive {
-    width: 100%;
-    height: auto;
-}
-
-/*.contentWrapper div {*/
-    /*max-width: 583px;*/
-/*}*/
-
-.inher-maxWidth {
-    max-width: inherit;
+.contentWrapper {
+    overflow: hidden;
+    text-align: left;
+    padding: 8px 16px;
+    border: 1px solid #d0dde5;
+    background-color: #fbfbfb;
+    max-width: 583px;
 }
 
 .blog-post-meta {
     padding-left: 10px;
 }
 
-.usergroup-list {
+.usergroup-list{
+    display: table;
+    cursor: default;
+    max-width: 583px;
+    counter-reset: li; /* Initiate a counter */
+    list-style: none; /* Remove default numbering */
+    *list-style: decimal; /* Keep using default numbering for IE6/7 */
+    font: 15px 'trebuchet MS', 'lucida sans';
+    padding: 0;
+    margin-bottom: 2em;
+    margin-left: 50px;
+    text-shadow: 0 1px 0 rgba(255,255,255,.5);
+}
 
+.usergroup-list li{
+    position: relative;
+    display: block;
+    padding: .4em 2em .4em 2em;
+    margin: .5em 0;
+    background: #ddd;
+    color: #444;
+    text-decoration: none;
+    border-radius: .3em;
+    transition: all .3s ease-out;
+}
+
+.usergroup-list li:hover{
+    background: #eee;
+}
+
+.usergroup-list li:before{
+    content: counter(li);
+    counter-increment: li;
+    position: absolute;
+    left: -1.3em;
+    top: 50%;
+    margin-top: -1.3em;
+    background: #87ceeb;
+    height: 2em;
+    width: 2em;
+    line-height: 2em;
+    border: .3em solid #fff;
+    text-align: center;
+    font-weight: bold;
+    border-radius: 2em;
+    transition: all .3s ease-out;
+}
+
+.pinfo {
+    margin: 15px 0;
+    padding: 15px 0;
 }

@@ -1,0 +1,66 @@
+.video-wrapper{
+    position: relative;
+    /*display: table;*/
+}
+
+.gif-wrapper{
+    position: relative;
+    display: table;
+    /*margin-bottom: 20px;*/
+}
+
+/*.youtube {*/
+    /*width: 570px;*/
+    /*height: 429px;*/
+/*}*/
+
+.img-boss {
+    cursor: pointer;
+    position: absolute;
+    /*margin: auto;*/
+    top: 0;
+    left: 0;
+    z-index: 999;
+}
+
+.content-play {
+    display: inline-block;
+    position: absolute;
+    margin-left: -30px;
+    margin-top: -30px;
+    left: 50%;
+    top: 50%;
+    cursor: pointer;
+    overflow: hidden;
+    opacity: 0.65;
+    width: 100%;
+    height: auto;
+}
+.type-marker {
+    color: whitesmoke;
+    position: absolute;
+    opacity: 0.65;
+    left: 5%;
+    top: 5%;
+}
+
+.content-play :hover {
+    color: green;
+}
+
+/* and hover for it (*/
+
+
+
+.myimg-responsive {
+    width: 100%;
+    height: auto;
+}
+
+/*.contentWrapper div {*/
+    /*max-width: 583px;*/
+/*}*/
+
+.inher-maxWidth {
+    max-width: inherit;
+}

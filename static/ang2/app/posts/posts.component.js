@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowTools", "angular2/router", "./post/post.component", "./searchbar/searchbar.component", "angular2-jwt"], function(exports_1) {
+System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowToolsY", "angular2/router", "./post/post.component", "./searchbar/searchbar.component", "angular2-jwt"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowTools_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1;
+    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1;
     var PostsComponent;
     return {
         setters:[
@@ -25,8 +25,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             function (posts_service_1_1) {
                 posts_service_1 = posts_service_1_1;
             },
-            function (sb_windowTools_1_1) {
-                sb_windowTools_1 = sb_windowTools_1_1;
+            function (sb_windowToolsY_1_1) {
+                sb_windowToolsY_1 = sb_windowToolsY_1_1;
             },
             function (router_1_1) {
                 router_1 = router_1_1;
@@ -42,10 +42,10 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             }],
         execute: function() {
             PostsComponent = (function () {
-                function PostsComponent(element, _postsService, _sb_windowTools, _ChangeDetectorRef, params) {
+                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params) {
                     this.element = element;
                     this._postsService = _postsService;
-                    this._sb_windowTools = _sb_windowTools;
+                    this._sb_windowToolsY = _sb_windowToolsY;
                     this._ChangeDetectorRef = _ChangeDetectorRef;
                     this.posts = [];
                     this.gettingPosts = true;
@@ -62,29 +62,28 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.GET_POSTS_DELTA = 5;
                     this.SCROLL_TIMEOUT = 150;
                     this.SCROLL_PERCENT_LOAD = 0.85;
-                    this.POSTS_OFFSET_DELTA = 30; // concat posts offset for unbreakable change currentPost
-                    this.postInView = {
-                        '_PostsChildren': this.PostsChildren,
-                        '_nativePostsPosition': [],
-                        '_currentPost': undefined,
-                        '_verticalOffset': undefined,
-                        '_POSTS_OFFSET_DELTA': this.POSTS_OFFSET_DELTA,
-                        setVerticalOffset: function () {
-                            var verticalOffset;
-                            if (self.pageYOffset) {
-                                verticalOffset = self.pageYOffset;
-                            }
-                            else if (document.documentElement && document.documentElement.scrollTop) {
-                                // Explorer 6 Strict
-                                verticalOffset = document.documentElement.scrollTop;
-                            }
-                            else if (document.body) {
-                                // all other Explorers
-                                verticalOffset = document.body.scrollTop;
-                            }
-                            this._verticalOffset = verticalOffset;
-                        },
-                        findPosY: function (obj) {
+                    //POSTS_OFFSET_DELTA:number = 30;  // concat posts offset for unbreakable change currentPost
+                    this.POSTS_START_POINT = 0;
+                    this.KEY_NEXT = 100;
+                    this.KEY_PREVIOUS = 97;
+                    this.KEY_HIDE_VIEWED = 102;
+                    this.postsInView = {
+                        _PostsDimension: [],
+                        _previousPost: undefined,
+                        _currentPost: 0,
+                        _POSTS_START_POINT: this.POSTS_START_POINT,
+                        //_getVerticalOffset(): number {
+                        //    if (self.pageYOffset) {
+                        //        return self.pageYOffset;
+                        //    } else if (document.documentElement && document.documentElement.scrollTop) {
+                        //        // Explorer 6 Strict
+                        //        return document.documentElement.scrollTop;
+                        //    } else if (document.body) {
+                        //        // all other Explorers
+                        //        return document.body.scrollTop;
+                        //    }
+                        //},
+                        _findPosY: function (obj) {
                             var curtop = 0;
                             if (obj.offsetParent) {
                                 while (1) {
@@ -100,22 +99,19 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                             }
                             return curtop;
                         },
-                        findCurrent: function (length) {
+                        _findCurrent: function (length, verticalOffset) {
                             for (var i = 0; i < length; i++) {
-                                if (this.isCurrent(i)) {
+                                if (this._isCurrent(i, verticalOffset)) {
                                     return i;
-                                }
-                                else {
-                                    console.log('error to findCurrentPosts');
                                 }
                             }
                         },
-                        isCurrent: function (postIndex) {
+                        _isCurrent: function (postIndex, verticalOffset) {
                             try {
-                                var post = this._nativePostsPosition[postIndex];
+                                var post = this._PostsDimension[postIndex];
                                 var postY1 = post[0];
                                 var postY2 = post[1];
-                                if (this._verticalOffset >= postY1 && this._verticalOffset <= postY2) {
+                                if (verticalOffset >= postY1 && verticalOffset <= postY2) {
                                     return true;
                                 }
                                 else {
@@ -126,34 +122,50 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 console.log('catched', err);
                             }
                         },
-                        updateNativePostsPosition: function () {
+                        updatePostsDimension: function (PostsChildren) {
                             var _this = this;
-                            this._nativePostsPosition = [];
-                            this._PostsChildren.forEach(function (post, i) {
+                            this._PostsDimension = [];
+                            //cancat post position for unbreakable scroll
+                            var postStart = this._POSTS_START_POINT;
+                            PostsChildren.forEach(function (post, i) {
                                 var currentPost = post.getNativeElement();
                                 var currentPostOffset = currentPost.offsetHeight;
-                                var postPosY = _this.findPosY(currentPost);
-                                var postInterval = [postPosY - _this._POSTS_OFFSET_DELTA, postPosY + currentPostOffset];
-                                _this._nativePostsPosition.push(postInterval);
+                                var postPosY = _this._findPosY(currentPost);
+                                var postEnd = postPosY + currentPostOffset;
+                                var postInterval = [postStart, postEnd];
+                                _this._PostsDimension.push(postInterval);
+                                postStart = postEnd;
                             });
-                            this._nativePostsPosition[0][0] = 0; //for 1st post start position
                         },
-                        getCurent: function () {
-                            this.setVerticalOffset();
-                            if (this.isCurrent(this._currentPost)) {
-                                return this._currentPost;
-                            }
-                            else {
-                                this._currentPost = this.findCurrent(this._nativePostsPosition.length);
-                                return this._currentPost;
+                        updateCurrent: function (verticalOffset) {
+                            //let verticalOffset = this._getVerticalOffset();
+                            this._previousPost = this._currentPost;
+                            if (!this._isCurrent(this._currentPost, verticalOffset)) {
+                                this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
                             }
                         },
+                        isPostChanged: function () {
+                            return this._previousPost !== this._currentPost;
+                        },
+                        getCurrent: function () {
+                            return this._currentPost;
+                        },
+                        getPostStartPosition: function (post) {
+                            return this._PostsDimension[post][0];
+                        }
                     };
                     this.routeDate = params.get('date');
                 }
                 ;
                 PostsComponent.prototype.ngOnInit = function () {
+                    var _this = this;
                     this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
+                    //on refresh and close save viewed posts
+                    window.onbeforeunload = function () { return closingCode(_this); };
+                    function closingCode(_mythis) {
+                        _mythis.saveViewedPostsID();
+                        return null;
+                    }
                 };
                 ;
                 PostsComponent.prototype.ngAfterViewInit = function () {
@@ -174,7 +186,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         .subscribe(function (posts) {
                         if (posts.length > 0) {
                             _this.grabViewedPostsID(posts);
-                            _this.addMeta(posts);
+                            //this.addMeta(posts);
                             Array.prototype.push.apply(_this.posts, posts);
                             _this.gettingPosts = false;
                         }
@@ -189,9 +201,19 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 };
                 ;
                 PostsComponent.prototype.getNewPosts = function () {
-                    this.getPostsEnd += this.GET_POSTS_DELTA;
-                    this.getPosts(this.getPostsEnd - this.GET_POSTS_DELTA, this.getPostsEnd, this.routeDate);
-                    this.gettingPosts = true;
+                    if (!this.gettingPosts) {
+                        this.getPostsEnd += this.GET_POSTS_DELTA;
+                        this.getPosts(this.getPostsEnd - this.GET_POSTS_DELTA, this.getPostsEnd, this.routeDate);
+                        this.gettingPosts = true;
+                    }
+                };
+                PostsComponent.prototype.saveViewedPostsID = function () {
+                    var _this = this;
+                    this._postsService.saveViewed(this.newViewedPosts).subscribe(function (suc) {
+                        _this.newViewedPosts = [];
+                        console.log('Saved');
+                    }, function (err) {
+                    });
                 };
                 PostsComponent.prototype.grabViewedPostsID = function (posts) {
                     for (var i = 0; i < posts.length; i++) {
@@ -201,36 +223,35 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }
                     }
                 };
-                PostsComponent.prototype.addMeta = function (posts) {
-                    for (var i = 0; i < posts.length; i++) {
-                        var curPost = posts[i];
-                        curPost['Meta'] = {
-                            'doTrunk': true,
-                        };
-                        //console.log(curPost.contents[0]);
-                        for (var i2 = 0; i2 < curPost.contents.length; i2++) {
-                            curPost.contents[i2]['Meta'] = {
-                                'play': false,
-                            };
-                        }
-                    }
-                };
-                ;
+                //addMeta(posts:Array<Posts>) {
+                //    for (let i = 0; i < posts.length; i++) {
+                //        let curPost = posts[i];
+                //        //curPost['Meta'] = {
+                //        //    'doTrunk': true,
+                //        //};
+                //        //console.log(curPost.contents[0]);
+                //        for (let i2 = 0; i2 < curPost.contents.length; i2++) {
+                //            curPost.contents[i2]['Meta'] = {
+                //                'play': false,
+                //            }
+                //        }
+                //    }
+                //};
                 PostsComponent.prototype.onScroll = function () {
                     var _this = this;
                     if (!this.scrollPass) {
                         //console.log(this._sb_windowTools.scrollPercent());
                         this.scrollPass = true;
-                        this._sb_windowTools.updateDimensions();
-                        if (this._sb_windowTools.scrollPercent() > this.SCROLL_PERCENT_LOAD && !this.gettingPosts) {
+                        this._sb_windowToolsY.updateDimensions();
+                        if (this._sb_windowToolsY.isPageHeightChanged()) {
+                            this.postsInView.updatePostsDimension(this.PostsChildren);
+                        }
+                        this.postsInView.updateCurrent(this._sb_windowToolsY.verticalOffset());
+                        if (this.postsInView.isPostChanged()) {
+                            this.setCurrentPostPosition(this.postsInView.getCurrent());
+                        }
+                        if (this._sb_windowToolsY.scrollPercent() > this.SCROLL_PERCENT_LOAD) {
                             this.getNewPosts();
-                        }
-                        if (this.pageHeight !== this._sb_windowTools.pageHeight()) {
-                            this.updateNativePostsPosition();
-                            this.pageHeight = this._sb_windowTools.pageHeight();
-                        }
-                        if (!this.isCurrentPost(this.currentPost)) {
-                            this.setCurrentPostPosition(this.findCurrentPost(this.nativePostsPosition.length));
                         }
                         setTimeout(function () {
                             _this.scrollPass = false;
@@ -238,94 +259,27 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     }
                 };
                 ;
-                PostsComponent.prototype.updateNativePostsPosition = function () {
-                    var _this = this;
-                    this.nativePostsPosition = [];
-                    this.PostsChildren.forEach(function (post, i) {
-                        var currentPost = post.getNativeElement();
-                        var currentPostOffset = currentPost.offsetHeight;
-                        var postPosY = _this._sb_windowTools.findPosY(currentPost);
-                        //let style = currentPost.currentStyle || window.getComputedStyle(currentPost);
-                        //// style.marginBottom return 'Xpx' and due to margin collapse
-                        //let styleMargin = Math.max(style.marginBottom.slice(0, -2), style.marginTop.slice(0, -2));
-                        var postInterval = [postPosY - _this.POSTS_OFFSET_DELTA, postPosY + currentPostOffset];
-                        _this.nativePostsPosition.push(postInterval);
-                        //got to know if post was 'doTrunked'
-                        //this.posts[i].Meta['height'] = currentPostOffset;
-                    });
-                    this.nativePostsPosition[0][0] = 0; //for 1st post start position
-                    console.log(this.nativePostsPosition);
-                };
                 PostsComponent.prototype.initPosts = function () {
-                    this._sb_windowTools.updateDimensions();
-                    // __init__ move
-                    if (this.currentPost == null) {
-                        this.setCurrentPostPosition(0);
-                    }
-                    if (!this.nativePostsPosition) {
-                        this.updateNativePostsPosition();
-                    }
-                    if (!this.pageHeight) {
-                        this.pageHeight = this._sb_windowTools.pageHeight();
-                    }
-                };
-                PostsComponent.prototype.isCurrentPost = function (postIndex) {
-                    try {
-                        var post = this.nativePostsPosition[postIndex];
-                        var postY1 = post[0];
-                        var postY2 = post[1];
-                        var currentOffset = this._sb_windowTools.verticalOffset();
-                        if (currentOffset >= postY1 && currentOffset <= postY2) {
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    }
-                    catch (err) {
-                        console.log('catched', err);
-                    }
-                };
-                PostsComponent.prototype.findCurrentPost = function (length) {
-                    //console.log('updated');
-                    //for (let i = 1; i < 4; i++) {
-                    //    if (this.nativePostsPosition[this.currentPost + i] && this.isCurrentPost(this.currentPost + i)) {
-                    //        //this.currentPost+=i;
-                    //        //this.setCurrentPostPosition(this.currentPost + i);
-                    //        return (this.currentPost + i);
-                    //    }
-                    //    if (this.nativePostsPosition[this.currentPost + i] && this.currentPost !== 0 && this.isCurrentPost(this.currentPost - i)) {
-                    //        //this.currentPost-=i;
-                    //        //this.setCurrentPostPosition(this.currentPost - i);
-                    //        return (this.currentPost - i);
-                    //    }
-                    //}
-                    for (var i = 0; i < length; i++) {
-                        if (this.isCurrentPost(i)) {
-                            return i;
-                        }
-                    }
+                    this._sb_windowToolsY.updateDimensions();
+                    this.setCurrentPostPosition(0);
+                    this.postsInView.updatePostsDimension(this.PostsChildren);
                 };
                 PostsComponent.prototype.setCurrentPostPosition = function (newPosition) {
-                    var _this = this;
+                    //TODO remove 'if'
                     if (this.posts[newPosition]) {
-                        this.currentPost = newPosition;
                         console.log('Current Post:', this.posts[newPosition].title);
-                        var currentID = this.posts[this.currentPost]['id'];
+                        var currentID = this.posts[newPosition]['id'];
                         if (angular2_jwt_1.tokenNotExpired() && !this.viewedPosts.find(function (x) { return x === currentID; })) {
                             this.viewedPosts.push(currentID);
                             this.newViewedPosts.push(currentID);
-                            //TODO make timeout to send viewed
                             if (this.newViewedPosts.length > 5) {
                                 //newViewedPosts to server
-                                this._postsService.saveViewed(this.newViewedPosts).subscribe(function (suc) {
-                                    console.log("Succ to load newViewed:", suc);
-                                    _this.newViewedPosts = [];
-                                }, function (err) {
-                                    console.log("Err to load newViewed:", err);
-                                });
+                                this.saveViewedPostsID();
                             }
                         }
+                    }
+                    else {
+                        console.log('!!!We dont have that post position');
                     }
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
@@ -334,44 +288,47 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     if (!this.keyEventPass) {
                         this.keyEventPass = true;
                         this.onScroll();
-                        if (event.keyCode === 100) {
-                            if (this.nativePostsPosition[this.currentPost + 1]) {
-                                //window.scrollTo(0, this.nativePostsPosition[this.currentPost + 1][0]);
-                                var from = this._sb_windowTools.verticalOffset();
-                                var to = this.nativePostsPosition[this.currentPost + 1][0];
-                                this.smoothYScrollFromTo(from, to + 1, this.SMOOTH_INTERVAL_PX);
-                            }
-                        }
-                        if (event.keyCode === 97) {
-                            if (this.nativePostsPosition[this.currentPost - 1]) {
-                                //window.scrollTo(0, this.nativePostsPosition[this.currentPost - 1][0]);
-                                var from = this._sb_windowTools.verticalOffset();
-                                var to = this.nativePostsPosition[this.currentPost - 1][0];
-                                this.smoothYScrollFromTo(to + 1, from, -this.SMOOTH_INTERVAL_PX);
-                            }
-                        }
-                        // hide viewed posts and scroll to first unviewed
-                        if (event.keyCode === 102) {
-                            var firstUnViewed;
-                            for (var i = 0; i < this.posts.length; i++) {
-                                var currentPost = this.posts[i];
-                                if (this.viewedPosts.find(function (x) { return x === currentPost.id; })) {
-                                    currentPost.viewed = true;
+                        switch (event.keyCode) {
+                            case this.KEY_NEXT:
+                                if (this.postsInView.getCurrent() + 1 <= this.posts.length) {
+                                    this._sb_windowToolsY.updateDimensions();
+                                    var from = this._sb_windowToolsY.verticalOffset();
+                                    var to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() + 1);
+                                    this.smoothYScrollFromTo(from, to + 1, this.SMOOTH_INTERVAL_PX);
                                 }
-                                else {
-                                    if (firstUnViewed === undefined) {
-                                        firstUnViewed = i;
+                                break;
+                            case this.KEY_PREVIOUS:
+                                if (this.postsInView.getCurrent() - 1 >= 0) {
+                                    this._sb_windowToolsY.updateDimensions();
+                                    var from = this._sb_windowToolsY.verticalOffset();
+                                    var to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() - 1);
+                                    this.smoothYScrollFromTo(to + 1, from, -this.SMOOTH_INTERVAL_PX);
+                                }
+                                break;
+                            // hide viewed posts and scroll to first unviewed
+                            case this.KEY_HIDE_VIEWED:
+                                var firstUnViewed;
+                                for (var i = 0; i < this.posts.length; i++) {
+                                    var currentPost = this.posts[i];
+                                    if (this.viewedPosts.find(function (x) { return x === currentPost.id; })) {
+                                        currentPost.viewed = true;
+                                    }
+                                    else {
+                                        if (firstUnViewed === undefined) {
+                                            firstUnViewed = i;
+                                        }
                                     }
                                 }
-                            }
-                            if (firstUnViewed !== undefined) {
-                                setTimeout(function () {
-                                    _this.onScroll();
-                                    // to scrollTo and set as current
-                                    window.scrollTo(0, _this.nativePostsPosition[firstUnViewed][0] + 1);
-                                    //    wait for cd onscroll()
-                                }, this.SCROLL_TIMEOUT + 1);
-                            }
+                                if (firstUnViewed !== undefined) {
+                                    setTimeout(function () {
+                                        // post was truncated => post Dimension was changed
+                                        _this.onScroll();
+                                        // to scrollTo and set as current
+                                        window.scrollTo(0, _this.postsInView.getPostStartPosition(firstUnViewed) + 1);
+                                        //    wait for cd onscroll()
+                                    }, this.SCROLL_TIMEOUT + 1);
+                                }
+                                break;
                         }
                         setTimeout(function () {
                             _this.keyEventPass = false;
@@ -383,13 +340,11 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var smoothTimeout = Math.abs(this.SMOOTH_INTERVAL_TIME / ((from - to) / rate));
                     if (to - from < Math.abs(rate)) {
                         if (rate > 0) {
-                            this.setCurrentPostPosition(this.currentPost + 1);
                             window.scrollBy(0, to - from);
                             //console.log('set +1');
                             return;
                         }
                         else {
-                            this.setCurrentPostPosition(this.currentPost - 1);
                             window.scrollBy(0, from - to);
                             //console.log('set -1');
                             return;
@@ -425,9 +380,9 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         templateUrl: static_1.SrcURL + 'posts/posts.html',
                         styleUrls: [static_1.SrcURL + 'posts/posts.css'],
                         directives: [post_component_1.PostComponent, searchbar_component_1.SearchbarComponent],
-                        providers: [posts_service_1.PostsService, sb_windowTools_1.sb_windowTools],
+                        providers: [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY],
                     }), 
-                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowTools_1.sb_windowTools, core_3.ChangeDetectorRef, router_1.RouteParams])
+                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams])
                 ], PostsComponent);
                 return PostsComponent;
             })();

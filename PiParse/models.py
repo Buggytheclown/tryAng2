@@ -27,7 +27,8 @@ class PostContents(models.Model):
     class Meta:
         ordering = ["id", ]
 
-
+# TODO rewrite FriendsList: user_1 and user_2
+# TODO make InviteList
 class FriendList(models.Model):
     owner = models.OneToOneField(User, related_name='owner')
     friends = models.ManyToManyField(User, related_name='friends')
