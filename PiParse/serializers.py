@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.relations import PrimaryKeyRelatedField
 
 from PiParse.models import PiPosts, PostContents
 
@@ -19,7 +18,16 @@ class UserSerializer(serializers.ModelSerializer):
 
 class PiPostsSerializer(serializers.ModelSerializer):
     contents = PostContentsSerializer(many=True)
+    viewed = serializers.SerializerMethodField()
+    friendsViewed = serializers.SerializerMethodField()
+
+    def get_viewed(self, obj):
+        return False
+
+    def get_friendsViewed(self, obj):
+        return []
 
     class Meta:
         model = PiPosts
-        fields = ('id', 'p_id', 'rating', 'post_link', 'title', 'timestamp', 'description', 'contents')
+        fields = (
+        'id', 'viewed', 'friendsViewed',  'p_id', 'rating', 'post_link', 'title', 'timestamp', 'description', 'contents')

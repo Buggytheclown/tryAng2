@@ -1,9 +1,77 @@
 .loginform {
     border: 2px ridge rgba(70, 52, 66, 0.25); /* Параметры границы */
     /*background: rgba(24, 166, 233, 0.75); !* Цвет фона *!*/
-    background-color: #F7F7F7
+    background-color: #F7F7F7;
     /*padding: 10px; !* Поля вокруг текста *!*/
+    border-radius: 10px;
+    /*box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);*/
 }
-.loginform ul li{
+
+.shadow5 {
+    position: relative;
+}
+
+.shadow5:before, .shadow5:after {
+    position: absolute;
+    content: "";
+    box-shadow: 0 10px 25px 20px #6f91af;
+    top: 40px;
+    left: 10px;
+    bottom: 50px;
+    z-index: -1;
+    -webkit-transform: rotate(-8deg);
+    -moz-transform: rotate(-8deg);
+    transform: rotate(-8deg);
+}
+
+.shadow5:after {
+    -webkit-transform: rotate(8deg);
+    -moz-transform: rotate(8deg);
+    transform: rotate(8deg);
+    right: 10px;
+    left: auto;
+}
+
+.loginform ul li {
     cursor: pointer;
+}
+
+.login-err {
+    position: absolute;
+}
+
+.login {
+    position: relative;
+}
+
+.easein {
+    margin-top: 0;
+    margin-bottom: 0;
+    margin-left: auto;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    top: 50%;
+    -webkit-transition: all ease 1s;
+    transition: all ease 1s;
+}
+
+.imputerr {
+    border-color: red;
+}
+
+.form-message {
+    position: relative;
+    min-height: 6em;
+}
+
+.myprogress-bar {
+    float: left;
+    height: 100%;
+    font-size: 12px;
+    line-height: 20px;
+    text-align: center;
+    box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
+    transition: width .6s ease;
 }

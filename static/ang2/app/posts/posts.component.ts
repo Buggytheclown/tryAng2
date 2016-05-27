@@ -38,7 +38,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
     // ____CONFIG____
     SMOOTH_INTERVAL_PX:number = 50;
     SMOOTH_INTERVAL_TIME:number = 200;
-    getPostsEnd:number = 10;
+    getPostsEnd:number = 5;
     getPostsStart:number = 0;
     GET_POSTS_DELTA:number = 5;
     SCROLL_TIMEOUT:number = 150;
@@ -198,12 +198,12 @@ export class PostsComponent implements OnInit, AfterViewInit {
         //console.log(event.keyCode);
         if (!this.keyEventPass) {
             this.keyEventPass = true;
+            this.allContentStop();
             this.onScroll();
 
             switch (event.keyCode) {
                 case this.KEY_NEXT:
                     if (this.postsInView.getCurrent() + 1 <= this.posts.length) {
-                        this._sb_windowToolsY.updateDimensions();
                         let from = this._sb_windowToolsY.verticalOffset();
                         let to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() + 1);
                         this.smoothYScrollFromTo(from, to + 1, this.SMOOTH_INTERVAL_PX);
@@ -212,7 +212,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
 
                 case this.KEY_PREVIOUS:
                     if (this.postsInView.getCurrent() - 1 >= 0) {
-                        this._sb_windowToolsY.updateDimensions();
                         let from = this._sb_windowToolsY.verticalOffset();
                         let to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() - 1);
                         this.smoothYScrollFromTo(to + 1, from, -this.SMOOTH_INTERVAL_PX);
@@ -271,7 +270,14 @@ export class PostsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    contentPlay(ipost:number, icontent:number) {
+    contentPlay(ipost:number, icontent:number):void {
+        this.allContentStop();
+        this.posts[ipost].contents[icontent]['Meta'] = {
+            'play': true,
+        }
+    }
+
+    allContentStop():void{
         for (let i = 0; i < this.posts.length; i++) {
             let curPost = this.posts[i];
             for (let i2 = 0; i2 < curPost.contents.length; i2++) {
@@ -279,9 +285,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
                     'play': false,
                 }
             }
-        }
-        this.posts[ipost].contents[icontent]['Meta'] = {
-            'play': true,
         }
     }
 
@@ -291,18 +294,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
         _previousPost: undefined,
         _currentPost: 0,
         _POSTS_START_POINT: this.POSTS_START_POINT,
-
-        //_getVerticalOffset(): number {
-        //    if (self.pageYOffset) {
-        //        return self.pageYOffset;
-        //    } else if (document.documentElement && document.documentElement.scrollTop) {
-        //        // Explorer 6 Strict
-        //        return document.documentElement.scrollTop;
-        //    } else if (document.body) {
-        //        // all other Explorers
-        //        return document.body.scrollTop;
-        //    }
-        //},
 
         _findPosY(obj): number {
             var curtop = 0;

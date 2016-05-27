@@ -3,7 +3,7 @@ import traceback
 
 from myLogger.models import myLogger
 
-
+# TODO make logger write only unpredicted message
 # decorator
 def logger_try_or_none(type, message):
     def wwrapper(fn):
@@ -23,7 +23,7 @@ def logger_try_or_none(type, message):
 
     return wwrapper
 
-
+# TODO disable it
 def logger_write(group, type, message):
     toLogger = myLogger(group=group, type=type, message=message)
     toLogger.save()

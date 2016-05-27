@@ -57,7 +57,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     // ____CONFIG____
                     this.SMOOTH_INTERVAL_PX = 50;
                     this.SMOOTH_INTERVAL_TIME = 200;
-                    this.getPostsEnd = 10;
+                    this.getPostsEnd = 5;
                     this.getPostsStart = 0;
                     this.GET_POSTS_DELTA = 5;
                     this.SCROLL_TIMEOUT = 150;
@@ -72,17 +72,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         _previousPost: undefined,
                         _currentPost: 0,
                         _POSTS_START_POINT: this.POSTS_START_POINT,
-                        //_getVerticalOffset(): number {
-                        //    if (self.pageYOffset) {
-                        //        return self.pageYOffset;
-                        //    } else if (document.documentElement && document.documentElement.scrollTop) {
-                        //        // Explorer 6 Strict
-                        //        return document.documentElement.scrollTop;
-                        //    } else if (document.body) {
-                        //        // all other Explorers
-                        //        return document.body.scrollTop;
-                        //    }
-                        //},
                         _findPosY: function (obj) {
                             var curtop = 0;
                             if (obj.offsetParent) {
@@ -287,11 +276,11 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     //console.log(event.keyCode);
                     if (!this.keyEventPass) {
                         this.keyEventPass = true;
+                        this.allContentStop();
                         this.onScroll();
                         switch (event.keyCode) {
                             case this.KEY_NEXT:
                                 if (this.postsInView.getCurrent() + 1 <= this.posts.length) {
-                                    this._sb_windowToolsY.updateDimensions();
                                     var from = this._sb_windowToolsY.verticalOffset();
                                     var to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() + 1);
                                     this.smoothYScrollFromTo(from, to + 1, this.SMOOTH_INTERVAL_PX);
@@ -299,7 +288,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 break;
                             case this.KEY_PREVIOUS:
                                 if (this.postsInView.getCurrent() - 1 >= 0) {
-                                    this._sb_windowToolsY.updateDimensions();
                                     var from = this._sb_windowToolsY.verticalOffset();
                                     var to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() - 1);
                                     this.smoothYScrollFromTo(to + 1, from, -this.SMOOTH_INTERVAL_PX);
@@ -358,6 +346,12 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     }
                 };
                 PostsComponent.prototype.contentPlay = function (ipost, icontent) {
+                    this.allContentStop();
+                    this.posts[ipost].contents[icontent]['Meta'] = {
+                        'play': true,
+                    };
+                };
+                PostsComponent.prototype.allContentStop = function () {
                     for (var i = 0; i < this.posts.length; i++) {
                         var curPost = this.posts[i];
                         for (var i2 = 0; i2 < curPost.contents.length; i2++) {
@@ -366,9 +360,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                             };
                         }
                     }
-                    this.posts[ipost].contents[icontent]['Meta'] = {
-                        'play': true,
-                    };
                 };
                 __decorate([
                     core_4.ViewChildren(post_component_1.PostComponent), 
