@@ -44,6 +44,10 @@
     position: relative;
 }
 
+.register {
+    position: relative;
+}
+
 .easein {
     margin-top: 0;
     margin-bottom: 0;
@@ -74,4 +78,11 @@
     text-align: center;
     box-shadow: inset 0 -1px 0 rgba(0,0,0,.15);
     transition: width .6s ease;
+}
+
+.closebut {
+    position: absolute;
+    top:0;
+    right: 0;
+    z-index: 999;
 }

@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1;
+    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1, core_6;
     var PostsComponent;
     return {
         setters:[
@@ -18,6 +18,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 core_3 = core_1_1;
                 core_4 = core_1_1;
                 core_5 = core_1_1;
+                core_6 = core_1_1;
             },
             function (static_1_1) {
                 static_1 = static_1_1;
@@ -42,11 +43,12 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             }],
         execute: function() {
             PostsComponent = (function () {
-                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params) {
+                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params, renderer) {
                     this.element = element;
                     this._postsService = _postsService;
                     this._sb_windowToolsY = _sb_windowToolsY;
                     this._ChangeDetectorRef = _ChangeDetectorRef;
+                    this.renderer = renderer;
                     this.posts = [];
                     this.gettingPosts = true;
                     this.scrollPass = false;
@@ -150,20 +152,31 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var _this = this;
                     this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
                     //on refresh and close save viewed posts
-                    window.onbeforeunload = function () { return closingCode(_this); };
-                    function closingCode(_mythis) {
-                        _mythis.saveViewedPostsID();
+                    this.renderer.listenGlobal('window', 'keypress', function (event) {
+                        _this.onKeyPress(event);
+                    });
+                    this.renderer.listenGlobal('window', 'beforeunload', function () {
+                        _this.saveViewedPostsID();
                         return null;
-                    }
+                    });
+                    this.renderer.listenGlobal('window', 'scroll', function () {
+                        _this.onScroll();
+                    });
                 };
                 ;
                 PostsComponent.prototype.ngAfterViewInit = function () {
+                    console.log('ngAfterViewInit');
                     this.initMove();
+                };
+                PostsComponent.prototype.ngOnDestroy = function () {
+                    this.saveViewedPostsID();
+                    console.log('ngOnDestroy');
                 };
                 PostsComponent.prototype.initMove = function () {
                     var _this = this;
                     if (this.PostsChildren.length > 0) {
                         this.initPosts();
+                        console.log('initMove');
                     }
                     else {
                         setTimeout(function () { return _this.initMove(); }, 50);
@@ -198,11 +211,14 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 };
                 PostsComponent.prototype.saveViewedPostsID = function () {
                     var _this = this;
-                    this._postsService.saveViewed(this.newViewedPosts).subscribe(function (suc) {
-                        _this.newViewedPosts = [];
-                        console.log('Saved');
-                    }, function (err) {
-                    });
+                    if (this.newViewedPosts.length > 0) {
+                        this._postsService.saveViewed(this.newViewedPosts).subscribe(function (suc) {
+                            _this.newViewedPosts = [];
+                            console.log('Saved');
+                        }, function (err) {
+                            console.log(err);
+                        });
+                    }
                 };
                 PostsComponent.prototype.grabViewedPostsID = function (posts) {
                     for (var i = 0; i < posts.length; i++) {
@@ -373,7 +389,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         directives: [post_component_1.PostComponent, searchbar_component_1.SearchbarComponent],
                         providers: [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY],
                     }), 
-                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams])
+                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams, core_6.Renderer])
                 ], PostsComponent);
                 return PostsComponent;
             })();

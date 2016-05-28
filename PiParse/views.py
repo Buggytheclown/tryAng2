@@ -109,8 +109,8 @@ class saveViewed(APIView):
                 viewed = received_json_data['viewed']
             except:
                 return JsonResponse({'success': False}, status=400)
-
-            ViewedToDB(request.user.id, viewed)
+            if viewed:
+                ViewedToDB(request.user.id, viewed)
             return Response({'success': True}, status=201)
         else:
             return JsonResponse({'success': False}, status=401)

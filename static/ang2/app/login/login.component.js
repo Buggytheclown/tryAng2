@@ -8,12 +8,15 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, login_service_1, angular2_jwt_1;
+    var core_1, static_1, login_service_1, angular2_jwt_1, core_2, core_3, core_4;
     var LoginComponent;
     return {
         setters:[
             function (core_1_1) {
                 core_1 = core_1_1;
+                core_2 = core_1_1;
+                core_3 = core_1_1;
+                core_4 = core_1_1;
             },
             function (static_1_1) {
                 static_1 = static_1_1;
@@ -29,7 +32,7 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                 function LoginComponent(_LoginService, _JwtHelper) {
                     this._LoginService = _LoginService;
                     this._JwtHelper = _JwtHelper;
-                    this.showFormContent = 0;
+                    this.closeLogReg = new core_4.EventEmitter();
                     //jwtHelper: JwtHelper = new JwtHelper();
                     //Login
                     this.loginErr = false;
@@ -134,6 +137,9 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                         },
                     };
                 }
+                LoginComponent.prototype.closeme = function () {
+                    this.closeLogReg.emit(true);
+                };
                 // *****
                 // LOGIN
                 //******
@@ -224,6 +230,13 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                             this.regErrDelayClaer();
                         }
                     }
+                    else if (!this.regPass1Valid()) {
+                        if (!this.regErr) {
+                            this.regErr = "Error: password too short";
+                            this.clearRegPass();
+                            this.regErrDelayClaer();
+                        }
+                    }
                 };
                 LoginComponent.prototype.register = function () {
                     var _this = this;
@@ -299,6 +312,14 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                     catch (err) {
                     }
                 };
+                __decorate([
+                    core_2.Input(), 
+                    __metadata('design:type', Object)
+                ], LoginComponent.prototype, "showFormContent", void 0);
+                __decorate([
+                    core_3.Output(), 
+                    __metadata('design:type', Object)
+                ], LoginComponent.prototype, "closeLogReg", void 0);
                 LoginComponent = __decorate([
                     core_1.Component({
                         selector: 'my-login',

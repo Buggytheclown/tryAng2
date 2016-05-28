@@ -9,13 +9,15 @@ import {CounterMainComponent} from "./counter/main-counter.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
 import {LoginComponent} from "./login/login.component";
 import {LoggerComponent} from "./logger/logger.component";
+import {SearchbarComponent} from "./posts/searchbar/searchbar.component";
 
 
 
 @Component({
     selector: 'my-main',
     templateUrl: SrcURL+'myMain.html',
-    directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent],
+    styleUrls: [SrcURL + 'myMain.css'],
+    directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent, SearchbarComponent, LoginComponent],
     providers: [ROUTER_PROVIDERS,]
 })
 
@@ -52,4 +54,6 @@ import {LoggerComponent} from "./logger/logger.component";
 ])
 
 
-export class MainComponent {}
+export class MainComponent {
+    showSign:string='';
+}

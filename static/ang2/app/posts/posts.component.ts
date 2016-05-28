@@ -16,6 +16,7 @@ import {QueryList} from "angular2/core";
 import {SearchbarComponent} from "./searchbar/searchbar.component";
 import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 import {OnDestroy} from "angular2/core";
+import {Renderer} from "angular2/core";
 
 @Component({
     selector: 'my-posts',
@@ -25,7 +26,7 @@ import {OnDestroy} from "angular2/core";
     providers: [PostsService, sb_windowToolsY],
 })
 
-export class PostsComponent implements OnInit, AfterViewInit {
+export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     posts:Array<Posts> = [];
     gettingPosts:boolean = true;
     scrollPass:boolean = false;
@@ -49,11 +50,12 @@ export class PostsComponent implements OnInit, AfterViewInit {
     KEY_PREVIOUS:number = 97;
     KEY_HIDE_VIEWED:number = 102;
 
-    constructor(public element:ElementRef,
+    constructor(private element:ElementRef,
                 private _postsService:PostsService,
                 private _sb_windowToolsY:sb_windowToolsY,
                 private _ChangeDetectorRef:ChangeDetectorRef,
-                params:RouteParams) {
+                params:RouteParams,
+                private renderer:Renderer) {
         this.routeDate = params.get('date');
 
     };
@@ -61,23 +63,34 @@ export class PostsComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
         //on refresh and close save viewed posts
-        window.onbeforeunload = ()=> closingCode(this);
-        function closingCode(_mythis) {
-            _mythis.saveViewedPostsID();
+        this.renderer.listenGlobal('window', 'keypress', (event) => {
+            this.onKeyPress(event)
+        });
+        this.renderer.listenGlobal('window', 'beforeunload', () => {
+            this.saveViewedPostsID();
             return null;
-        }
-
+        });
+        this.renderer.listenGlobal('window', 'scroll', () => {
+            this.onScroll();
+        });
     };
 
     @ViewChildren(PostComponent) PostsChildren:QueryList<PostComponent>;
 
     ngAfterViewInit() {
+        console.log('ngAfterViewInit');
         this.initMove();
+    }
+
+    ngOnDestroy() {
+        this.saveViewedPostsID();
+        console.log('ngOnDestroy');
     }
 
     initMove() {
         if (this.PostsChildren.length > 0) {
             this.initPosts();
+            console.log('initMove');
         } else {
             setTimeout(()=>this.initMove(), 50)
         }
@@ -111,11 +124,14 @@ export class PostsComponent implements OnInit, AfterViewInit {
     }
 
     saveViewedPostsID() {
-        this._postsService.saveViewed(this.newViewedPosts).subscribe(suc => {
-            this.newViewedPosts = [];
-            console.log('Saved')
-        }, err => {
-        });
+        if (this.newViewedPosts.length > 0) {
+            this._postsService.saveViewed(this.newViewedPosts).subscribe(suc => {
+                this.newViewedPosts = [];
+                console.log('Saved')
+            }, err => {
+                console.log(err)
+            })
+        }
     }
 
     grabViewedPostsID(posts) {
@@ -172,7 +188,6 @@ export class PostsComponent implements OnInit, AfterViewInit {
         this.setCurrentPostPosition(0);
         this.postsInView.updatePostsDimension(this.PostsChildren);
     }
-
 
     setCurrentPostPosition(newPosition:number) {
         //TODO remove 'if'
@@ -277,7 +292,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
         }
     }
 
-    allContentStop():void{
+    allContentStop():void {
         for (let i = 0; i < this.posts.length; i++) {
             let curPost = this.posts[i];
             for (let i2 = 0; i2 < curPost.contents.length; i2++) {
@@ -366,7 +381,7 @@ export class PostsComponent implements OnInit, AfterViewInit {
         },
 
         getPostStartPosition(post:number): number{
-            return this._PostsDimension[post][0]
+            return this._PostsDimension[post][0];
         }
 
     };

@@ -2,7 +2,9 @@ import {Component} from "angular2/core";
 import {SrcURL} from "../../static";
 import {LoginService} from "./login.service";
 import {tokenNotExpired, JwtHelper} from "angular2-jwt";
-import when = webdriver.promise.when;
+import {Input} from "angular2/core";
+import {Output} from "angular2/core";
+import {EventEmitter} from "angular2/core";
 
 
 @Component({
@@ -14,7 +16,8 @@ import when = webdriver.promise.when;
 })
 
 export class LoginComponent {
-    showFormContent:number = 0;
+    @Input()showFormContent;
+    @Output() closeLogReg = new EventEmitter();
     //jwtHelper: JwtHelper = new JwtHelper();
 
     //Login
@@ -35,6 +38,10 @@ export class LoginComponent {
     constructor(private _LoginService:LoginService, private _JwtHelper:JwtHelper) {
     }
 
+    closeme() {
+        this.closeLogReg.emit(true)
+    }
+
     // *****
     // LOGIN
     //******
@@ -48,7 +55,7 @@ export class LoginComponent {
     }
 
     login():void {
-        if(this.canLogin()) {
+        if (this.canLogin()) {
             this._LoginService.login(this.logName, this.logPass).subscribe(
                 (res)=> {
                     this.logPass = '';
@@ -99,6 +106,7 @@ export class LoginComponent {
             return false
         }
     }
+
     //__end validators__
 
     //compare validators
@@ -126,6 +134,12 @@ export class LoginComponent {
         } else if (!this.passMatch()) {
             if (!this.regErr) {
                 this.regErr = "Error: password didn't match";
+                this.clearRegPass();
+                this.regErrDelayClaer();
+            }
+        } else if (!this.regPass1Valid()) {
+            if (!this.regErr) {
+                this.regErr = "Error: password too short";
                 this.clearRegPass();
                 this.regErrDelayClaer();
             }

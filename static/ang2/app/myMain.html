@@ -1,37 +1,23 @@
-<nav class="navbar navbar-inverse navbar-default">
+<nav class="navbar navbar-inverse">
     <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" [routerLink]="['Posts']">Posts</a>
-            <a class="navbar-brand" [routerLink]="['Votes']">Votes</a>
-            <a class="navbar-brand" [routerLink]="['Blocknote']">Blocknote</a>
-            <a class="navbar-brand" [routerLink]="['Login']">Login</a>
-            <a class="navbar-brand" [routerLink]="['Logger']">Logger</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <form class="navbar-form navbar-right">
-                <div class="form-group">
-                    <input type="text" placeholder="Email" class="form-control">
-                </div>
-                <div class="form-group">
-                    <input type="password" placeholder="Password" class="form-control">
-                </div>
-                <button type="submit" class="btn btn-success">Sign in</button>
-            </form>
-        </div><!--/.navbar-collapse -->
+        <!--CARE of src!! (hardcoded)-->
+        <img src="/static/img/logo2013+.png" style="margin-left:20%">
+        <ul class="nav navbar-nav navbar-right nav" style="margin-right:20%">
+            <li><a (click)="showSign='login'" style="cursor: pointer"><i class="fa fa-sign-in" aria-hidden="true"></i> Login </a></li>
+            <li><a (click)="showSign='register'" style="cursor: pointer"><i class="fa fa-user-plus" aria-hidden="true"></i> Register </a>
+            </li>
+        </ul>
     </div>
 </nav>
 
-<!--<div class="container">-->
-<!--    <my-carousel>my-carousel(Loading...)</my-carousel>-->
-<!--</div>-->
-
+<div [ngSwitch]="showSign" style="position: absolute; z-index: 999" class="showsign col-md-4 col-md-offset-4">
+    <template [ngSwitchWhen]="'login'">
+        <my-login (closeLogReg)="showSign=''" [showFormContent]="0"></my-login>
+    </template>
+    <template [ngSwitchWhen]="'register'">
+        <my-login (closeLogReg)="showSign=''" [showFormContent]="1"></my-login>
+    </template>
+</div>
 
 <div class="container">
     <div class="row">
