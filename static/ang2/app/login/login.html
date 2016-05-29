@@ -19,13 +19,13 @@
                     </template>
                 </h3>
             </div>
-            <label for="inputLogin" class="sr-only">Login</label>
-            <input [(ngModel)]="logName" type="text" id="inputLogin" class="form-control" placeholder="Login"
+            <label for="inputLogName" class="sr-only">Login</label>
+            <input [(ngModel)]="logName" type="text" id="inputLogName" class="form-control" placeholder="Login"
                    required autofocus>
             <br>
 
-            <label for="inputPassword" class="sr-only">Password</label>
-            <input [(ngModel)]="logPass" type="password" id="inputPassword" class="form-control"
+            <label for="inputLogPass" class="sr-only">Password</label>
+            <input [(ngModel)]="logPass" type="password" id="inputLogPass" class="form-control"
                    placeholder="Password" required>
             <br>
             <button [class.disabled]="!canLogin()" class="btn btn-lg btn-primary btn-block" type="submit">Sign in

@@ -1,0 +1,7 @@
+ul.nav li{
+    cursor: pointer;
+}
+
+li.logout :hover{
+    color: red;
+}

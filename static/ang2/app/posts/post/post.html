@@ -18,12 +18,12 @@
                 <div [style.maxHeight]="doTrunk ? 1000 : 999999" class="contentWrapper">
                     <div *ngFor="#content of post.contents; #icontent = index">
 
-                        <my-post-content [content]="content" (contentToPlay)="contentPlay(icontent)" (contentImgLoaded)="contentImgLoaded()"></my-post-content>
+                        <my-post-content [content]="content" (contentToPlay)="contentPlay(icontent)"
+                                         (contentImgLoaded)="contentImgLoaded()"></my-post-content>
 
                     </div>
                 </div>
-                <div class="show-full" *ngIf="height > 1000 && doTrunk "
-                     (click)="doTrunk = false">
+                <div class="show-full" *ngIf="height > 1000 && doTrunk " (click)="doTrunk = false">
                     <p>show full <br>
                         <i class="fa fa-sort-desc fa-2x" aria-hidden="true"></i></p>
                 </div>
@@ -38,18 +38,23 @@
         </div>
 
         <div *ngSwitchWhen="'userGroup'">
-            <div *ngIf="post.friendsViewed">
+            <template [ngIf]="autenticated()">
+                <div *ngIf="post.friendsViewed">
 
-                <ol class="usergroup-list">
-                    <li *ngFor="#user of post.friendsViewed" >
-                        {{ user }}
-                    </li>
-                </ol>
-            </div>
+                    <ol class="usergroup-list">
+                        <li *ngFor="#user of post.friendsViewed">
+                            {{ user }}
+                        </li>
+                    </ol>
+                </div>
 
-            <div *ngIf="!friendsViewed()">
-                <p class="bg-info text-center pinfo">None of your friends saw it!</p>
-            </div>
+                <div *ngIf="!friendsViewed()">
+                    <p class="bg-info text-center pinfo">None of your friends saw it!</p>
+                </div>
+            </template>
+            <template [ngIf]="!autenticated()">
+                <p class="bg-info text-center pinfo">Register or login to view!</p>
+            </template>
         </div>
 
     </div>

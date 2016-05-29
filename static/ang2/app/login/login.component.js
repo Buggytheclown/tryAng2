@@ -158,6 +158,7 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                             _this.logPass = '';
                             _this.logName = '';
                             localStorage.setItem('id_token', res.token);
+                            _this.closeme();
                         }, function (err) {
                             console.log('err', err);
                             _this.logPass = '';
@@ -245,6 +246,7 @@ System.register(["angular2/core", "../../static", "./login.service", "angular2-j
                             _this.clearRegPass();
                             if (!res.err) {
                                 localStorage.setItem('id_token', res.token);
+                                _this.closeme();
                             }
                             else {
                                 console.log('err1', res.err);

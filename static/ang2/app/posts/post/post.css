@@ -1,4 +1,5 @@
 .show-full {
+    box-sizing: border-box;
     background-color: #f0f1eb;
     height: 53px;
     cursor: pointer;
@@ -8,13 +9,15 @@
 .show-full p {
     padding-left: 40%;
     padding-top: 15px;
+    box-sizing: border-box;
+    margin-bottom: 0;
 }
 
 .show-full i {
     padding-left: 7%;
 }
 
-.show-full :hover {
+.show-full:hover {
     background-color: #e4e5df;
 }
 

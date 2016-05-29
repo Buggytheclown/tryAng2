@@ -8,6 +8,8 @@ import {EventEmitter} from "angular2/core";
 import {ElementRef} from "angular2/core";
 import {AfterViewInit} from "angular2/core";
 import {PostContentComponent} from "./content/content.component";
+import {OnDestroy} from "angular2/core";
+import {tokenNotExpired} from "angular2-jwt";
 
 @Component({
     selector: 'my-post',
@@ -72,7 +74,13 @@ export class PostComponent implements OnInit, AfterViewInit {
     }
 
     friendsViewed():number{
-        return this.post.friendsViewed.length
+        if(this.autenticated()) {
+            return this.post.friendsViewed.length
+        }else {return 0}
+    }
+
+    autenticated(){
+        return tokenNotExpired();
     }
 
 }

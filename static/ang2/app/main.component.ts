@@ -4,12 +4,8 @@ import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/route
 
 import {PostsComponent} from "./posts/posts.component";
 import {VotesComponent} from "./votes/votes.component";
-import {CarouselComponent} from "./carousel/carousel.component";
-import {CounterMainComponent} from "./counter/main-counter.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
-import {LoginComponent} from "./login/login.component";
 import {LoggerComponent} from "./logger/logger.component";
-import {SearchbarComponent} from "./posts/searchbar/searchbar.component";
 
 
 
@@ -17,7 +13,7 @@ import {SearchbarComponent} from "./posts/searchbar/searchbar.component";
     selector: 'my-main',
     templateUrl: SrcURL+'myMain.html',
     styleUrls: [SrcURL + 'myMain.css'],
-    directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent, SearchbarComponent, LoginComponent],
+    directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent],
     providers: [ROUTER_PROVIDERS,]
 })
 
@@ -41,11 +37,6 @@ import {SearchbarComponent} from "./posts/searchbar/searchbar.component";
       component: BlocknoteComponent
     },
     {
-      path: '/login',
-      name: 'Login',
-      component: LoginComponent
-    },
-    {
       path: '/logger',
       name: 'Logger',
       component: LoggerComponent
@@ -54,6 +45,4 @@ import {SearchbarComponent} from "./posts/searchbar/searchbar.component";
 ])
 
 
-export class MainComponent {
-    showSign:string='';
-}
+export class MainComponent {}

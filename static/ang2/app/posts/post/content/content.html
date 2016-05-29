@@ -22,13 +22,12 @@
 </div>
 
 <!-- img -->
-<div *ngIf="content.type==='img'">
+<div *ngIf="content.type==='img'" style="margin-bottom: 1em">
     <img class="myimg-responsive" src="{{ content.content }}" (load)="imgLoaded()">
 </div>
 
 <!-- video/coub -->
-<!--TODO test the coub -->
-<div *ngIf="content.type==='video'" class="video-wrapper">
+<div *ngIf="content.type==='video'" class="video-wrapper" style="margin-bottom: 1em">
     <img src="{{ content.pre_content }}" class="myimg-responsive" (load)="imgLoaded()" #videoimg>
     <div *ngIf="!content.Meta.play">
         <div class="type-marker">

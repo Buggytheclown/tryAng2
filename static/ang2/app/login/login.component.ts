@@ -60,7 +60,8 @@ export class LoginComponent {
                 (res)=> {
                     this.logPass = '';
                     this.logName = '';
-                    localStorage.setItem('id_token', res.token)
+                    localStorage.setItem('id_token', res.token);
+                    this.closeme();
                 },
                 (err)=> {
                     console.log('err', err);
@@ -152,7 +153,8 @@ export class LoginComponent {
                 (res)=> {
                     this.clearRegPass();
                     if (!res.err) {
-                        localStorage.setItem('id_token', res.token)
+                        localStorage.setItem('id_token', res.token);
+                        this.closeme();
                     } else {
                         console.log('err1', res.err);
                         if (!this.regErr) {

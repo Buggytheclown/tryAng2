@@ -17,16 +17,20 @@ import {SearchbarComponent} from "./searchbar/searchbar.component";
 import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 import {OnDestroy} from "angular2/core";
 import {Renderer} from "angular2/core";
+import {elementInView} from "../helpers/elementInView";
+import {HeaderComponent} from "../header/header";
 
 @Component({
     selector: 'my-posts',
     templateUrl: SrcURL + 'posts/posts.html',
     styleUrls: [SrcURL + 'posts/posts.css'],
-    directives: [PostComponent, SearchbarComponent],
-    providers: [PostsService, sb_windowToolsY],
+    directives: [PostComponent, SearchbarComponent, HeaderComponent],
+    providers: [PostsService, sb_windowToolsY, elementInView],
 })
 
 export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
+    // can process onKeyPress
+    pressKeyFree:boolean = true;
     posts:Array<Posts> = [];
     gettingPosts:boolean = true;
     scrollPass:boolean = false;
@@ -55,7 +59,8 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
                 private _sb_windowToolsY:sb_windowToolsY,
                 private _ChangeDetectorRef:ChangeDetectorRef,
                 params:RouteParams,
-                private renderer:Renderer) {
+                private renderer:Renderer,
+                private postsInView: elementInView) {
         this.routeDate = params.get('date');
 
     };
@@ -63,34 +68,38 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
         //on refresh and close save viewed posts
-        this.renderer.listenGlobal('window', 'keypress', (event) => {
-            this.onKeyPress(event)
-        });
-        this.renderer.listenGlobal('window', 'beforeunload', () => {
-            this.saveViewedPostsID();
+        window.onbeforeunload = ()=> closingCode(this);
+        function closingCode(_mythis) {
+            _mythis.saveViewedPostsID();
             return null;
-        });
-        this.renderer.listenGlobal('window', 'scroll', () => {
-            this.onScroll();
-        });
+        }
+        //window.addEventListener("beforeunload", this.saveViewedPostsID);
+        //FULL OF BUGGS - dont use it!!!!
+        //this.renderer.listenGlobal('window', 'keypress', (event) => {
+        //    this.onKeyPress(event)
+        //});
+        //this.renderer.listenGlobal('window', 'beforeunload', () => {
+        //    this.saveViewedPostsID();
+        //    return null;
+        //});
+        //this.renderer.listenGlobal('window', 'scroll', () => {
+        //    this.onScroll();
+        //});
     };
 
     @ViewChildren(PostComponent) PostsChildren:QueryList<PostComponent>;
 
     ngAfterViewInit() {
-        console.log('ngAfterViewInit');
         this.initMove();
     }
 
     ngOnDestroy() {
         this.saveViewedPostsID();
-        console.log('ngOnDestroy');
     }
 
     initMove() {
         if (this.PostsChildren.length > 0) {
             this.initPosts();
-            console.log('initMove');
         } else {
             setTimeout(()=>this.initMove(), 50)
         }
@@ -161,6 +170,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     onScroll() {
         if (!this.scrollPass) {
             //console.log(this._sb_windowTools.scrollPercent());
+            //console.log(this.posts);
             this.scrollPass = true;
             this._sb_windowToolsY.updateDimensions();
 
@@ -190,7 +200,6 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     setCurrentPostPosition(newPosition:number) {
-        //TODO remove 'if'
         if (this.posts[newPosition]) {
             console.log('Current Post:', this.posts[newPosition].title);
             let currentID = this.posts[newPosition]['id'];
@@ -205,13 +214,13 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
                 }
             }
         } else {
-            console.log('!!!We dont have that post position')
+            console.log('!!!We dont have that post position - ', newPosition)
         }
     }
 
     onKeyPress(event) {
         //console.log(event.keyCode);
-        if (!this.keyEventPass) {
+        if (!this.keyEventPass && this.pressKeyFree) {
             this.keyEventPass = true;
             this.allContentStop();
             this.onScroll();
@@ -226,6 +235,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
                     break;
 
                 case this.KEY_PREVIOUS:
+                    //TODO scroll to top current or previous
                     if (this.postsInView.getCurrent() - 1 >= 0) {
                         let from = this._sb_windowToolsY.verticalOffset();
                         let to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() - 1);
@@ -265,6 +275,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
+    //TODO test it (const time to scroll)
     smoothYScrollFromTo(from:number, to:number, rate:number):void {
         let smoothTimeout = Math.abs(this.SMOOTH_INTERVAL_TIME / ((from - to) / rate));
         if (to - from < Math.abs(rate)) {
@@ -303,87 +314,86 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-
-    postsInView = {
-        _PostsDimension: [],
-        _previousPost: undefined,
-        _currentPost: 0,
-        _POSTS_START_POINT: this.POSTS_START_POINT,
-
-        _findPosY(obj): number {
-            var curtop = 0;
-            if (obj.offsetParent) {
-                while (1) {
-                    curtop += obj.offsetTop;
-                    if (!obj.offsetParent) {
-                        break;
-                    }
-                    obj = obj.offsetParent;
-                }
-            } else if (obj.y) {
-                curtop += obj.y;
-            }
-            return curtop;
-        },
-
-        _findCurrent(length:number, verticalOffset:number): number {
-            for (let i = 0; i < length; i++) {
-                if (this._isCurrent(i, verticalOffset)) {
-                    return i;
-                }
-            }
-        },
-
-        _isCurrent(postIndex:number, verticalOffset:number): boolean {
-            try {
-                let post:Array<number> = this._PostsDimension[postIndex];
-                let postY1:number = post[0];
-                let postY2:number = post[1];
-                if (verticalOffset >= postY1 && verticalOffset <= postY2) {
-                    return true;
-                } else {
-                    return false
-                }
-            } catch (err) {
-                console.log('catched', err)
-            }
-        },
-
-        updatePostsDimension(PostsChildren): void {
-            this._PostsDimension = [];
-            //cancat post position for unbreakable scroll
-            let postStart:number = this._POSTS_START_POINT;
-            PostsChildren.forEach((post, i)=> {
-                let currentPost = post.getNativeElement();
-                let currentPostOffset = currentPost.offsetHeight;
-                let postPosY:number = this._findPosY(currentPost);
-                let postEnd = postPosY + currentPostOffset;
-                let postInterval:Array<number> = [postStart, postEnd];
-                this._PostsDimension.push(postInterval);
-                postStart = postEnd;
-            });
-        },
-
-        updateCurrent(verticalOffset): void {
-            //let verticalOffset = this._getVerticalOffset();
-            this._previousPost = this._currentPost;
-            if (!this._isCurrent(this._currentPost, verticalOffset)) {
-                this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
-            }
-        },
-
-        isPostChanged(): boolean{
-            return this._previousPost !== this._currentPost
-        },
-
-        getCurrent(): number{
-            return this._currentPost
-        },
-
-        getPostStartPosition(post:number): number{
-            return this._PostsDimension[post][0];
-        }
-
-    };
+    //postsInView = {
+    //    _PostsDimension: [],
+    //    _previousPost: undefined,
+    //    _currentPost: 0,
+    //    _POSTS_START_POINT: this.POSTS_START_POINT,
+    //
+    //    _findPosY(obj): number {
+    //        var curtop = 0;
+    //        if (obj.offsetParent) {
+    //            while (1) {
+    //                curtop += obj.offsetTop;
+    //                if (!obj.offsetParent) {
+    //                    break;
+    //                }
+    //                obj = obj.offsetParent;
+    //            }
+    //        } else if (obj.y) {
+    //            curtop += obj.y;
+    //        }
+    //        return curtop;
+    //    },
+    //
+    //    _findCurrent(length:number, verticalOffset:number): number {
+    //        for (let i = 0; i < length; i++) {
+    //            if (this._isCurrent(i, verticalOffset)) {
+    //                return i;
+    //            }
+    //        }
+    //    },
+    //
+    //    _isCurrent(postIndex:number, verticalOffset:number): boolean {
+    //        try {
+    //            let post:Array<number> = this._PostsDimension[postIndex];
+    //            let postY1:number = post[0];
+    //            let postY2:number = post[1];
+    //            if (verticalOffset >= postY1 && verticalOffset <= postY2) {
+    //                return true;
+    //            } else {
+    //                return false
+    //            }
+    //        } catch (err) {
+    //            console.log('catched', err)
+    //        }
+    //    },
+    //
+    //    updatePostsDimension(PostsChildren): void {
+    //        this._PostsDimension = [];
+    //        //cancat post position for unbreakable scroll
+    //        let postStart:number = this._POSTS_START_POINT;
+    //        PostsChildren.forEach((post, i)=> {
+    //            let currentPost = post.getNativeElement();
+    //            let currentPostOffset = currentPost.offsetHeight;
+    //            let postPosY:number = this._findPosY(currentPost);
+    //            let postEnd = postPosY + currentPostOffset;
+    //            let postInterval:Array<number> = [postStart, postEnd];
+    //            this._PostsDimension.push(postInterval);
+    //            postStart = postEnd;
+    //        });
+    //    },
+    //
+    //    updateCurrent(verticalOffset): void {
+    //        //let verticalOffset = this._getVerticalOffset();
+    //        this._previousPost = this._currentPost;
+    //        if (!this._isCurrent(this._currentPost, verticalOffset)) {
+    //            this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
+    //        }
+    //    },
+    //
+    //    isPostChanged(): boolean{
+    //        return this._previousPost !== this._currentPost
+    //    },
+    //
+    //    getCurrent(): number{
+    //        return this._currentPost
+    //    },
+    //
+    //    getPostStartPosition(post:number): number{
+    //        return this._PostsDimension[post][0];
+    //    }
+    //
+    //};
 
 }

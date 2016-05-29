@@ -2,10 +2,7 @@ export class elementInView {
     _PostsDimension:Array<Array<number>> = [];
     _previousPost:number;
     _currentPost:number = 0;
-    _POSTS_START_POINT:number;
-
-    constructor(POSTS_START_POINT) { this._POSTS_START_POINT=POSTS_START_POINT
-    }
+    _POSTS_START_POINT:number = 0;
 
     _findPosY(obj):number {
         var curtop = 0;
@@ -46,19 +43,33 @@ export class elementInView {
         }
     }
 
+    //angular2 didnt destroy children after router navigate, so we test it before (it was renderer.listenGlobal, bsd)
+    validChildren(PostsChildren):boolean {
+        let test = false;
+        try {
+            test = PostsChildren.first.getNativeElement().offsetHeight > 0;
+        } catch (err) {
+            console.log(err);
+        }
+        return test;
+    }
+
     updatePostsDimension(PostsChildren):void {
-        this._PostsDimension = [];
-        //cancat post position for unbreakable scroll
-        let postStart:number = this._POSTS_START_POINT;
-        PostsChildren.forEach((post, i)=> {
-            let currentPost = post.getNativeElement();
-            let currentPostOffset = currentPost.offsetHeight;
-            let postPosY:number = this._findPosY(currentPost);
-            let postEnd = postPosY + currentPostOffset;
-            let postInterval:Array<number> = [postStart, postEnd];
-            this._PostsDimension.push(postInterval);
-            postStart = postEnd;
-        });
+        if (this.validChildren(PostsChildren)) {
+            this._PostsDimension = [];
+            //cancat post position for unbreakable scroll
+            let postStart:number = this._POSTS_START_POINT;
+            PostsChildren.forEach((post, i)=> {
+                let currentPost = post.getNativeElement();
+                let currentPostOffset = currentPost.offsetHeight;
+                let postPosY:number = this._findPosY(currentPost);
+                let postEnd = postPosY + currentPostOffset;
+                let postInterval:Array<number> = [postStart, postEnd];
+                this._PostsDimension.push(postInterval);
+                postStart = postEnd;
+            });
+            //console.log(this._PostsDimension)
+        }
     }
 
     updateCurrent(verticalOffset):void {
@@ -70,7 +81,7 @@ export class elementInView {
     }
 
     isPostChanged():boolean {
-        return this._previousPost !== this._currentPost
+        return this._previousPost !== this._currentPost;
     }
 
     getCurrent():number {

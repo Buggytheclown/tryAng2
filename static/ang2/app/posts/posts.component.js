@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowToolsY", "angular2/router", "./post/post.component", "./searchbar/searchbar.component", "angular2-jwt"], function(exports_1) {
+System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowToolsY", "angular2/router", "./post/post.component", "./searchbar/searchbar.component", "angular2-jwt", "../helpers/elementInView", "../header/header"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1, core_6;
+    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1, core_6, elementInView_1, header_1;
     var PostsComponent;
     return {
         setters:[
@@ -40,15 +40,24 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             },
             function (angular2_jwt_1_1) {
                 angular2_jwt_1 = angular2_jwt_1_1;
+            },
+            function (elementInView_1_1) {
+                elementInView_1 = elementInView_1_1;
+            },
+            function (header_1_1) {
+                header_1 = header_1_1;
             }],
         execute: function() {
             PostsComponent = (function () {
-                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params, renderer) {
+                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params, renderer, postsInView) {
                     this.element = element;
                     this._postsService = _postsService;
                     this._sb_windowToolsY = _sb_windowToolsY;
                     this._ChangeDetectorRef = _ChangeDetectorRef;
                     this.renderer = renderer;
+                    this.postsInView = postsInView;
+                    // can process onKeyPress
+                    this.pressKeyFree = true;
                     this.posts = [];
                     this.gettingPosts = true;
                     this.scrollPass = false;
@@ -69,82 +78,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.KEY_NEXT = 100;
                     this.KEY_PREVIOUS = 97;
                     this.KEY_HIDE_VIEWED = 102;
-                    this.postsInView = {
-                        _PostsDimension: [],
-                        _previousPost: undefined,
-                        _currentPost: 0,
-                        _POSTS_START_POINT: this.POSTS_START_POINT,
-                        _findPosY: function (obj) {
-                            var curtop = 0;
-                            if (obj.offsetParent) {
-                                while (1) {
-                                    curtop += obj.offsetTop;
-                                    if (!obj.offsetParent) {
-                                        break;
-                                    }
-                                    obj = obj.offsetParent;
-                                }
-                            }
-                            else if (obj.y) {
-                                curtop += obj.y;
-                            }
-                            return curtop;
-                        },
-                        _findCurrent: function (length, verticalOffset) {
-                            for (var i = 0; i < length; i++) {
-                                if (this._isCurrent(i, verticalOffset)) {
-                                    return i;
-                                }
-                            }
-                        },
-                        _isCurrent: function (postIndex, verticalOffset) {
-                            try {
-                                var post = this._PostsDimension[postIndex];
-                                var postY1 = post[0];
-                                var postY2 = post[1];
-                                if (verticalOffset >= postY1 && verticalOffset <= postY2) {
-                                    return true;
-                                }
-                                else {
-                                    return false;
-                                }
-                            }
-                            catch (err) {
-                                console.log('catched', err);
-                            }
-                        },
-                        updatePostsDimension: function (PostsChildren) {
-                            var _this = this;
-                            this._PostsDimension = [];
-                            //cancat post position for unbreakable scroll
-                            var postStart = this._POSTS_START_POINT;
-                            PostsChildren.forEach(function (post, i) {
-                                var currentPost = post.getNativeElement();
-                                var currentPostOffset = currentPost.offsetHeight;
-                                var postPosY = _this._findPosY(currentPost);
-                                var postEnd = postPosY + currentPostOffset;
-                                var postInterval = [postStart, postEnd];
-                                _this._PostsDimension.push(postInterval);
-                                postStart = postEnd;
-                            });
-                        },
-                        updateCurrent: function (verticalOffset) {
-                            //let verticalOffset = this._getVerticalOffset();
-                            this._previousPost = this._currentPost;
-                            if (!this._isCurrent(this._currentPost, verticalOffset)) {
-                                this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
-                            }
-                        },
-                        isPostChanged: function () {
-                            return this._previousPost !== this._currentPost;
-                        },
-                        getCurrent: function () {
-                            return this._currentPost;
-                        },
-                        getPostStartPosition: function (post) {
-                            return this._PostsDimension[post][0];
-                        }
-                    };
                     this.routeDate = params.get('date');
                 }
                 ;
@@ -152,31 +85,35 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var _this = this;
                     this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
                     //on refresh and close save viewed posts
-                    this.renderer.listenGlobal('window', 'keypress', function (event) {
-                        _this.onKeyPress(event);
-                    });
-                    this.renderer.listenGlobal('window', 'beforeunload', function () {
-                        _this.saveViewedPostsID();
+                    window.onbeforeunload = function () { return closingCode(_this); };
+                    function closingCode(_mythis) {
+                        _mythis.saveViewedPostsID();
                         return null;
-                    });
-                    this.renderer.listenGlobal('window', 'scroll', function () {
-                        _this.onScroll();
-                    });
+                    }
+                    //window.addEventListener("beforeunload", this.saveViewedPostsID);
+                    //FULL OF BUGGS - dont use it!!!!
+                    //this.renderer.listenGlobal('window', 'keypress', (event) => {
+                    //    this.onKeyPress(event)
+                    //});
+                    //this.renderer.listenGlobal('window', 'beforeunload', () => {
+                    //    this.saveViewedPostsID();
+                    //    return null;
+                    //});
+                    //this.renderer.listenGlobal('window', 'scroll', () => {
+                    //    this.onScroll();
+                    //});
                 };
                 ;
                 PostsComponent.prototype.ngAfterViewInit = function () {
-                    console.log('ngAfterViewInit');
                     this.initMove();
                 };
                 PostsComponent.prototype.ngOnDestroy = function () {
                     this.saveViewedPostsID();
-                    console.log('ngOnDestroy');
                 };
                 PostsComponent.prototype.initMove = function () {
                     var _this = this;
                     if (this.PostsChildren.length > 0) {
                         this.initPosts();
-                        console.log('initMove');
                     }
                     else {
                         setTimeout(function () { return _this.initMove(); }, 50);
@@ -246,6 +183,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var _this = this;
                     if (!this.scrollPass) {
                         //console.log(this._sb_windowTools.scrollPercent());
+                        //console.log(this.posts);
                         this.scrollPass = true;
                         this._sb_windowToolsY.updateDimensions();
                         if (this._sb_windowToolsY.isPageHeightChanged()) {
@@ -270,7 +208,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.postsInView.updatePostsDimension(this.PostsChildren);
                 };
                 PostsComponent.prototype.setCurrentPostPosition = function (newPosition) {
-                    //TODO remove 'if'
                     if (this.posts[newPosition]) {
                         console.log('Current Post:', this.posts[newPosition].title);
                         var currentID = this.posts[newPosition]['id'];
@@ -284,13 +221,13 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }
                     }
                     else {
-                        console.log('!!!We dont have that post position');
+                        console.log('!!!We dont have that post position - ', newPosition);
                     }
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
                     var _this = this;
                     //console.log(event.keyCode);
-                    if (!this.keyEventPass) {
+                    if (!this.keyEventPass && this.pressKeyFree) {
                         this.keyEventPass = true;
                         this.allContentStop();
                         this.onScroll();
@@ -303,6 +240,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 }
                                 break;
                             case this.KEY_PREVIOUS:
+                                //TODO scroll to top current or previous
                                 if (this.postsInView.getCurrent() - 1 >= 0) {
                                     var from = this._sb_windowToolsY.verticalOffset();
                                     var to = this.postsInView.getPostStartPosition(this.postsInView.getCurrent() - 1);
@@ -339,6 +277,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }, this.SCROLL_TIMEOUT + 1);
                     }
                 };
+                //TODO test it (const time to scroll)
                 PostsComponent.prototype.smoothYScrollFromTo = function (from, to, rate) {
                     var _this = this;
                     var smoothTimeout = Math.abs(this.SMOOTH_INTERVAL_TIME / ((from - to) / rate));
@@ -386,10 +325,10 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         selector: 'my-posts',
                         templateUrl: static_1.SrcURL + 'posts/posts.html',
                         styleUrls: [static_1.SrcURL + 'posts/posts.css'],
-                        directives: [post_component_1.PostComponent, searchbar_component_1.SearchbarComponent],
-                        providers: [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY],
+                        directives: [post_component_1.PostComponent, searchbar_component_1.SearchbarComponent, header_1.HeaderComponent],
+                        providers: [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, elementInView_1.elementInView],
                     }), 
-                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams, core_6.Renderer])
+                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams, core_6.Renderer, elementInView_1.elementInView])
                 ], PostsComponent);
                 return PostsComponent;
             })();

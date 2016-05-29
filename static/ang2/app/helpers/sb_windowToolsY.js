@@ -11,7 +11,6 @@ System.register([], function(exports_1) {
                     this._windowHeight = undefined;
                     this._verticalOffset = undefined;
                 }
-                ;
                 // load the page size, view port position and vertical scroll offset
                 sb_windowToolsY.prototype.updateDimensions = function () {
                     this.updateViewportHeight();

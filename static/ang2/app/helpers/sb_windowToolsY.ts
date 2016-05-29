@@ -5,10 +5,6 @@ export class sb_windowToolsY {
     _windowHeight:number = undefined;
     _verticalOffset:number = undefined;
 
-    constructor() {
-    };
-
-
     // load the page size, view port position and vertical scroll offset
     updateDimensions():void {
         this.updateViewportHeight();
