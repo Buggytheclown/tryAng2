@@ -1,0 +1,78 @@
+li:first-child {
+    cursor: pointer;
+    text-align: center;
+    background: #143039; /* For browsers that do not support gradients */
+    background: linear-gradient(#234f5f, #0e2328);
+    border: 1px solid #15343f;
+}
+
+ul {
+    margin:0;
+    padding: 0;
+    color: #f4f5f6;
+    list-style: none;
+}
+
+li {
+    position: relative;
+    background-color: #0e1e28;
+    color: #babcbd;
+    margin-top: 2px;
+    padding: 5px 0 5px 15px;
+}
+
+.listwrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 999;
+    width: inherit;
+    max-width: 400px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px 2px rgba(127, 127, 127, 0.77);
+    background-color: #061013;
+    /*position: fixed;*/
+    /*right: 0;*/
+    /*bottom: 0;*/
+    /*top: 0;*/
+}
+
+.usercontroll {
+    background-color: #0a1924;
+}
+
+.usercontroll i {
+    color: #8ba6a6;
+    padding: 10px 0 10px 15px;
+}
+
+.deleteuser {
+    position: absolute;
+    color: #4d7a75;
+    right: 20px;
+}
+
+.deleteuser:hover, .usercontroll i:hover{
+    color: whitesmoke;
+    cursor: pointer;
+}
+
+li button {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.confirmBox input {
+    background-color: #0e1e28;
+    color: #babcbd;
+    margin-bottom: 10px;
+}
+
+.confirmBox {
+    border: 1px solid rgba(22, 70, 82, 0.89);
+    padding: 10px;
+    color: whitesmoke;
+    text-align: center;
+}

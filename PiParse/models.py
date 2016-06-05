@@ -3,6 +3,9 @@ from django.db import models
 
 
 class PiPosts(models.Model):
+    # TODO make p_id pk!
+    # TODO SQL p_id uniq already
+    # TODO comments_count
     p_id = models.IntegerField(unique=True)
     rating = models.IntegerField()
     post_link = models.TextField()
@@ -10,6 +13,7 @@ class PiPosts(models.Model):
     timestamp = models.DateTimeField()
     description = models.TextField(blank=True, default='')
     viewed = models.ManyToManyField(User, related_name='viewed')
+    # comments_count = models.IntegerField(null=True)
 
     def __str__(self):
         return self.title

@@ -6,14 +6,14 @@ import {PostsComponent} from "./posts/posts.component";
 import {VotesComponent} from "./votes/votes.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
 import {LoggerComponent} from "./logger/logger.component";
-
+import {FriendlistComponent} from "./posts/friendlist/friendlist.component";
 
 
 @Component({
     selector: 'my-main',
-    templateUrl: SrcURL+'myMain.html',
+    templateUrl: SrcURL + 'myMain.html',
     styleUrls: [SrcURL + 'myMain.css'],
-    directives: [ROUTER_DIRECTIVES, PostsComponent, VotesComponent, BlocknoteComponent],
+    directives: [ROUTER_DIRECTIVES, PostsComponent, LoggerComponent, VotesComponent, BlocknoteComponent],
     providers: [ROUTER_PROVIDERS,]
 })
 
@@ -32,17 +32,23 @@ import {LoggerComponent} from "./logger/logger.component";
 
     },
     {
-      path: '/blocknote',
-      name: 'Blocknote',
-      component: BlocknoteComponent
+        path: '/blocknote',
+        name: 'Blocknote',
+        component: BlocknoteComponent
     },
     {
-      path: '/logger',
-      name: 'Logger',
-      component: LoggerComponent
+        path: '/logger',
+        name: 'Logger',
+        component: LoggerComponent
+    },
+    {
+        path: '/friendlist',
+        name: 'Friendlist',
+        component: FriendlistComponent
     },
 
 ])
 
 
-export class MainComponent {}
+export class MainComponent {
+}

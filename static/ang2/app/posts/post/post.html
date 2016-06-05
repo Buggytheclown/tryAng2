@@ -1,8 +1,9 @@
 <div>
     <div class="post-head">
         <h3>{{ post.title }}</h3>
-        <button class="btn btn-default btn-sm" (click)="postShow='content'">Content</button>
-        <button class="btn btn-default btn-sm" (click)="postShow='userGroup'">Viewed: {{ friendsViewed() }}</button>
+        <button class="btn btn-default btn-sm"  [class.btn-primary]="postShow==='content'" (click)="postShow='content' ">Content</button>
+        <button class="btn btn-default btn-sm" [class.btn-primary]="postShow==='userGroup'" (click)="postShow='userGroup' ">Viewed: {{ friendsViewed() }}</button>
+        <button class="btn btn-default btn-sm" [class.btn-primary]="postShow==='comments'" (click)="postShow='comments' ">Comments</button>
 
         <p class="rating">Rating:<b>{{ post.rating }}</b>
             <small class="blog-post-meta">{{ stringAsDate(post.timestamp) | date:'medium'}}</small>
@@ -55,6 +56,10 @@
             <template [ngIf]="!autenticated()">
                 <p class="bg-info text-center pinfo">Register or login to view!</p>
             </template>
+        </div>
+
+        <div *ngSwitchWhen="'comments'" class="contentWrapper" style="overflow: scroll; max-height: 600px; max-width: none">
+            <my-comments [url]="post.post_link"></my-comments>
         </div>
 
     </div>

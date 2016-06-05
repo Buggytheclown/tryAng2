@@ -2,6 +2,7 @@ import datetime
 import json
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import JsonResponse
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny
@@ -12,6 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from PiParse.models import PiPosts, FriendList
+from PiParse.scripts.parseComments import ParseComments
 from PiParse.scripts.rawParseScript import ParsePikabu
 from PiParse.scripts.rawParseToSQL import postsSQL, loggsSQL
 from PiParse.serializers import PiPostsSerializer
@@ -78,7 +80,7 @@ class PiPostsViewSet(viewsets.ViewSet):
 
         # for authenticated:
         if userId:
-            userFriendsId= FriendList.objects.all().filter(user_1=userId).values_list('user_2_id', flat=True)
+            userFriendsId = FriendList.objects.all().filter(user_1=userId).values_list('user_2_id', flat=True)
 
         postSerializer = []
         for post in queryset:
@@ -89,7 +91,8 @@ class PiPostsViewSet(viewsets.ViewSet):
                 postData.update({"viewed": viewed})
 
                 # provide friendsName for viewed post friend
-                viewedFriends = PiPosts.objects.get(id=post.id).viewed.filter(id__in=userFriendsId).values_list('username', flat=True)
+                viewedFriends = PiPosts.objects.get(id=post.id).viewed.filter(id__in=userFriendsId).values_list(
+                    'username', flat=True)
                 postData.update({"friendsViewed": viewedFriends})
 
             postSerializer.append(postData)
@@ -111,6 +114,56 @@ class saveViewed(APIView):
                 return JsonResponse({'success': False}, status=400)
             if viewed:
                 ViewedToDB(request.user.id, viewed)
-            return Response({'success': True}, status=201)
+            return JsonResponse({'success': True}, status=201)
         else:
             return JsonResponse({'success': False}, status=401)
+
+
+class Comments(APIView):
+    permission_classes = (AllowAny,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self, request):
+        url = request.query_params.get('page')
+        comments = ParseComments().getComments(url)
+        return JsonResponse(comments, safe=False)
+
+
+class Friendlist(APIView):
+    permission_classes = (IsAuthenticated,)
+    authentication_classes = (JSONWebTokenAuthentication,)
+
+    def get(self, request):
+        """get friendlist of request.user"""
+        userId = request.user.id
+        FriendslistQuery = FriendList.objects.all().filter(user_1=userId)
+        friendsName = [x.user_2.username for x in FriendslistQuery]
+        return JsonResponse(friendsName, safe=False)
+
+    def put(self, request):
+        """add a new friend"""
+        userId = request.user.id
+
+        try:
+            body_unicode = request.body.decode('utf-8')
+            received_json_data = json.loads(body_unicode)
+            friendName = received_json_data['friend']
+        except:
+            return JsonResponse({'success': False}, status=400)
+
+        try:
+            friend = User.objects.get(username=friendName)
+            user = User.objects.get(id=userId)
+        except ObjectDoesNotExist:
+            return JsonResponse({'success': False}, status=400)
+
+        # denormalisation bd
+        fl1 = FriendList.objects.get_or_create(user_1=user, user_2=friend)
+        fl2 = FriendList.objects.get_or_create(user_1=friend, user_2=user)
+
+        response = {'success': True, 'created': [fl1[1], fl2[1]]}
+        return JsonResponse(response, status=201)
+
+    def delete(self, request):
+        """delete friend"""
+        pass

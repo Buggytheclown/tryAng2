@@ -19,12 +19,14 @@
         </ul>
     </div>
 </nav>
-<!--show log/reg form-->
-<div [ngSwitch]="showSign" style="position: absolute; z-index: 999" class="showsign col-md-4 col-md-offset-4">
-    <template [ngSwitchWhen]="'login'">
-        <my-login (closeLogReg)="showSign=''" [showFormContent]="0"></my-login>
-    </template>
-    <template [ngSwitchWhen]="'register'">
-        <my-login (closeLogReg)="showSign=''" [showFormContent]="1"></my-login>
-    </template>
+<div style="position: relative" class="col-md-4 col-md-offset-4">
+    <!--show log/reg form-->
+    <div [ngSwitch]="showSign" class="showsign">
+        <template [ngSwitchWhen]="'login'">
+            <my-login (closeLogReg)="showSign=''" [showFormContent]="0"></my-login>
+        </template>
+        <template [ngSwitchWhen]="'register'">
+            <my-login (closeLogReg)="showSign=''" [showFormContent]="1"></my-login>
+        </template>
+    </div>
 </div>

@@ -1,0 +1,45 @@
+<div class="listwrapper">
+    <!--___Full___-->
+    <template [ngIf]="!hidden">
+
+        <ul>
+            <li (dblclick)="hidden=!hidden" >Friend list
+                <button (click)="hidden=true" class="btn btn-danger btn-xs">_</button>
+            </li>
+            <li *ngFor="#friend of friendslist">{{ friend }}<i (click)="userOnDelete = friend"
+                                                                 class="fa fa-user-times deleteuser"
+                                                                 aria-hidden="true"></i></li>
+        </ul>
+
+        <div *ngIf="userOnDelete" class="confirmBox">
+            <p>Delete {{ userOnDelete }}?</p>
+            <button (click)="deleteFriend(userOnDelete)" class="btn btn-success btn-sm">Sure</button>
+            <button (click)="userOnDelete=''" class="btn btn-danger btn-sm">Cancel</button>
+        </div>
+
+        <div *ngIf="showAddFriend" class="confirmBox" >
+            <p>Add friend?</p>
+            <!--TODO waiting spinner while hide input and res-->
+            <input #addFriendInput type="text">
+            <br>
+            <button (click)="addFriend(addFriendInput.value)" class="btn btn-success btn-sm">Add</button>
+            <button (click)="showAddFriend=false" class="btn btn-danger btn-sm">Cancel</button>
+        </div>
+
+        <div class="usercontroll">
+            <i (click)="showAddFriend=true" class="fa fa-user-plus fa-2x" aria-hidden="true"></i>
+        </div>
+    </template>
+
+
+    <!--___Hidden___-->
+    <template [ngIf]="hidden">
+        <ul>
+            <li (dblclick)="hidden=!hidden" >Friend list
+                <button (click)="hidden=false" class="btn btn-info btn-xs"><i class="fa fa-clone"
+                                                                              aria-hidden="true"></i>
+                </button>
+            </li>
+        </ul>
+    </template>
+</div>

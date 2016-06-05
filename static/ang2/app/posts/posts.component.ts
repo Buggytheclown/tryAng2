@@ -19,12 +19,13 @@ import {OnDestroy} from "angular2/core";
 import {Renderer} from "angular2/core";
 import {elementInView} from "../helpers/elementInView";
 import {HeaderComponent} from "../header/header";
+import {FriendlistComponent} from "./friendlist/friendlist.component";
 
 @Component({
     selector: 'my-posts',
     templateUrl: SrcURL + 'posts/posts.html',
     styleUrls: [SrcURL + 'posts/posts.css'],
-    directives: [PostComponent, SearchbarComponent, HeaderComponent],
+    directives: [PostComponent, SearchbarComponent, HeaderComponent, FriendlistComponent],
     providers: [PostsService, sb_windowToolsY, elementInView],
 })
 
@@ -219,6 +220,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onKeyPress(event) {
+        //TODO if switch not on content?
         //console.log(event.keyCode);
         if (!this.keyEventPass && this.pressKeyFree) {
             this.keyEventPass = true;
@@ -395,5 +397,9 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     //    }
     //
     //};
+
+    authenticated() {
+        return tokenNotExpired();
+    }
 
 }

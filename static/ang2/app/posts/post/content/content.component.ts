@@ -8,6 +8,7 @@ import { ElementRef } from "angular2/core";
 import { AfterViewInit } from "angular2/core";
 import {OnDestroy} from "angular2/core";
 import {AfterContentInit} from "angular2/core";
+import {Content} from "./content.interface";
 
 @Component({
     selector: 'my-post-content',
@@ -19,7 +20,7 @@ import {AfterContentInit} from "angular2/core";
 
 export class PostContentComponent implements OnInit {
 
-    @Input() content;
+    @Input() content:Content;
     @Output() contentToPlay = new EventEmitter();
     @Output() contentImgLoaded = new EventEmitter();
 

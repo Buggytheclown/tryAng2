@@ -1,0 +1,21 @@
+<div class="comment">
+    <div>
+        {{comment.rating}} <strong>{{comment.username}}</strong> {{comment.time |dateFromUTC |date:'medium' }}
+    </div>
+    <!--TODO make gif-->
+    <!--TODO improve img-->
+    <div [innerHtml]="comment.content">
+    </div>
+</div>
+
+<div *ngIf="comment.child.length > 0" class="childcomment">
+    <template [ngIf]="showChild">
+        <div *ngFor="#childs of comment.child">
+            <my-comment [showChild]="true" [comment]="childs"></my-comment>
+        </div>
+    </template>
+    <div (click)="showChild=!showChild" class="togglechild">
+        <i *ngIf="showChild" class="fa fa-minus-square-o" aria-hidden="true"></i>
+        <i *ngIf="!showChild " class="showBranch fa fa-plus-square-o" aria-hidden="true"> Show brunch ({{countChildrens}} <i class="fa fa-comments" aria-hidden="true"></i>)</i>
+    </div>
+</div>

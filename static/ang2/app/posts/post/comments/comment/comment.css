@@ -1,0 +1,25 @@
+.comment {
+    margin-bottom: 15px;
+    margin-top: 10px;
+}
+
+
+.childcomment {
+    min-height: 10px;
+    position: relative;
+    margin-left: 25px;
+    border-left: dotted 1px rgb(156, 148, 148);
+    padding-left: 10px;
+}
+
+.togglechild {
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    left: -5px;
+    background-color: white;
+}
+
+.showBranch {
+    color: green;
+}

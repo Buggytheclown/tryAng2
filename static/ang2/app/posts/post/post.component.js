@@ -1,4 +1,4 @@
-System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt"], function(exports_1) {
+System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt", "./comments/comments.component"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1;
+    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1, comments_component_1;
     var PostComponent;
     return {
         setters:[
@@ -27,6 +27,9 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
             },
             function (angular2_jwt_1_1) {
                 angular2_jwt_1 = angular2_jwt_1_1;
+            },
+            function (comments_component_1_1) {
+                comments_component_1 = comments_component_1_1;
             }],
         execute: function() {
             PostComponent = (function () {
@@ -84,6 +87,9 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                 PostComponent.prototype.autenticated = function () {
                     return angular2_jwt_1.tokenNotExpired();
                 };
+                PostComponent.prototype.postShowIs = function (switchState) {
+                    return this.postShow === switchState;
+                };
                 __decorate([
                     core_2.Input(), 
                     __metadata('design:type', Object)
@@ -97,7 +103,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                         selector: 'my-post',
                         templateUrl: static_1.SrcURL + 'posts/post/post.html',
                         styleUrls: [static_1.SrcURL + 'posts/post/post.css'],
-                        directives: [content_component_1.PostContentComponent],
+                        directives: [content_component_1.PostContentComponent, comments_component_1.CommentsComponent],
                         providers: [],
                     }), 
                     __metadata('design:paramtypes', [core_5.ElementRef])

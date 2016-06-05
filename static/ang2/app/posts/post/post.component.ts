@@ -10,12 +10,13 @@ import {AfterViewInit} from "angular2/core";
 import {PostContentComponent} from "./content/content.component";
 import {OnDestroy} from "angular2/core";
 import {tokenNotExpired} from "angular2-jwt";
+import {CommentsComponent} from "./comments/comments.component";
 
 @Component({
     selector: 'my-post',
     templateUrl: SrcURL + 'posts/post/post.html',
     styleUrls: [SrcURL + 'posts/post/post.css'],
-    directives: [PostContentComponent],
+    directives: [PostContentComponent, CommentsComponent],
     providers: [],
 })
 
@@ -81,6 +82,10 @@ export class PostComponent implements OnInit, AfterViewInit {
 
     autenticated(){
         return tokenNotExpired();
+    }
+
+    postShowIs(switchState:string):boolean{
+        return this.postShow === switchState
     }
 
 }

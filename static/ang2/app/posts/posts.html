@@ -1,37 +1,43 @@
 <my-header (focusin)="pressKeyFree=false" (focusout)="pressKeyFree=true"></my-header>
-<div class="container">
+
+<!--TODO make listener explicit-->
+<div (window:scroll)="onScroll()" (window:keypress)="onKeyPress($event)" class="container">
     <div class="row">
-        <div class="col-sm-8 col-sm-offset-2">
+        <div class="col-sm-6 col-sm-offset-3">
 
-            <!--TODO make listener mor explicit-->
-            <div (window:scroll)="onScroll()" (window:keypress)="onKeyPress($event)">
-                <div style="text-align: center">
-                    <div style="display: inline-block;">
-                        <my-searchbar></my-searchbar>
-                    </div>
-                </div>
+            <div>
+                <my-searchbar></my-searchbar>
+            </div>
 
-                <div *ngIf="!posts" style="margin-left: 50%">
-                    <i class="fa fa-spinner fa-4x fa-spin"></i>
-                </div>
-
-                <div *ngFor="#post of posts; #ipost = index" class="blog-post _mypost">
-                    <div *ngIf="post">
-                        <my-post [post]="post" (contentToPlay)="contentPlay(ipost, $event)"></my-post>
-                    </div>
-                </div><!-- endFor post  /.blog-post -->
-
-                <!-- spinner for waiting posts -->
-                <div *ngIf="gettingPosts && posts && !outOfPosts" style="margin-left: 50%">
-                    <i class="fa fa-spinner fa-4x fa-spin"></i>
-                </div>
-                <div *ngIf="outOfPosts" class="bg-info">
-                    <p class="text-center pinfo">Congratulations! You have seen all posts for this day!</p>
-                </div>
-
+            <div *ngIf="authenticated()" style=" margin-top: 10px; padding: 20px; position: relative">
+                <my-friendlist (focusin)="pressKeyFree=false" (focusout)="pressKeyFree=true"></my-friendlist>
             </div>
 
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-8 col-sm-offset-2">
+            <div *ngIf="!posts" style="margin-left: 50%">
+                <i class="fa fa-spinner fa-4x fa-spin"></i>
+            </div>
+
+            <div *ngFor="#post of posts; #ipost = index" class="blog-post _mypost">
+                <div *ngIf="post">
+                    <my-post [post]="post" (contentToPlay)="contentPlay(ipost, $event)"></my-post>
+                </div>
+            </div><!-- endFor post  /.blog-post -->
+
+            <!-- spinner for waiting posts -->
+            <div *ngIf="gettingPosts && posts && !outOfPosts" style="margin-left: 50%">
+                <i class="fa fa-spinner fa-4x fa-spin"></i>
+            </div>
+            <div *ngIf="outOfPosts" class="bg-info">
+                <p class="text-center pinfo">Congratulations! You have seen all posts for this day!</p>
+            </div>
+
+        </div>
+
+    </div>
+
 </div> <!-- /container -->
 
