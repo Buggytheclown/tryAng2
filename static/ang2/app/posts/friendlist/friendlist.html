@@ -3,12 +3,12 @@
     <template [ngIf]="!hidden">
 
         <ul>
-            <li (dblclick)="hidden=!hidden" >Friend list
+            <li (dblclick)="hidden=!hidden">Friend list
                 <button (click)="hidden=true" class="btn btn-danger btn-xs">_</button>
             </li>
             <li *ngFor="#friend of friendslist">{{ friend }}<i (click)="userOnDelete = friend"
-                                                                 class="fa fa-user-times deleteuser"
-                                                                 aria-hidden="true"></i></li>
+                                                               class="fa fa-user-times deleteuser"
+                                                               aria-hidden="true"></i></li>
         </ul>
 
         <div *ngIf="userOnDelete" class="confirmBox">
@@ -17,13 +17,29 @@
             <button (click)="userOnDelete=''" class="btn btn-danger btn-sm">Cancel</button>
         </div>
 
-        <div *ngIf="showAddFriend" class="confirmBox" >
-            <p>Add friend?</p>
-            <!--TODO waiting spinner while hide input and res-->
-            <input #addFriendInput type="text">
-            <br>
-            <button (click)="addFriend(addFriendInput.value)" class="btn btn-success btn-sm">Add</button>
-            <button (click)="showAddFriend=false" class="btn btn-danger btn-sm">Cancel</button>
+        <div *ngIf="showAddFriend" class="confirmBox">
+            <template [ngIf]="!addFriendWaiting">
+                <template [ngIf]="!addFriendMessage">
+                    <p>Add friend?</p>
+                    <input #addFriendInput type="text" autofocus>
+                    <br>
+                    <button (click)="addFriend(addFriendInput.value)" class="btn btn-success btn-sm">Add</button>
+                    <button (click)="showAddFriend=false" class="btn btn-danger btn-sm">Cancel</button>
+                </template>
+                <template [ngIf]="addFriendMessage">
+                    <br>
+                    <p>{{addFriendMessage}}</p>
+                    <br>
+                    <button (click)="addFriendMessage='' " class="btn btn-success btn-sm">Add friend</button>
+                    <button (click)="addFriendMessage='' ; showAddFriend=false" class="btn btn-danger btn-sm">Cancel</button>
+                </template>
+            </template>
+            <template [ngIf]="addFriendWaiting">
+                <div *ngIf="!posts">
+                    <i class="fa fa-spinner fa-4x fa-spin"></i>
+                </div>
+            </template>
+
         </div>
 
         <div class="usercontroll">
@@ -35,7 +51,7 @@
     <!--___Hidden___-->
     <template [ngIf]="hidden">
         <ul>
-            <li (dblclick)="hidden=!hidden" >Friend list
+            <li (dblclick)="hidden=!hidden">Friend list
                 <button (click)="hidden=false" class="btn btn-info btn-xs"><i class="fa fa-clone"
                                                                               aria-hidden="true"></i>
                 </button>

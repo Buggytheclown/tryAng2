@@ -1,4 +1,4 @@
-System.register(['angular2/core', "../static", 'angular2/router', "./posts/posts.component", "./votes/votes.component", "./blocknote/blocknote.component", "./logger/logger.component", "./posts/friendlist/friendlist.component"], function(exports_1) {
+System.register(['angular2/core', "../static", 'angular2/router', "./posts/posts.component", "./votes/votes.component", "./blocknote/blocknote.component", "./logger/logger.component", "./posts/friendlist/friendlist.component", "./helpers/headersUnsafe"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(['angular2/core', "../static", 'angular2/router', "./posts/posts
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, router_1, posts_component_1, votes_component_1, blocknote_component_1, logger_component_1, friendlist_component_1;
+    var core_1, static_1, router_1, posts_component_1, votes_component_1, blocknote_component_1, logger_component_1, friendlist_component_1, headersUnsafe_1;
     var MainComponent;
     return {
         setters:[
@@ -35,6 +35,9 @@ System.register(['angular2/core', "../static", 'angular2/router', "./posts/posts
             },
             function (friendlist_component_1_1) {
                 friendlist_component_1 = friendlist_component_1_1;
+            },
+            function (headersUnsafe_1_1) {
+                headersUnsafe_1 = headersUnsafe_1_1;
             }],
         execute: function() {
             MainComponent = (function () {
@@ -46,7 +49,7 @@ System.register(['angular2/core', "../static", 'angular2/router', "./posts/posts
                         templateUrl: static_1.SrcURL + 'myMain.html',
                         styleUrls: [static_1.SrcURL + 'myMain.css'],
                         directives: [router_1.ROUTER_DIRECTIVES, posts_component_1.PostsComponent, logger_component_1.LoggerComponent, votes_component_1.VotesComponent, blocknote_component_1.BlocknoteComponent],
-                        providers: [router_1.ROUTER_PROVIDERS,]
+                        providers: [router_1.ROUTER_PROVIDERS, headersUnsafe_1.headersUnsafe]
                     }),
                     router_1.RouteConfig([
                         {

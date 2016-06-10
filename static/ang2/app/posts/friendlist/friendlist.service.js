@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxjs/add/operator/delay', 'angular2-jwt', "../helpers/headersUnsafe"], function(exports_1) {
+System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'angular2-jwt', "../../helpers/headersUnsafe"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -9,7 +9,7 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
     var core_1, http_1, angular2_jwt_1, headersUnsafe_1;
-    var PostsService;
+    var FriendlistService;
     return {
         setters:[
             function (core_1_1) {
@@ -19,7 +19,6 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
                 http_1 = http_1_1;
             },
             function (_1) {},
-            function (_2) {},
             function (angular2_jwt_1_1) {
                 angular2_jwt_1 = angular2_jwt_1_1;
             },
@@ -27,33 +26,37 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
                 headersUnsafe_1 = headersUnsafe_1_1;
             }],
         execute: function() {
-            PostsService = (function () {
-                function PostsService(_http, _AuthHttp, _headersUnsafe) {
+            FriendlistService = (function () {
+                function FriendlistService(_http, _AuthHttp, _headersUnsafe) {
                     this._http = _http;
                     this._AuthHttp = _AuthHttp;
                     this._headersUnsafe = _headersUnsafe;
                 }
                 ;
-                PostsService.prototype.getPosts = function (from, to, date) {
-                    return this._AuthHttp.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date)
+                FriendlistService.prototype.getFriendlist = function () {
+                    return this._AuthHttp.get('/api/friendlist/')
                         .map(function (res) { return res.json(); });
-                    // Subscribe to the observable to get the parsed people object and attach it to the
-                    // component
                 };
-                PostsService.prototype.saveViewed = function (viewed) {
+                FriendlistService.prototype.deleteFriend = function (user) {
                     var headers = this._headersUnsafe.getHeaders();
-                    var body = JSON.stringify({ 'viewed': viewed });
-                    return this._AuthHttp.post('/api/viewed/', body, headers)
+                    var body = JSON.stringify({ 'friend': user });
+                    return this._AuthHttp.patch('/api/friendlist/', body, headers)
                         .map(function (res) { return res.json(); });
                 };
-                PostsService = __decorate([
+                FriendlistService.prototype.addFriend = function (user) {
+                    var headers = this._headersUnsafe.getHeaders();
+                    var body = JSON.stringify({ 'friend': user });
+                    return this._AuthHttp.put('/api/friendlist/', body, headers)
+                        .map(function (res) { return res.json(); });
+                };
+                FriendlistService = __decorate([
                     core_1.Injectable(), 
                     __metadata('design:paramtypes', [http_1.Http, angular2_jwt_1.AuthHttp, headersUnsafe_1.headersUnsafe])
-                ], PostsService);
-                return PostsService;
+                ], FriendlistService);
+                return FriendlistService;
             })();
-            exports_1("PostsService", PostsService);
+            exports_1("FriendlistService", FriendlistService);
         }
     }
 });
-//# sourceMappingURL=posts.service.js.map
+//# sourceMappingURL=friendlist.service.js.map

@@ -13,11 +13,18 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from PiParse.models import PiPosts, FriendList
-from PiParse.scripts.parseComments import ParseComments
-from PiParse.scripts.rawParseScript import ParsePikabu
-from PiParse.scripts.rawParseToSQL import postsSQL, loggsSQL
+from PiParse.scripts.parsePikabu import ParseComments,  ParsePikabu
+from PiParse.scripts.rawToSQL import postsSQL, loggsSQL, ViewedToDB
 from PiParse.serializers import PiPostsSerializer
-from PiParse.scripts.rawViewedToSQL import ViewedToDB
+
+
+def getBodyDate(request, param):
+    try:
+        body_unicode = request.body.decode('utf-8')
+        received_json_data = json.loads(body_unicode)
+        return received_json_data[param]
+    except:
+        return None
 
 
 class PiPostsViewSet(viewsets.ViewSet):
@@ -54,7 +61,7 @@ class PiPostsViewSet(viewsets.ViewSet):
 
     def _isUser_viewed_post(self, userId, postid):
         # ___add viewed___ to post -  if authenticated and post is viewed
-        userViewedFilter = PiPosts.objects.get(id=postid).viewed.filter(id=userId).values('id')
+        userViewedFilter = PiPosts.objects.get(p_id=postid).viewed.filter(id=userId).values('id')
         return userViewedFilter and True or False
 
     def list(self, request):
@@ -87,11 +94,11 @@ class PiPostsViewSet(viewsets.ViewSet):
             postData = PiPostsSerializer(post).data
             if userId:
                 # set post is viewed by user to try or false
-                viewed = self._isUser_viewed_post(userId=userId, postid=post.id)
+                viewed = self._isUser_viewed_post(userId=userId, postid=post.p_id)
                 postData.update({"viewed": viewed})
 
                 # provide friendsName for viewed post friend
-                viewedFriends = PiPosts.objects.get(id=post.id).viewed.filter(id__in=userFriendsId).values_list(
+                viewedFriends = PiPosts.objects.get(p_id=post.p_id).viewed.filter(id__in=userFriendsId).values_list(
                     'username', flat=True)
                 postData.update({"friendsViewed": viewedFriends})
 
@@ -101,22 +108,16 @@ class PiPostsViewSet(viewsets.ViewSet):
 
 
 class saveViewed(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
     def post(self, request):
-        if request.user.id:
-            try:
-                body_unicode = request.body.decode('utf-8')
-                received_json_data = json.loads(body_unicode)
-                viewed = received_json_data['viewed']
-            except:
-                return JsonResponse({'success': False}, status=400)
-            if viewed:
-                ViewedToDB(request.user.id, viewed)
+        viewed = getBodyDate(request, 'viewed')
+        if viewed:
+            ViewedToDB(request.user.id, viewed)
             return JsonResponse({'success': True}, status=201)
         else:
-            return JsonResponse({'success': False}, status=401)
+            return JsonResponse({}, status=400)
 
 
 class Comments(APIView):
@@ -140,30 +141,47 @@ class Friendlist(APIView):
         friendsName = [x.user_2.username for x in FriendslistQuery]
         return JsonResponse(friendsName, safe=False)
 
+
     def put(self, request):
         """add a new friend"""
         userId = request.user.id
-
-        try:
-            body_unicode = request.body.decode('utf-8')
-            received_json_data = json.loads(body_unicode)
-            friendName = received_json_data['friend']
-        except:
-            return JsonResponse({'success': False}, status=400)
+        friendName = getBodyDate(request, 'friend')
+        if not friendName:
+            return JsonResponse({}, status=400)
 
         try:
             friend = User.objects.get(username=friendName)
             user = User.objects.get(id=userId)
         except ObjectDoesNotExist:
-            return JsonResponse({'success': False}, status=400)
+            return JsonResponse({}, status=204)
 
-        # denormalisation bd
-        fl1 = FriendList.objects.get_or_create(user_1=user, user_2=friend)
-        fl2 = FriendList.objects.get_or_create(user_1=friend, user_2=user)
+        if user != friend:
+            # in reason of denormalisation bd
+            fl1 = FriendList.objects.get_or_create(user_1=user, user_2=friend)
+            fl2 = FriendList.objects.get_or_create(user_1=friend, user_2=user)
+        else:
+            return JsonResponse({}, status=204)
 
         response = {'success': True, 'created': [fl1[1], fl2[1]]}
         return JsonResponse(response, status=201)
 
-    def delete(self, request):
+
+    def patch(self, request):
         """delete friend"""
-        pass
+        userId = request.user.id
+        friendName = getBodyDate(request, 'friend')
+        if not friendName:
+            return JsonResponse({}, status=400)
+
+        try:
+            friend = User.objects.get(username=friendName)
+            user = User.objects.get(id=userId)
+        except ObjectDoesNotExist:
+            return JsonResponse({}, status=204)
+
+        # denormalisation bd
+        FriendList.objects.get(user_1=user, user_2=friend).delete()
+        FriendList.objects.get(user_1=friend, user_2=user).delete()
+
+        response = {'success': True}
+        return JsonResponse(response, status=201)

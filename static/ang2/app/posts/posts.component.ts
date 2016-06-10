@@ -148,7 +148,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         for (let i = 0; i < posts.length; i++) {
             let curPost = posts[i];
             if (curPost['viewed']) {
-                this.viewedPosts.push(curPost['id'])
+                this.viewedPosts.push(curPost['p_id'])
             }
         }
     }
@@ -203,7 +203,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     setCurrentPostPosition(newPosition:number) {
         if (this.posts[newPosition]) {
             console.log('Current Post:', this.posts[newPosition].title);
-            let currentID = this.posts[newPosition]['id'];
+            let currentID = this.posts[newPosition]['p_id'];
 
             if (tokenNotExpired() && !this.viewedPosts.find((x)=>x === currentID)) {
                 this.viewedPosts.push(currentID);
@@ -250,7 +250,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
                     let firstUnViewed;
                     for (let i = 0; i < this.posts.length; i++) {
                         var currentPost = this.posts[i];
-                        if (this.viewedPosts.find((x)=>x === currentPost.id)) {
+                        if (this.viewedPosts.find((x)=>x === currentPost.p_id)) {
                             currentPost.viewed = true;
                         } else {
                             if (firstUnViewed === undefined) {

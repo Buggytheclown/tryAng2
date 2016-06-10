@@ -16,9 +16,11 @@ def logger_try_or_none(type, message):
                 error_traceback = ''.join(traceback.format_tb(error_traceback))
                 # for future insert into " "
                 error_traceback = error_traceback.replace('"', "\'")
-                # exc = str(error_type.__name__) + "\n" + str(error_message) + "\n" + error_traceback
-                exc = '{} \n {} \n {}'.format(error_type.__name__, error_message, error_traceback)
-                newLogger['logs'].append({'type': type, 'message': message, 'error': exc})
+                # exept advertising post
+                if error_traceback.find('story_rating') == -1:
+                    # exc = str(error_type.__name__) + "\n" + str(error_message) + "\n" + error_traceback
+                    exc = '{} \n {} \n {}'.format(error_type.__name__, error_message, error_traceback)
+                    newLogger['logs'].append({'type': type, 'message': message, 'error': exc})
                 return None
 
         return wrapper

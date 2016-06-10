@@ -1,8 +1,8 @@
 import {Content} from "./post/content/content.interface";
 
 export interface Posts {
-    id:number;
     viewed: boolean;
+    commentsCount: number;
     p_id: number;
     rating: number;
     post_link: string;

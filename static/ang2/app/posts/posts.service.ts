@@ -4,18 +4,13 @@ import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/delay';
 import {Headers} from "angular2/http";
 import {AuthHttp} from 'angular2-jwt';
+import {headersUnsafe} from "../helpers/headersUnsafe";
 
 @Injectable()
 export class PostsService {
-    constructor(private _http:Http, private _AuthHttp:AuthHttp) {
+    constructor(private _http:Http, private _AuthHttp:AuthHttp, private _headersUnsafe:headersUnsafe) {
     };
 
-    //getPosts(from, to) {return this._http.get('/api/posts/'+'?postFrom=' + from + '&postTo=' + to).delay(500)
-    //        // Call map on the response observable to get the parsed people object
-    //        .map(res => res.json());
-    //        // Subscribe to the observable to get the parsed people object and attach it to the
-    //        // component
-    //}
     getPosts(from, to, date) {
         return this._AuthHttp.get('/api/PiParse/' + '?postFrom=' + from + '&postTo=' + to + '&date=' + date )
             // Call map on the response observable to get the parsed people object
@@ -25,19 +20,10 @@ export class PostsService {
     }
 
     saveViewed(viewed:number[]) {
-        let headers = new Headers();
-        headers.append('X-CSRFToken', this.getCookie('csrftoken'));
-        headers.append('Content-Type', 'application/json');
+        let headers = this._headersUnsafe.getHeaders();
         let body = JSON.stringify({'viewed': viewed});
-        return this._AuthHttp.post('/api/viewed/', body, {headers: headers})
+        return this._AuthHttp.post('/api/viewed/', body, headers)
             .map(res => res.json());
-    }
-
-    getCookie(name) {
-        let value = "; " + document.cookie;
-        let parts = value.split("; " + name + "=");
-        if (parts.length == 2)
-            return parts.pop().split(";").shift();
     }
 }
 

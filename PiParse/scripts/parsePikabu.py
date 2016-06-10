@@ -1,17 +1,85 @@
+# from PiParse.scripts.parsePikabu import ParseComments, ParsePikabu
 from functools import reduce
-
 import datetime
-
-import pytz
 from bs4 import BeautifulSoup
 import re
-
 from pip._vendor.requests.packages import urllib3
-
 from myLogger.rawLoggertry import logger_try_or_none, logger_write
 
 
-class ParsePikabu:
+class PikabuSoup:
+    def getParsePage(self, parseUrl):
+        http = urllib3.PoolManager()
+        http.headers['user_name'] = 'Tidjei'
+        http.headers['password'] = 'buggy2497672'
+        response = http.request('GET', parseUrl)
+        return BeautifulSoup(response.data, "html5lib")
+
+
+class ParseComments(PikabuSoup):
+
+    def getRawComments(self, soup):
+        mainCommentsBlock = soup.find("div", class_='b-comments_type_main')
+        comments = mainCommentsBlock.find_all("div", class_="b-comment", recursive=False)
+        return comments
+
+    def getRawCommentBody(self, rawcomment):
+        return rawcomment.find("div", class_='b-comment__body')
+
+    def parseHeader(self, rawCommentBody):
+        rawHeader = rawCommentBody.find("div", class_='b-comment__header')
+        rating = rawHeader.find(class_='b-comment__rating-count')
+        ratingBlocked = rating.find(class_="i-sprite--comments__rating-lock")
+        if ratingBlocked:
+            rating = 'blocked'
+        else:
+            rating = rating.contents[0]
+
+        commentUser = rawHeader.find(class_='b-comment__user')
+        useravatar = None
+        username = commentUser.find("a").find('span').contents[0]
+        time = commentUser.find("time")['datetime']
+
+        return useravatar, username, rating, time
+
+    def parseContent(self, rawCommentBody):
+        # TODO test it
+        rawcomment = rawCommentBody.find("div", class_='b-comment__content').contents
+        # concat Array<string> in type:string
+        rawcomment = map(lambda x: str(x).replace('"', "\'"), rawcomment)
+        rawcomment = reduce(lambda x, y: x + y, rawcomment)
+        return rawcomment
+
+    def findChilds(self, rawcomment):
+        childsBlock = rawcomment.find("div", class_='b-comments_level_0')
+        if childsBlock:
+            childs = childsBlock.find_all("div", class_='b-comment', recursive=False)
+        else:
+            childs = []
+        return childs
+
+    def findComments(self, rawcomments):
+        output = []
+        for rawcomment in rawcomments:
+            rawCommentBody = self.getRawCommentBody(rawcomment)
+            useravatar, username, rating, time = self.parseHeader(rawCommentBody)
+            content = self.parseContent(rawCommentBody)
+            child = self.findChilds(rawcomment)
+            if child:
+                child = self.findComments(child)
+            # 'content':content,
+            comment = {'username': username, 'useravatar': useravatar, 'rating': rating, 'time': time, 'content':content, 'child': child}
+            output.append(comment)
+        return output
+
+    def getComments(self, pageurl):
+        soup = super().getParsePage(parseUrl=pageurl)
+        rawcomments = self.getRawComments(soup)
+        comments = self.findComments(rawcomments)
+        return comments
+
+
+class ParsePikabu(PikabuSoup):
     def __init__(self, date='', tillPage=None, tillRating=None, page=None):
         if date:
             date = '/' + str(date)
@@ -26,19 +94,9 @@ class ParsePikabu:
                            'logs': []}
         self._newPosts = []
 
-    @logger_try_or_none(type='error', message='getParsePage try to get a soup HTML')
-    def getParsePage(self, parseUrl):
-        http = urllib3.PoolManager()
-        http.headers['user_name'] = 'Tidjei'
-        http.headers['password'] = 'buggy2497672'
-        response = http.request('GET', parseUrl)
-        return BeautifulSoup(response.data, "html5lib")
-
-    def createPost(self, p_id, link, theme, rating, timestamp, description):
-
-        newPost = {'p_id': p_id, 'post_link': link, 'title': theme, 'rating': rating, 'timestamp': timestamp,
+    def createPost(self, p_id, commentsCount, link, theme, rating, timestamp, description):
+        newPost = {'p_id': p_id, 'commentsCount': commentsCount, 'post_link': link, 'title': theme, 'rating': rating, 'timestamp': timestamp,
                    'description': description, 'contents': []}
-        logger_write(group=self._newLogger, type='info', message='Post was created: {}'.format(theme))
         return newPost
 
     @logger_try_or_none(type='error', message='setPost fail to set a post date')
@@ -56,6 +114,8 @@ class ParsePikabu:
             story_description = str(_story_description.contents[0])
         story_rating = table.find("div", class_='story__rating-count').contents[0].replace('\n', '').replace('\t', '')
         timestamp = table.find("div", class_='story__date')['title']
+        rawCommentsCount = table.find("a", class_='story__comments-count').contents[0]
+        commentsCount = rawCommentsCount[:rawCommentsCount.find('Коммент') - 1]
         # small no UTC fix (
         timestamp = datetime.datetime.utcfromtimestamp(int(timestamp)) + datetime.timedelta(
             hours=3) + datetime.timedelta(minutes=30)
@@ -64,7 +124,7 @@ class ParsePikabu:
         if len(p_id) > 3:
             # story_rating = story_rating.contents[0]
             self.lastRating = story_rating
-            newPost = self.createPost(p_id=p_id, link=link, theme=theme, rating=story_rating, timestamp=timestamp,
+            newPost = self.createPost(p_id=p_id, commentsCount=commentsCount, link=link, theme=theme, rating=story_rating, timestamp=timestamp,
                                       description=story_description)
             return newPost
         else:
@@ -144,7 +204,7 @@ class ParsePikabu:
 
     def findAndSetStoryes(self):
         parseUrl = "http://pikabu.ru/best" + self.date + "?page=" + str(self.currentPage)
-        soup = self.getParsePage(parseUrl=parseUrl)
+        soup = super().getParsePage(parseUrl=parseUrl)
         if not soup:
             return False
         tables = self.findTables(soup)

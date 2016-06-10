@@ -7,6 +7,7 @@ import {VotesComponent} from "./votes/votes.component";
 import {BlocknoteComponent} from "./blocknote/blocknote.component";
 import {LoggerComponent} from "./logger/logger.component";
 import {FriendlistComponent} from "./posts/friendlist/friendlist.component";
+import {headersUnsafe} from "./helpers/headersUnsafe";
 
 
 @Component({
@@ -14,7 +15,7 @@ import {FriendlistComponent} from "./posts/friendlist/friendlist.component";
     templateUrl: SrcURL + 'myMain.html',
     styleUrls: [SrcURL + 'myMain.css'],
     directives: [ROUTER_DIRECTIVES, PostsComponent, LoggerComponent, VotesComponent, BlocknoteComponent],
-    providers: [ROUTER_PROVIDERS,]
+    providers: [ROUTER_PROVIDERS, headersUnsafe]
 })
 
 

@@ -164,7 +164,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     for (var i = 0; i < posts.length; i++) {
                         var curPost = posts[i];
                         if (curPost['viewed']) {
-                            this.viewedPosts.push(curPost['id']);
+                            this.viewedPosts.push(curPost['p_id']);
                         }
                     }
                 };
@@ -213,7 +213,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 PostsComponent.prototype.setCurrentPostPosition = function (newPosition) {
                     if (this.posts[newPosition]) {
                         console.log('Current Post:', this.posts[newPosition].title);
-                        var currentID = this.posts[newPosition]['id'];
+                        var currentID = this.posts[newPosition]['p_id'];
                         if (angular2_jwt_1.tokenNotExpired() && !this.viewedPosts.find(function (x) { return x === currentID; })) {
                             this.viewedPosts.push(currentID);
                             this.newViewedPosts.push(currentID);
@@ -256,7 +256,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                                 var firstUnViewed;
                                 for (var i = 0; i < this.posts.length; i++) {
                                     var currentPost = this.posts[i];
-                                    if (this.viewedPosts.find(function (x) { return x === currentPost.id; })) {
+                                    if (this.viewedPosts.find(function (x) { return x === currentPost.p_id; })) {
                                         currentPost.viewed = true;
                                     }
                                     else {
