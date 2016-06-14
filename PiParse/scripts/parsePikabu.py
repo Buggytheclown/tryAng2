@@ -9,11 +9,14 @@ from myLogger.rawLoggertry import logger_try_or_none, logger_write
 
 class PikabuSoup:
     def getParsePage(self, parseUrl):
-        http = urllib3.PoolManager()
-        http.headers['user_name'] = 'Tidjei'
-        http.headers['password'] = 'buggy2497672'
-        response = http.request('GET', parseUrl)
-        return BeautifulSoup(response.data, "html5lib")
+        try:
+            http = urllib3.PoolManager()
+            http.headers['user_name'] = 'Tidjei'
+            http.headers['password'] = 'buggy2497672'
+            response = http.request('GET', parseUrl)
+            return BeautifulSoup(response.data, "html5lib")
+        except:
+            return None
 
 
 class ParseComments(PikabuSoup):
@@ -74,6 +77,8 @@ class ParseComments(PikabuSoup):
 
     def getComments(self, pageurl):
         soup = super().getParsePage(parseUrl=pageurl)
+        if not soup:
+            return None
         rawcomments = self.getRawComments(soup)
         comments = self.findComments(rawcomments)
         return comments
@@ -145,12 +150,13 @@ class ParsePikabu(PikabuSoup):
 
         content_class = content['class'][1]
         if re.match("b-story(-block|__content)_type_text", content_class):
-            post_content = content.contents
             if content.find(class_='b-story-block__content'):
                 post_content = content.find(class_='b-story-block__content').contents
-            # concat Array<string> in type:string
+            else:
+                post_content = content.contents
+            # concat Array<string> in type:string and replace " for future insert into ""
             post_content = map(lambda x: str(x).replace('"', "\'"), post_content)
-            post_content = reduce(lambda x, y: x + y, post_content)
+            post_content = ''.join(post_content)
             post_content_type = 'p'
 
         elif re.match("b-story(-block|__content)_type_(media|image|video)", content_class):
@@ -206,10 +212,10 @@ class ParsePikabu(PikabuSoup):
         parseUrl = "http://pikabu.ru/best" + self.date + "?page=" + str(self.currentPage)
         soup = super().getParsePage(parseUrl=parseUrl)
         if not soup:
-            return False
+            return None
         tables = self.findTables(soup)
         if not tables:
-            return False
+            return None
         for table in tables:
             newPost = self.setPost(table=table)
             if not newPost:

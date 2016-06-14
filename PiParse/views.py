@@ -13,7 +13,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from PiParse.models import PiPosts, FriendList
-from PiParse.scripts.parsePikabu import ParseComments,  ParsePikabu
+from PiParse.scripts.parsePikabu import ParseComments, ParsePikabu
 from PiParse.scripts.rawToSQL import postsSQL, loggsSQL, ViewedToDB
 from PiParse.serializers import PiPostsSerializer
 
@@ -28,14 +28,11 @@ def getBodyDate(request, param):
 
 
 class PiPostsViewSet(viewsets.ViewSet):
-    """
-    API endpoint that allows users to be viewed or edited.
-    """
-    # serializer_class = PiPostsSerializer
-    # permission_classes = (AllowAny,)
+    permission_classes = (AllowAny,)
     authentication_classes = (JSONWebTokenAuthentication,)
 
-    def _get_dateParameter(self, date):
+    @staticmethod
+    def _get_dateParameter(date):
         dateParse = ""
         try:
             day, month, year = str(date).split('-')
@@ -59,11 +56,6 @@ class PiPostsViewSet(viewsets.ViewSet):
         postsSQL(posts)
         loggsSQL(loggs)
 
-    def _isUser_viewed_post(self, userId, postid):
-        # ___add viewed___ to post -  if authenticated and post is viewed
-        userViewedFilter = PiPosts.objects.get(p_id=postid).viewed.filter(id=userId).values('id')
-        return userViewedFilter and True or False
-
     def list(self, request):
         # TODO make sheduler for update post and rating
 
@@ -74,32 +66,26 @@ class PiPostsViewSet(viewsets.ViewSet):
         postFrom = request.query_params.get('postFrom', '0')
         postTo = request.query_params.get('postTo', '19')
 
-        queryset = PiPosts.objects.all().filter(timestamp__range=timeRange).order_by('-rating')[
-                   int(postFrom):int(postTo)]
+        queryset = PiPosts.objects.all().filter(timestamp__range=timeRange)[int(postFrom):int(postTo)]
 
         # parse when nothing yet or update parsed post
         if queryset.count() < 5:  # or postTo % 20 == 0 or postFrom == 0
             self._parse_pikabu(postTo=int(postTo), dateParse=dateParse)
 
-        # SUBQUERY FOR VIEWEDS
+        # ___SUBQUERY FOR VIEWEDS___
         userId = request.user.id
-        userFriendsId = []
-
-        # for authenticated:
-        if userId:
-            userFriendsId = FriendList.objects.all().filter(user_1=userId).values_list('user_2_id', flat=True)
+        userFriendsId = FriendList.getFriendList(userId=userId)
 
         postSerializer = []
         for post in queryset:
             postData = PiPostsSerializer(post).data
             if userId:
-                # set post is viewed by user to try or false
-                viewed = self._isUser_viewed_post(userId=userId, postid=post.p_id)
-                postData.update({"viewed": viewed})
+                # set post is isviewed by user to try or false
+                isviewed = PiPosts.objects.get(p_id=post.p_id).isUser_viewed(userId)
+                postData.update({"viewed": isviewed})
 
-                # provide friendsName for viewed post friend
-                viewedFriends = PiPosts.objects.get(p_id=post.p_id).viewed.filter(id__in=userFriendsId).values_list(
-                    'username', flat=True)
+                # provide friendsName for isviewed post friend
+                viewedFriends = PiPosts.objects.get(p_id=post.p_id).friend_viewed_name(userFriendsId)
                 postData.update({"friendsViewed": viewedFriends})
 
             postSerializer.append(postData)
@@ -141,7 +127,6 @@ class Friendlist(APIView):
         friendsName = [x.user_2.username for x in FriendslistQuery]
         return JsonResponse(friendsName, safe=False)
 
-
     def put(self, request):
         """add a new friend"""
         userId = request.user.id
@@ -164,7 +149,6 @@ class Friendlist(APIView):
 
         response = {'success': True, 'created': [fl1[1], fl2[1]]}
         return JsonResponse(response, status=201)
-
 
     def patch(self, request):
         """delete friend"""

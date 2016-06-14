@@ -1,4 +1,5 @@
 import base64
+from abc import ABCMeta
 
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, Client, RequestFactory
@@ -12,11 +13,38 @@ from PiParse.scripts.parsePikabu import ParsePikabu, ParseComments
 from PiParse.scripts.rawToSQL import loggsSQL, postsSQL, ViewedToDB
 from django.db import connection
 
+from PiParse.test.mockPiPostsViewResponse import anon_15_01_2016
+from PiParse.test.mockPiPostsViewResponse import auth_15_01_2016
 from PiParse.test.mockPikabuCommentsResult import mockPikabuCommentsResult
 from PiParse.test.mockPikabuCommentsSoup import MockPikabuCommentsSoup
 from PiParse.test.mockPikabuPostsResult import mockPikabuPostsResult, mockLogger
 from PiParse.test.mockPikabuPostsSoup import MockPikabuPostsSoup
 from PiParse.views import PiPostsViewSet, Friendlist
+
+
+class MyBaseTest(TestCase):
+    def setUp(self):
+        self.URL = ''
+        raise NotImplemented
+
+    def logMeIn(self):
+        self.user = self.create_user('user1')
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.user)
+
+    def create_user(self, name):
+        return User.objects.create_user(name, 'test_password')
+
+    def assert_method_toResponse(self, method, statusCode, requestParam=None, responseBody=None, isLoggedin=True):
+        requestParam = requestParam or {}
+        if isLoggedin:
+            method = getattr(self.client, method)
+        else:
+            method = getattr(Client(), method)
+        response = method(self.URL, requestParam, format='json')
+        self.assertEquals(response.status_code, statusCode)
+        if responseBody:
+            self.assertEquals(response.json(), responseBody)
 
 
 class ParseToSql(TestCase):
@@ -183,32 +211,17 @@ class parsePikabu(TestCase):
         # pass
 
 
-# class PiPostsView(TestCase):
-#     def setUp(self):
-#         self.factory = RequestFactory()
-#
-#     def test_emptyCall(self):
-#         request = self.factory.get('/api/PiParse/')
-#         request.user = AnonymousUser()
-#         response = PiPostsViewSet.as_view({'get': 'list'})(request)
-#         self.assertEquals(response.json(), ())
-
-
-class FriendlistView(TestCase):
+class FriendlistView(MyBaseTest):
     """user playing with friendlist"""
+
     def setUp(self):
-        self.user = self.create_user('user1')
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.user)
+        self.URL = '/api/friendlist/'
+        self.logMeIn()
 
         self.userFriends = ['friend1', 'friend2', 'friend3']
-
         for friend in self.userFriends:
             userFriend = self.create_user(friend)
             self.make_friend(self.user, userFriend)
-
-    def create_user(self, name):
-        return User.objects.create_user(name, 'test_password')
 
     def make_friend(self, user1, user2):
         FriendList.objects.create(user_1=user1, user_2=user2)
@@ -216,14 +229,6 @@ class FriendlistView(TestCase):
 
     def friendlistDoesNotChanged(self):
         self.assert_method_toResponse('get', 200, responseBody=self.userFriends)
-
-    def assert_method_toResponse(self, method, statusCode, requestParam=None, responseBody=None):
-        requestParam = requestParam or {}
-        methods = {'put': self.client.put, 'get': self.client.get, 'patch': self.client.patch}
-        response = methods[method]('/api/friendlist/', requestParam, format='json')
-        self.assertEquals(response.status_code, statusCode)
-        if responseBody:
-            self.assertEquals(response.json(), responseBody)
 
     def test_get(self):
         self.friendlistDoesNotChanged()
@@ -255,7 +260,8 @@ class FriendlistView(TestCase):
 
     def test_patch(self):
         """delete friend"""
-        self.assert_method_toResponse('patch', 201, requestParam={'friend': self.userFriends[0]}, responseBody={'success': True})
+        self.assert_method_toResponse('patch', 201, requestParam={'friend': self.userFriends[0]},
+                                      responseBody={'success': True})
         self.assert_method_toResponse('get', 200, responseBody=self.userFriends[1:])
 
     def test_patch_badFriend(self):
@@ -271,18 +277,76 @@ class FriendlistView(TestCase):
     def test_get_put_patch_anonimus(self):
         """unauthenticated goes in ass...401!"""
         client = Client()
-        methods = [client.put, client.get, client.patch]
+        methods = ['put', 'get', 'patch']
         for method in methods:
-            response = method('/api/friendlist/', {'friend': self.userFriends[0]}, format='json')
-            self.assertEquals(response.status_code, 401)
+            self.assert_method_toResponse(method, 401, requestParam={'friend': self.userFriends[0]}, isLoggedin=False)
 
 
-class saveViewedView(TestCase):
+class saveViewedView(MyBaseTest):
+    def setUp(self):
+        self.URL = '/api/viewed/'
+        self.logMeIn()
+
     def test_post_goodBody(self):
-        pass
+        self.assert_method_toResponse('post', 201, requestParam={'viewed': [123, 321]}, responseBody={'success': True})
 
     def test_post_badBody(self):
-        pass
+        self.assert_method_toResponse('post', 400, requestParam={'NotImplemented': [123, 321]})
 
-    def test_post_anonimus(self):
-        pass
+    def test_post_anonymous(self):
+        self.assert_method_toResponse('post', 401, requestParam={'NotImplemented': [123, 321]}, isLoggedin=False)
+
+
+class CommentsView(MyBaseTest):
+    def setUp(self):
+        self.URL = '/api/comments/'
+        self.logMeIn()
+
+    def test_get(self):
+        self.assert_method_toResponse('get', 200, requestParam={'page': ''}, isLoggedin=False)
+
+    def test_get_badParam(self):
+        self.assert_method_toResponse('get', 200, requestParam={'NotImplemented': ''}, isLoggedin=False)
+
+
+class PiPostsView(MyBaseTest):
+    fixtures = ['test2']
+
+    def setUp(self):
+        self.URL = '/api/PiParse/'
+        self.client = APIClient()
+        self.user = User.objects.get(id=1)
+        self.client.force_authenticate(user=self.user)
+
+    def assert_dateParameters(self, requestDate, rawDate, rawTimeRange):
+        responseDate, responseTimeRange = PiPostsViewSet._get_dateParameter(requestDate)
+        self.assertEquals(responseDate, rawDate)
+        self.assertEquals(responseTimeRange, rawTimeRange)
+
+    def test_dateParameterPast(self):
+        days = range(1, 28)
+        months = range(1, 12)
+        for month in months:
+            for day in days:
+                requestDate = "{}-{}-2015".format(day, month)
+                rawDate = "{}-{}-2015".format(("0" + str(day))[-2:], ("0" + str(month))[-2:])
+                rawTimeRange = (datetime.date(2015, month, day), datetime.date(2015, month, day + 1))
+                self.assert_dateParameters(requestDate, rawDate, rawTimeRange)
+
+    def test_dateParameterNow(self):
+        responseDate, responseTimeRange = PiPostsViewSet._get_dateParameter('')
+        self.assertEquals(responseDate, "")
+
+    def test_get_authenticated(self):
+        self.assert_method_toResponse('get', 200, requestParam={'date': '15-01-2016'},
+                                      responseBody=auth_15_01_2016)
+
+        self.assert_method_toResponse('get', 200, requestParam={'date': '15-01-2016', 'postFrom': '0',
+                                                                'postTo': '10'}, responseBody=auth_15_01_2016[0:10])
+
+    def test_get_anonymous(self):
+        self.assert_method_toResponse('get', 200, requestParam={'date': '15-01-2016'},
+                                      responseBody=anon_15_01_2016, isLoggedin=False)
+
+        self.assert_method_toResponse('get', 200, requestParam={'date': '15-01-2016', 'postFrom': '0', 'postTo': '10'},
+                                      responseBody=anon_15_01_2016[0:10], isLoggedin=False)
