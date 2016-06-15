@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     # 3rd
     'rest_framework',
     # myApp
-    'Posts', 'Polls', 'Angular2', 'PiParse', 'myLogger',
+    'Angular2', 'PiParse', 'myLogger',
 ]
 
 MIDDLEWARE_CLASSES = [

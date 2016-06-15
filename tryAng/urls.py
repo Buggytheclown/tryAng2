@@ -18,22 +18,17 @@ from django.contrib import admin
 from rest_framework import routers
 
 from PiParse.views import PiPostsViewSet, saveViewed, Comments, Friendlist
-from Posts import views as PostsView
-from Polls import views as PollsView
 from Angular2 import views as Angular2View
 from rest_framework_jwt.views import obtain_jwt_token
 
 from myLogger.views import myLoggerGroupViewSet
 
 router = routers.DefaultRouter()
-router.register(r'posts', PostsView.PostsViewSet, base_name="Posts")
-router.register(r'polls', PollsView.PollsViewSet)
 router.register(r'PiParse', PiPostsViewSet, base_name="PiPosts")
 router.register(r'logger', myLoggerGroupViewSet, base_name='Logger')
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^api/polls/(?P<question_id>[0-9]+)/(?P<choice_id>[0-9]+)$', PollsView.PollsVoteUp),
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api-token-auth/', obtain_jwt_token),

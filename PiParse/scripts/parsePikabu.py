@@ -20,7 +20,7 @@ class PikabuSoup:
 
 
 class ParseComments(PikabuSoup):
-
+    # TODO add logger
     def getRawComments(self, soup):
         mainCommentsBlock = soup.find("div", class_='b-comments_type_main')
         comments = mainCommentsBlock.find_all("div", class_="b-comment", recursive=False)
@@ -46,11 +46,10 @@ class ParseComments(PikabuSoup):
         return useravatar, username, rating, time
 
     def parseContent(self, rawCommentBody):
-        # TODO test it
         rawcomment = rawCommentBody.find("div", class_='b-comment__content').contents
         # concat Array<string> in type:string
         rawcomment = map(lambda x: str(x).replace('"', "\'"), rawcomment)
-        rawcomment = reduce(lambda x, y: x + y, rawcomment)
+        rawcomment = "".join(rawcomment)
         return rawcomment
 
     def findChilds(self, rawcomment):
@@ -213,9 +212,11 @@ class ParsePikabu(PikabuSoup):
         soup = super().getParsePage(parseUrl=parseUrl)
         if not soup:
             return None
+
         tables = self.findTables(soup)
         if not tables:
             return None
+
         for table in tables:
             newPost = self.setPost(table=table)
             if not newPost:
@@ -232,6 +233,7 @@ class ParsePikabu(PikabuSoup):
             # decide what type of content we have and do smth
             for content in contents:
                 if not self.setContent(newPost=newPost, content=content):
+
                     logger_write(group=self._newLogger, type='warning',
                                  message='Post was deleted: {}'.format(newPost['title']))
                     # newPost.delete()

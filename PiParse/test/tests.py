@@ -1,11 +1,7 @@
-import base64
-from abc import ABCMeta
-
 from django.contrib.auth.models import AnonymousUser, User
 from django.test import TestCase, Client, RequestFactory
 import datetime
 
-# Create your tests here.
 from rest_framework.test import APIClient
 
 from PiParse.models import FriendList
@@ -19,7 +15,7 @@ from PiParse.test.mockPikabuCommentsResult import mockPikabuCommentsResult
 from PiParse.test.mockPikabuCommentsSoup import MockPikabuCommentsSoup
 from PiParse.test.mockPikabuPostsResult import mockPikabuPostsResult, mockLogger
 from PiParse.test.mockPikabuPostsSoup import MockPikabuPostsSoup
-from PiParse.views import PiPostsViewSet, Friendlist
+from PiParse.views import PiPostsViewSet
 
 
 class MyBaseTest(TestCase):
@@ -197,9 +193,8 @@ class parsePikabu(TestCase):
             pass
 
         pp = MockParsePikabuPosts()
-        logger, posts = pp.findAndSetStoryes()
+        _, posts = pp.findAndSetStoryes()
         self.assertEqual(posts, mockPikabuPostsResult)
-        self.assertEqual(logger, mockLogger)
 
     def test_parsePikabuComments(self):
         class MockParsePikabuComments(ParseComments, MockPikabuCommentsSoup):

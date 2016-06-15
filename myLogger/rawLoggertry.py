@@ -4,7 +4,7 @@ import traceback
 from myLogger.models import myLogger
 
 
-# decorator
+# decorator for method with 1st arg self
 def logger_try_or_none(type, message):
     def wwrapper(fn):
         def wrapper(*args, **kwargs):
@@ -17,7 +17,7 @@ def logger_try_or_none(type, message):
                 # for future insert into " "
                 error_traceback = error_traceback.replace('"', "\'")
                 # exept advertising post
-                if error_traceback.find('story_rating') == -1:
+                if 'story_rating' not in error_traceback:
                     # exc = str(error_type.__name__) + "\n" + str(error_message) + "\n" + error_traceback
                     exc = '{} \n {} \n {}'.format(error_type.__name__, error_message, error_traceback)
                     newLogger['logs'].append({'type': type, 'message': message, 'error': exc})
