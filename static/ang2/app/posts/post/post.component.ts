@@ -10,7 +10,7 @@ import {AfterViewInit} from "angular2/core";
 import {PostContentComponent} from "./content/content.component";
 import {OnDestroy} from "angular2/core";
 import {tokenNotExpired} from "angular2-jwt";
-import {CommentsComponent} from "./comments/comments.component";
+import {CommentsComponent} from "../../comments/comments.component";
 import {ViewChild} from "angular2/core";
 
 @Component({
@@ -92,6 +92,7 @@ export class PostComponent implements OnInit, AfterViewInit {
         return this.postShow === switchState
     }
 
+    //TODO can remove to helper?
     copyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
 

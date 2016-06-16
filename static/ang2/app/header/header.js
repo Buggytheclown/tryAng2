@@ -1,4 +1,4 @@
-System.register(["../../static", "angular2/core", "../login/login.component", "angular2-jwt"], function(exports_1) {
+System.register(["../../static", "angular2/core", "./login/login.component", "angular2-jwt"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);

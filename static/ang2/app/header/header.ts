@@ -1,6 +1,6 @@
 import {SrcURL} from "../../static";
 import {Component} from "angular2/core";
-import {LoginComponent} from "../login/login.component";
+import {LoginComponent} from "./login/login.component";
 import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 
 @Component({

@@ -19,14 +19,20 @@ class logerTest(TestCase):
                 raise AttributeError('Raised err')
 
             @logger_try_or_none(type='noterr', message='!catch the err')
-            def someErrUncaught(self):
+            def someErrUncaught1(self):
                 story_rating = None
                 rating = story_rating['href']
+
+            @logger_try_or_none(type='noterr2', message='!catch the err')
+            def someErrUncaught2(self):
+                story_link = None
+                rating = story_link['href']
 
             def doWork(self):
                 self.loggerWrite()
                 self.someErr()
-                self.someErrUncaught()
+                self.someErrUncaught1()
+                self.someErrUncaught2()
 
             @property
             def loggs(self):

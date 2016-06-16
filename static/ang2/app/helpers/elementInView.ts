@@ -1,7 +1,7 @@
 export class elementInView {
     _PostsDimension:Array<Array<number>> = [];
     _previousPost:number;
-    _currentPost:number = 0;
+    _currentPost:number=0;
     _POSTS_START_POINT:number = 0;
 
     _findPosY(obj):number {

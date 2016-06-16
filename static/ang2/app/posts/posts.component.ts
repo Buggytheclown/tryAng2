@@ -13,13 +13,13 @@ import {Posts} from "./posts.interface";
 import {PostComponent} from "./post/post.component";
 import {ViewChildren} from "angular2/core";
 import {QueryList} from "angular2/core";
-import {SearchbarComponent} from "./searchbar/searchbar.component";
+import {SearchbarComponent} from "../searchbar/searchbar.component";
 import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 import {OnDestroy} from "angular2/core";
 import {Renderer} from "angular2/core";
 import {elementInView} from "../helpers/elementInView";
 import {HeaderComponent} from "../header/header";
-import {FriendlistComponent} from "./friendlist/friendlist.component";
+import {FriendlistComponent} from "../friendlist/friendlist.component";
 
 @Component({
     selector: 'my-posts',
@@ -153,20 +153,6 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    //addMeta(posts:Array<Posts>) {
-    //    for (let i = 0; i < posts.length; i++) {
-    //        let curPost = posts[i];
-    //        //curPost['Meta'] = {
-    //        //    'doTrunk': true,
-    //        //};
-    //        //console.log(curPost.contents[0]);
-    //        for (let i2 = 0; i2 < curPost.contents.length; i2++) {
-    //            curPost.contents[i2]['Meta'] = {
-    //                'play': false,
-    //            }
-    //        }
-    //    }
-    //};
 
     onScroll() {
         if (!this.scrollPass) {
@@ -220,7 +206,6 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     onKeyPress(event) {
-        //TODO if switch not on content?
         //console.log(event.keyCode);
         if (!this.keyEventPass && this.pressKeyFree) {
             this.keyEventPass = true;
@@ -316,87 +301,6 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    //postsInView = {
-    //    _PostsDimension: [],
-    //    _previousPost: undefined,
-    //    _currentPost: 0,
-    //    _POSTS_START_POINT: this.POSTS_START_POINT,
-    //
-    //    _findPosY(obj): number {
-    //        var curtop = 0;
-    //        if (obj.offsetParent) {
-    //            while (1) {
-    //                curtop += obj.offsetTop;
-    //                if (!obj.offsetParent) {
-    //                    break;
-    //                }
-    //                obj = obj.offsetParent;
-    //            }
-    //        } else if (obj.y) {
-    //            curtop += obj.y;
-    //        }
-    //        return curtop;
-    //    },
-    //
-    //    _findCurrent(length:number, verticalOffset:number): number {
-    //        for (let i = 0; i < length; i++) {
-    //            if (this._isCurrent(i, verticalOffset)) {
-    //                return i;
-    //            }
-    //        }
-    //    },
-    //
-    //    _isCurrent(postIndex:number, verticalOffset:number): boolean {
-    //        try {
-    //            let post:Array<number> = this._PostsDimension[postIndex];
-    //            let postY1:number = post[0];
-    //            let postY2:number = post[1];
-    //            if (verticalOffset >= postY1 && verticalOffset <= postY2) {
-    //                return true;
-    //            } else {
-    //                return false
-    //            }
-    //        } catch (err) {
-    //            console.log('catched', err)
-    //        }
-    //    },
-    //
-    //    updatePostsDimension(PostsChildren): void {
-    //        this._PostsDimension = [];
-    //        //cancat post position for unbreakable scroll
-    //        let postStart:number = this._POSTS_START_POINT;
-    //        PostsChildren.forEach((post, i)=> {
-    //            let currentPost = post.getNativeElement();
-    //            let currentPostOffset = currentPost.offsetHeight;
-    //            let postPosY:number = this._findPosY(currentPost);
-    //            let postEnd = postPosY + currentPostOffset;
-    //            let postInterval:Array<number> = [postStart, postEnd];
-    //            this._PostsDimension.push(postInterval);
-    //            postStart = postEnd;
-    //        });
-    //    },
-    //
-    //    updateCurrent(verticalOffset): void {
-    //        //let verticalOffset = this._getVerticalOffset();
-    //        this._previousPost = this._currentPost;
-    //        if (!this._isCurrent(this._currentPost, verticalOffset)) {
-    //            this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
-    //        }
-    //    },
-    //
-    //    isPostChanged(): boolean{
-    //        return this._previousPost !== this._currentPost
-    //    },
-    //
-    //    getCurrent(): number{
-    //        return this._currentPost
-    //    },
-    //
-    //    getPostStartPosition(post:number): number{
-    //        return this._PostsDimension[post][0];
-    //    }
-    //
-    //};
 
     authenticated() {
         return tokenNotExpired();

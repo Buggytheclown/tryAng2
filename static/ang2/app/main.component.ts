@@ -3,11 +3,10 @@ import {SrcURL} from "../static";
 import { RouteConfig, ROUTER_DIRECTIVES, ROUTER_PROVIDERS } from 'angular2/router';
 
 import {PostsComponent} from "./posts/posts.component";
-import {VotesComponent} from "./votes/votes.component";
-import {BlocknoteComponent} from "./blocknote/blocknote.component";
 import {LoggerComponent} from "./logger/logger.component";
-import {FriendlistComponent} from "./posts/friendlist/friendlist.component";
 import {headersUnsafe} from "./helpers/headersUnsafe";
+import {BlocknoteComponent} from "./temp-study/blocknote/blocknote.component";
+import {VotesComponent} from "./temp-study/votes/votes.component";
 
 
 @Component({
@@ -42,11 +41,7 @@ import {headersUnsafe} from "./helpers/headersUnsafe";
         name: 'Logger',
         component: LoggerComponent
     },
-    {
-        path: '/friendlist',
-        name: 'Friendlist',
-        component: FriendlistComponent
-    },
+
 
 ])
 

@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowToolsY", "angular2/router", "./post/post.component", "./searchbar/searchbar.component", "angular2-jwt", "../helpers/elementInView", "../header/header", "./friendlist/friendlist.component"], function(exports_1) {
+System.register(["angular2/core", "../../static", "./posts.service", "../helpers/sb_windowToolsY", "angular2/router", "./post/post.component", "../searchbar/searchbar.component", "angular2-jwt", "../helpers/elementInView", "../header/header", "../friendlist/friendlist.component"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -168,20 +168,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }
                     }
                 };
-                //addMeta(posts:Array<Posts>) {
-                //    for (let i = 0; i < posts.length; i++) {
-                //        let curPost = posts[i];
-                //        //curPost['Meta'] = {
-                //        //    'doTrunk': true,
-                //        //};
-                //        //console.log(curPost.contents[0]);
-                //        for (let i2 = 0; i2 < curPost.contents.length; i2++) {
-                //            curPost.contents[i2]['Meta'] = {
-                //                'play': false,
-                //            }
-                //        }
-                //    }
-                //};
                 PostsComponent.prototype.onScroll = function () {
                     var _this = this;
                     if (!this.scrollPass) {
@@ -229,7 +215,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 };
                 PostsComponent.prototype.onKeyPress = function (event) {
                     var _this = this;
-                    //TODO if switch not on content?
                     //console.log(event.keyCode);
                     if (!this.keyEventPass && this.pressKeyFree) {
                         this.keyEventPass = true;
@@ -320,87 +305,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }
                     }
                 };
-                //postsInView = {
-                //    _PostsDimension: [],
-                //    _previousPost: undefined,
-                //    _currentPost: 0,
-                //    _POSTS_START_POINT: this.POSTS_START_POINT,
-                //
-                //    _findPosY(obj): number {
-                //        var curtop = 0;
-                //        if (obj.offsetParent) {
-                //            while (1) {
-                //                curtop += obj.offsetTop;
-                //                if (!obj.offsetParent) {
-                //                    break;
-                //                }
-                //                obj = obj.offsetParent;
-                //            }
-                //        } else if (obj.y) {
-                //            curtop += obj.y;
-                //        }
-                //        return curtop;
-                //    },
-                //
-                //    _findCurrent(length:number, verticalOffset:number): number {
-                //        for (let i = 0; i < length; i++) {
-                //            if (this._isCurrent(i, verticalOffset)) {
-                //                return i;
-                //            }
-                //        }
-                //    },
-                //
-                //    _isCurrent(postIndex:number, verticalOffset:number): boolean {
-                //        try {
-                //            let post:Array<number> = this._PostsDimension[postIndex];
-                //            let postY1:number = post[0];
-                //            let postY2:number = post[1];
-                //            if (verticalOffset >= postY1 && verticalOffset <= postY2) {
-                //                return true;
-                //            } else {
-                //                return false
-                //            }
-                //        } catch (err) {
-                //            console.log('catched', err)
-                //        }
-                //    },
-                //
-                //    updatePostsDimension(PostsChildren): void {
-                //        this._PostsDimension = [];
-                //        //cancat post position for unbreakable scroll
-                //        let postStart:number = this._POSTS_START_POINT;
-                //        PostsChildren.forEach((post, i)=> {
-                //            let currentPost = post.getNativeElement();
-                //            let currentPostOffset = currentPost.offsetHeight;
-                //            let postPosY:number = this._findPosY(currentPost);
-                //            let postEnd = postPosY + currentPostOffset;
-                //            let postInterval:Array<number> = [postStart, postEnd];
-                //            this._PostsDimension.push(postInterval);
-                //            postStart = postEnd;
-                //        });
-                //    },
-                //
-                //    updateCurrent(verticalOffset): void {
-                //        //let verticalOffset = this._getVerticalOffset();
-                //        this._previousPost = this._currentPost;
-                //        if (!this._isCurrent(this._currentPost, verticalOffset)) {
-                //            this._currentPost = this._findCurrent(this._PostsDimension.length, verticalOffset);
-                //        }
-                //    },
-                //
-                //    isPostChanged(): boolean{
-                //        return this._previousPost !== this._currentPost
-                //    },
-                //
-                //    getCurrent(): number{
-                //        return this._currentPost
-                //    },
-                //
-                //    getPostStartPosition(post:number): number{
-                //        return this._PostsDimension[post][0];
-                //    }
-                //
-                //};
                 PostsComponent.prototype.authenticated = function () {
                     return angular2_jwt_1.tokenNotExpired();
                 };

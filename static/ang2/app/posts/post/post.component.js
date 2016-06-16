@@ -1,4 +1,4 @@
-System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt", "./comments/comments.component"], function(exports_1) {
+System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt", "../../comments/comments.component"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -91,6 +91,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                 PostComponent.prototype.postShowIs = function (switchState) {
                     return this.postShow === switchState;
                 };
+                //TODO can remove to helper?
                 PostComponent.prototype.copyTextToClipboard = function (text) {
                     var _this = this;
                     var textArea = document.createElement("textarea");
