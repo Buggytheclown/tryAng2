@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowToolsY_1, core_2, core_3, router_1, post_component_1, core_4, core_5, searchbar_component_1, angular2_jwt_1, core_6, elementInView_1, header_1, friendlist_component_1;
+    var core_1, static_1, posts_service_1, sb_windowToolsY_1, router_1, post_component_1, core_2, core_3, searchbar_component_1, angular2_jwt_1, elementInView_1, header_1, friendlist_component_1;
     var PostsComponent;
     return {
         setters:[
@@ -16,9 +16,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 core_1 = core_1_1;
                 core_2 = core_1_1;
                 core_3 = core_1_1;
-                core_4 = core_1_1;
-                core_5 = core_1_1;
-                core_6 = core_1_1;
             },
             function (static_1_1) {
                 static_1 = static_1_1;
@@ -52,12 +49,9 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
             }],
         execute: function() {
             PostsComponent = (function () {
-                function PostsComponent(element, _postsService, _sb_windowToolsY, _ChangeDetectorRef, params, renderer, postsInView) {
-                    this.element = element;
+                function PostsComponent(_postsService, _sb_windowToolsY, params, postsInView) {
                     this._postsService = _postsService;
                     this._sb_windowToolsY = _sb_windowToolsY;
-                    this._ChangeDetectorRef = _ChangeDetectorRef;
-                    this.renderer = renderer;
                     this.postsInView = postsInView;
                     // can process onKeyPress
                     this.pressKeyFree = true;
@@ -88,7 +82,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     var _this = this;
                     this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
                     //on refresh and close save viewed posts
-                    window.onbeforeunload = function () { return closingCode(_this); };
+                    window.onbeforeunload = function () { closingCode(_this); };
                     function closingCode(_mythis) {
                         _mythis.saveViewedPostsID();
                         return null;
@@ -139,6 +133,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     function (error) {
                         console.error('Error to load Posts: ' + error);
                         setTimeout(function () { return _this.gettingPosts = false; }, 1000);
+                        _this.getPosts(from, to, date);
                     });
                 };
                 ;
@@ -266,7 +261,6 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         }, this.SCROLL_TIMEOUT + 1);
                     }
                 };
-                //TODO test it (const time to scroll)
                 PostsComponent.prototype.smoothYScrollFromTo = function (from, to, rate) {
                     var _this = this;
                     var smoothTimeout = Math.abs(this.SMOOTH_INTERVAL_TIME / ((from - to) / rate));
@@ -309,8 +303,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     return angular2_jwt_1.tokenNotExpired();
                 };
                 __decorate([
-                    core_4.ViewChildren(post_component_1.PostComponent), 
-                    __metadata('design:type', core_5.QueryList)
+                    core_2.ViewChildren(post_component_1.PostComponent), 
+                    __metadata('design:type', core_3.QueryList)
                 ], PostsComponent.prototype, "PostsChildren", void 0);
                 PostsComponent = __decorate([
                     core_1.Component({
@@ -320,7 +314,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                         directives: [post_component_1.PostComponent, searchbar_component_1.SearchbarComponent, header_1.HeaderComponent, friendlist_component_1.FriendlistComponent],
                         providers: [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, elementInView_1.elementInView],
                     }), 
-                    __metadata('design:paramtypes', [core_2.ElementRef, posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, core_3.ChangeDetectorRef, router_1.RouteParams, core_6.Renderer, elementInView_1.elementInView])
+                    __metadata('design:paramtypes', [posts_service_1.PostsService, sb_windowToolsY_1.sb_windowToolsY, router_1.RouteParams, elementInView_1.elementInView])
                 ], PostsComponent);
                 return PostsComponent;
             })();

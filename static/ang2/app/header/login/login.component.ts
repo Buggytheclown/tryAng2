@@ -1,7 +1,6 @@
 import {Component} from "angular2/core";
 import {SrcURL} from "../../../static";
 import {LoginService} from "./login.service";
-import {tokenNotExpired, JwtHelper} from "angular2-jwt";
 import {Input} from "angular2/core";
 import {Output} from "angular2/core";
 import {EventEmitter} from "angular2/core";
@@ -12,7 +11,7 @@ import {EventEmitter} from "angular2/core";
     templateUrl: SrcURL + 'header/login/login.html',
     styleUrls: [SrcURL + 'header/login/login.css'],
     directives: [],
-    providers: [LoginService, JwtHelper],
+    providers: [LoginService],
 })
 
 export class LoginComponent {
@@ -35,16 +34,20 @@ export class LoginComponent {
     passCheckColor:string = '';
     passCheckWidth:number = 0;
 
-    constructor(private _LoginService:LoginService, private _JwtHelper:JwtHelper) {
+    constructor(private _LoginService:LoginService) {
     }
 
     closeme() {
         this.closeLogReg.emit(true)
     }
 
+    setToken(token){
+        localStorage.setItem('id_token', token);
+    }
+
     // *****
     // LOGIN
-    //******
+    // *****
 
     canLogin():boolean {
         if (this.logName.length > 0 && this.logPass.length > 0) {
@@ -60,7 +63,7 @@ export class LoginComponent {
                 (res)=> {
                     this.logPass = '';
                     this.logName = '';
-                    localStorage.setItem('id_token', res.token);
+                    this.setToken(res.token);
                     this.closeme();
                 },
                 (err)=> {
@@ -79,7 +82,7 @@ export class LoginComponent {
 
     // *****
     // REGISTER
-    //******
+    // *****
 
     //__validators__
     regNameValid():boolean {
@@ -124,27 +127,25 @@ export class LoginComponent {
             if (!this.regErr) {
                 this.regErr = "Error: bad username";
                 this.regName = '';
-                this.regErrDelayClaer();
             }
         } else if (!this.regMailValid()) {
             if (!this.regErr) {
                 this.regErr = "Error: bad e-mail";
                 this.regMail = '';
-                this.regErrDelayClaer();
             }
         } else if (!this.passMatch()) {
             if (!this.regErr) {
                 this.regErr = "Error: password didn't match";
                 this.clearRegPass();
-                this.regErrDelayClaer();
             }
         } else if (!this.regPass1Valid()) {
             if (!this.regErr) {
                 this.regErr = "Error: password too short";
                 this.clearRegPass();
-                this.regErrDelayClaer();
+
             }
         }
+        this.regErrDelayClaer();
     }
 
     register() {
@@ -153,7 +154,7 @@ export class LoginComponent {
                 (res)=> {
                     this.clearRegPass();
                     if (!res.err) {
-                        localStorage.setItem('id_token', res.token);
+                        this.setToken(res.token);
                         this.closeme();
                     } else {
                         console.log('err1', res.err);
@@ -306,32 +307,32 @@ export class LoginComponent {
     // TEST
     //******
 
-    Test() {
-        let tok = localStorage.getItem('id_token');
-        console.log(tok);
-    }
-
-    Logout() {
-        localStorage.removeItem('id_token');
-    }
-
-    loggedin() {
-        return tokenNotExpired();
-    }
-
-    expDate() {
-        try {
-            let token = localStorage.getItem('id_token');
-            return this._JwtHelper.getTokenExpirationDate(token);
-        } catch (err) {
-        }
-    }
-
-    decodeToken() {
-        try {
-            let token = localStorage.getItem('id_token');
-            return this._JwtHelper.decodeToken(token);
-        } catch (err) {
-        }
-    }
+    //Test() {
+    //    let tok = localStorage.getItem('id_token');
+    //    console.log(tok);
+    //}
+    //
+    //Logout() {
+    //    localStorage.removeItem('id_token');
+    //}
+    //
+    //loggedin() {
+    //    return tokenNotExpired();
+    //}
+    //
+    //expDate() {
+    //    try {
+    //        let token = localStorage.getItem('id_token');
+    //        return this._JwtHelper.getTokenExpirationDate(token);
+    //    } catch (err) {
+    //    }
+    //}
+    //
+    //decodeToken() {
+    //    try {
+    //        let token = localStorage.getItem('id_token');
+    //        return this._JwtHelper.decodeToken(token);
+    //    } catch (err) {
+    //    }
+    //}
 }

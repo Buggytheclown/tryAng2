@@ -1,5 +1,4 @@
 export interface Comments {
-    //TODO rating string or number?
     useravatar: string;
     username: string;
     rating: string;

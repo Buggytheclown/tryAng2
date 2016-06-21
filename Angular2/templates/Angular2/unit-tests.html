@@ -1,0 +1,65 @@
+{% load static %}
+<html>
+<head>
+    <!-- 1. Load libraries -->
+        <!--1.1 Jasmine-->
+    <title>Jasmine Unit Tests</title>
+    <link rel="stylesheet" href={% static 'ang2/node_modules/jasmine-core/lib/jasmine-core/jasmine.css' %}>
+    <script src={% static 'ang2/node_modules/jasmine-core/lib/jasmine-core/jasmine.js' %}></script>
+    <script src = {% static 'ang2/node_modules/jasmine-core/lib/jasmine-core/jasmine-html.js' %}></script>
+    <script src={% static 'ang2/node_modules/jasmine-core/lib/jasmine-core/boot.js' %}></script>
+
+        <!--1.2 Angular-->
+    <!-- IE required polyfills, in this exact order -->
+    <script src={% static "ang2/node_modules/es6-shim/es6-shim.min.js" %}></script>
+    <script src={% static "ang2/node_modules/systemjs/dist/system-polyfills.js" %}></script>
+    <script src={% static "ang2/node_modules/angular2/bundles/angular2-polyfills.js" %}></script>
+    <script src={% static "ang2/node_modules/systemjs/dist/system.src.js" %}></script>
+    <script src={% static "ang2/node_modules/rxjs/bundles/Rx.js" %}></script>
+    <script src={% static "ang2/node_modules/angular2/bundles/angular2.dev.js" %}></script>
+    <script src={% static "ang2/node_modules/angular2/bundles/router.dev.js" %}></script>
+    <script src={% static "ang2/node_modules/angular2/bundles/http.js" %}></script>
+</head>
+
+    <body>
+        <!-- #1. add the system.js library -->
+    <script src={% static 'ang2/node_modules/systemjs/dist/system.src.js' %}></script>
+
+    <script>
+        // #2. Configure systemjs to use the .js extension
+        //     for imports from the app folder
+        System.config({
+            baseURL: "{% static 'ang2' %}",
+            defaultJSExtensions: true,
+            map: {
+                angular2: '{% static "ang2/node_modules/angular2" %}',
+                rxjs: '{% static "ang2/node_modules/rxjs" %}',
+                'angular2-jwt': '{% static "ang2/node_modules/angular2-jwt/angular2-jwt" %}',
+            },
+            packages: {
+                ang2: {
+                    defaultExtension: 'js',
+                    format: 'register'
+                }
+            }
+        });
+
+        // #3. Import the spec file explicitly
+        Promise.all([
+                    System.import("{% static 'ang2/angular2-unit-testing/elementInView-spec/elementInView.spec' %}"),
+                    System.import("{% static 'ang2/angular2-unit-testing/login-spec/login.spec' %}"),
+                    System.import("{% static 'ang2/angular2-unit-testing/searchbar-spec/searchbar.spec' %}")
+                ])
+
+
+                // #4. wait for all imports to load ...
+                //     then re-execute `window.onload` which
+                //     triggers the Jasmine test-runner start
+                //     or explain what went wrong.
+                .then(window.onload)
+                .catch(console.error.bind(console));
+    </script>
+    </body>
+
+
+</html>

@@ -2,11 +2,6 @@
     <div class="closebut">
         <button (click)="closeme()"  class="btn btn-danger btn-sm">X</button>
     </div>
-    <!-- <ul class="nav nav-tabs nav-justified">
-        <li role="presentation" [class.active]="showFormContent===0"><a (click)="showFormContent=0">Login</a></li>
-        <li role="presentation" [class.active]="showFormContent===1"><a (click)="showFormContent=1">Register</a>
-        </li>
-    </ul> -->
     <div *ngIf="showFormContent===0" class="login">
 
         <form class="form-signin" (submit)="login()">

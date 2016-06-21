@@ -1,21 +1,30 @@
 <my-header (focusin)="pressKeyFree=false" (focusout)="pressKeyFree=true"></my-header>
 
 <!--TODO make listener explicit-->
-<!--TODO make A D F explanation jpg-->
 <div (window:scroll)="onScroll()" (window:keypress)="onKeyPress($event)" class="container">
     <div class="row">
-        <div class="col-sm-6 col-sm-offset-3">
+        <div class="col-sm-4 col-sm-offset-4">
 
             <div>
                 <my-searchbar></my-searchbar>
             </div>
 
-            <div *ngIf="authenticated()" style=" margin-top: 10px; padding: 20px; position: relative">
-                <my-friendlist (focusin)="pressKeyFree=false" (focusout)="pressKeyFree=true"></my-friendlist>
+            <div class="navkeys">
+                <div class="navkey-explanation">
+                    key navigation
+                </div>
+                <img src="/static/img/pikabu-keys.png">
             </div>
-
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm-5 col-sm-offset-3">
+            <div *ngIf="authenticated()" class="friendlist">
+                <my-friendlist (focusin)="pressKeyFree=false" (focusout)="pressKeyFree=true"></my-friendlist>
+            </div>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-8 col-sm-offset-2">
             <div *ngIf="!posts" style="margin-left: 50%">

@@ -33,6 +33,9 @@ export class HeaderComponent {
     }
 
     getUsername(){
-        return this.decodeToken().username
+        try {
+            return this.decodeToken().username
+        }catch (err){console.log(err)}
+        return 'ERR_RELOG'
     }
 }

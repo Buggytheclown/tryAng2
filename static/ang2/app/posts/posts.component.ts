@@ -55,12 +55,10 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     KEY_PREVIOUS:number = 97;
     KEY_HIDE_VIEWED:number = 102;
 
-    constructor(private element:ElementRef,
+    constructor(
                 private _postsService:PostsService,
                 private _sb_windowToolsY:sb_windowToolsY,
-                private _ChangeDetectorRef:ChangeDetectorRef,
                 params:RouteParams,
-                private renderer:Renderer,
                 private postsInView: elementInView) {
         this.routeDate = params.get('date');
 
@@ -69,7 +67,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     ngOnInit() {
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
         //on refresh and close save viewed posts
-        window.onbeforeunload = ()=> closingCode(this);
+        window.onbeforeunload = ()=> {closingCode(this)};
         function closingCode(_mythis) {
             _mythis.saveViewedPostsID();
             return null;
@@ -121,6 +119,7 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
                 error=> {
                     console.error('Error to load Posts: ' + error);
                     setTimeout(()=>this.gettingPosts = false, 1000);
+                    this.getPosts(from, to, date);
                 }
             );
     };
@@ -262,7 +261,6 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
         }
     }
 
-    //TODO test it (const time to scroll)
     smoothYScrollFromTo(from:number, to:number, rate:number):void {
         let smoothTimeout = Math.abs(this.SMOOTH_INTERVAL_TIME / ((from - to) / rate));
         if (to - from < Math.abs(rate)) {

@@ -1,4 +1,4 @@
-System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt", "../../comments/comments.component"], function(exports_1) {
+System.register(["../../../static", "angular2/core", "./content/content.component", "angular2-jwt", "../../comments/comments.component", "../../helpers/copyTextToClipboard"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1, comments_component_1;
+    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1, comments_component_1, copyTextToClipboard_1;
     var PostComponent;
     return {
         setters:[
@@ -30,6 +30,9 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
             },
             function (comments_component_1_1) {
                 comments_component_1 = comments_component_1_1;
+            },
+            function (copyTextToClipboard_1_1) {
+                copyTextToClipboard_1 = copyTextToClipboard_1_1;
             }],
         execute: function() {
             PostComponent = (function () {
@@ -91,58 +94,18 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                 PostComponent.prototype.postShowIs = function (switchState) {
                     return this.postShow === switchState;
                 };
-                //TODO can remove to helper?
                 PostComponent.prototype.copyTextToClipboard = function (text) {
                     var _this = this;
-                    var textArea = document.createElement("textarea");
-                    //
-                    // *** This styling is an extra step which is likely not required. ***
-                    //
-                    // Why is it here? To ensure:
-                    // 1. the element is able to have focus and selection.
-                    // 2. if element was to flash render it has minimal visual impact.
-                    // 3. less flakyness with selection and copying which **might** occur if
-                    //    the textarea element is not visible.
-                    //
-                    // The likelihood is the element won't even render, not even a flash,
-                    // so some of these are just precautions. However in IE the element
-                    // is visible whilst the popup box asking the user for permission for
-                    // the web page to copy to the clipboard.
-                    //
-                    // Place in top-left corner of screen regardless of scroll position.
-                    textArea.style.position = 'fixed';
-                    textArea.style.top = 0;
-                    textArea.style.left = 0;
-                    // Ensure it has a small width and height. Setting to 1px / 1em
-                    // doesn't work as this gives a negative w/h on some browsers.
-                    textArea.style.width = '2em';
-                    textArea.style.height = '2em';
-                    // We don't need padding, reducing the size if it does flash render.
-                    textArea.style.padding = 0;
-                    // Clean up any borders.
-                    textArea.style.border = 'none';
-                    textArea.style.outline = 'none';
-                    textArea.style.boxShadow = 'none';
-                    // Avoid flash of white box if rendered for any reason.
-                    textArea.style.background = 'transparent';
-                    textArea.value = text;
-                    document.body.appendChild(textArea);
-                    textArea.select();
-                    try {
-                        var successful = document.execCommand('copy');
-                        if (successful) {
-                            this.linkCopyed = true;
-                            setTimeout(function () { _this.linkCopyed = false; }, 1500);
-                        }
-                        else {
-                            window.prompt("Copy to clipboard: Ctrl+C, Enter", text);
-                        }
-                        ;
+                    var success = copyTextToClipboard_1.copyToClipboard(text);
+                    if (success) {
+                        this.linkCopyed = true;
+                        setTimeout(function () {
+                            _this.linkCopyed = false;
+                        }, 1500);
                     }
-                    catch (err) {
+                    else {
                         console.log('Oops, unable to copy');
                     }
-                    document.body.removeChild(textArea);
                 };
                 __decorate([
                     core_2.Input(), 

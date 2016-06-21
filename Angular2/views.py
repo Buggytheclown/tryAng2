@@ -9,6 +9,10 @@ def AngIndex(request):
     return render(request, 'Angular2/index.html')
 
 
+def AngJasmine(request):
+    return render(request, 'Angular2/unit-tests.html')
+
+
 def Register(request):
     if request.method == 'POST':
         try:

@@ -45,7 +45,13 @@ System.register(["../../static", "angular2/core", "./login/login.component", "an
                     }
                 };
                 HeaderComponent.prototype.getUsername = function () {
-                    return this.decodeToken().username;
+                    try {
+                        return this.decodeToken().username;
+                    }
+                    catch (err) {
+                        console.log(err);
+                    }
+                    return 'ERR_RELOG';
                 };
                 HeaderComponent = __decorate([
                     core_1.Component({

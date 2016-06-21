@@ -1,4 +1,4 @@
-System.register(["angular2/core", "../../../static", "./login.service", "angular2-jwt"], function(exports_1) {
+System.register(["angular2/core", "../../../static", "./login.service"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, login_service_1, angular2_jwt_1, core_2, core_3, core_4;
+    var core_1, static_1, login_service_1, core_2, core_3, core_4;
     var LoginComponent;
     return {
         setters:[
@@ -23,15 +23,11 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
             },
             function (login_service_1_1) {
                 login_service_1 = login_service_1_1;
-            },
-            function (angular2_jwt_1_1) {
-                angular2_jwt_1 = angular2_jwt_1_1;
             }],
         execute: function() {
             LoginComponent = (function () {
-                function LoginComponent(_LoginService, _JwtHelper) {
+                function LoginComponent(_LoginService) {
                     this._LoginService = _LoginService;
-                    this._JwtHelper = _JwtHelper;
                     this.closeLogReg = new core_4.EventEmitter();
                     //jwtHelper: JwtHelper = new JwtHelper();
                     //Login
@@ -141,9 +137,12 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                 LoginComponent.prototype.closeme = function () {
                     this.closeLogReg.emit(true);
                 };
+                LoginComponent.prototype.setToken = function (token) {
+                    localStorage.setItem('id_token', token);
+                };
                 // *****
                 // LOGIN
-                //******
+                // *****
                 LoginComponent.prototype.canLogin = function () {
                     if (this.logName.length > 0 && this.logPass.length > 0) {
                         return true;
@@ -158,7 +157,7 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                         this._LoginService.login(this.logName, this.logPass).subscribe(function (res) {
                             _this.logPass = '';
                             _this.logName = '';
-                            localStorage.setItem('id_token', res.token);
+                            _this.setToken(res.token);
                             _this.closeme();
                         }, function (err) {
                             console.log('err', err);
@@ -174,7 +173,7 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                 };
                 // *****
                 // REGISTER
-                //******
+                // *****
                 //__validators__
                 LoginComponent.prototype.regNameValid = function () {
                     var re = /^[a-zA-Z0-9.\-_$@*!]{3,30}$/;
@@ -215,30 +214,27 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                         if (!this.regErr) {
                             this.regErr = "Error: bad username";
                             this.regName = '';
-                            this.regErrDelayClaer();
                         }
                     }
                     else if (!this.regMailValid()) {
                         if (!this.regErr) {
                             this.regErr = "Error: bad e-mail";
                             this.regMail = '';
-                            this.regErrDelayClaer();
                         }
                     }
                     else if (!this.passMatch()) {
                         if (!this.regErr) {
                             this.regErr = "Error: password didn't match";
                             this.clearRegPass();
-                            this.regErrDelayClaer();
                         }
                     }
                     else if (!this.regPass1Valid()) {
                         if (!this.regErr) {
                             this.regErr = "Error: password too short";
                             this.clearRegPass();
-                            this.regErrDelayClaer();
                         }
                     }
+                    this.regErrDelayClaer();
                 };
                 LoginComponent.prototype.register = function () {
                     var _this = this;
@@ -246,7 +242,7 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                         this._LoginService.register(this.regName, this.regPass1, this.regMail).subscribe(function (res) {
                             _this.clearRegPass();
                             if (!res.err) {
-                                localStorage.setItem('id_token', res.token);
+                                _this.setToken(res.token);
                                 _this.closeme();
                             }
                             else {
@@ -286,35 +282,6 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                     }
                     //console.log('COLOR:', this.passCheckColor, 'WIDTH:', this.passCheckWidth)
                 };
-                // *****
-                // TEST
-                //******
-                LoginComponent.prototype.Test = function () {
-                    var tok = localStorage.getItem('id_token');
-                    console.log(tok);
-                };
-                LoginComponent.prototype.Logout = function () {
-                    localStorage.removeItem('id_token');
-                };
-                LoginComponent.prototype.loggedin = function () {
-                    return angular2_jwt_1.tokenNotExpired();
-                };
-                LoginComponent.prototype.expDate = function () {
-                    try {
-                        var token = localStorage.getItem('id_token');
-                        return this._JwtHelper.getTokenExpirationDate(token);
-                    }
-                    catch (err) {
-                    }
-                };
-                LoginComponent.prototype.decodeToken = function () {
-                    try {
-                        var token = localStorage.getItem('id_token');
-                        return this._JwtHelper.decodeToken(token);
-                    }
-                    catch (err) {
-                    }
-                };
                 __decorate([
                     core_2.Input(), 
                     __metadata('design:type', Object)
@@ -329,9 +296,9 @@ System.register(["angular2/core", "../../../static", "./login.service", "angular
                         templateUrl: static_1.SrcURL + 'header/login/login.html',
                         styleUrls: [static_1.SrcURL + 'header/login/login.css'],
                         directives: [],
-                        providers: [login_service_1.LoginService, angular2_jwt_1.JwtHelper],
+                        providers: [login_service_1.LoginService],
                     }), 
-                    __metadata('design:paramtypes', [login_service_1.LoginService, angular2_jwt_1.JwtHelper])
+                    __metadata('design:paramtypes', [login_service_1.LoginService])
                 ], LoginComponent);
                 return LoginComponent;
             })();

@@ -6,3 +6,28 @@
 .blog-post {
     margin-bottom: 30px;
 }
+
+.navkeys {
+    margin: 10px 0;
+    border: 1px solid #d7d7d7;
+    border-radius: 3px;
+    max-width: 215px;
+}
+
+.navkeys img {
+    padding: 5px 15px;
+    width: 100%;
+    height: auto;
+}
+
+.navkey-explanation {
+    padding-left: 15px;
+    background-color: #efefef;
+    color: #777;
+}
+
+.friendlist {
+    margin-top: 10px;
+    padding: 20px;
+    position: relative;
+}
