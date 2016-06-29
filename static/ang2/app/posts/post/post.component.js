@@ -8,7 +8,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1, comments_component_1, copyTextToClipboard_1;
+    var static_1, core_1, core_2, core_3, core_4, core_5, content_component_1, angular2_jwt_1, comments_component_1, copyTextToClipboard_1, core_6;
     var PostComponent;
     return {
         setters:[
@@ -21,6 +21,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                 core_3 = core_1_1;
                 core_4 = core_1_1;
                 core_5 = core_1_1;
+                core_6 = core_1_1;
             },
             function (content_component_1_1) {
                 content_component_1 = content_component_1_1;
@@ -36,9 +37,13 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
             }],
         execute: function() {
             PostComponent = (function () {
-                function PostComponent(element) {
+                function PostComponent(element, refDetector) {
                     this.element = element;
+                    this.refDetector = refDetector;
                     this.contentToPlay = new core_4.EventEmitter();
+                    this.windowWidthVal = 500;
+                    this.navCollapse = false;
+                    this.navCollapseHide = true;
                     this.postShow = 'content';
                     this.doTrunk = true;
                     this.contentImgLoadedDo = true;
@@ -48,6 +53,12 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                     this.updatePostHeight();
                 };
                 PostComponent.prototype.ngOnInit = function () {
+                    var _this = this;
+                    this.navCollapse = window.innerWidth < this.windowWidthVal;
+                    this.windowWidth.subscribe(function (val) {
+                        _this.navCollapse = val < _this.windowWidthVal;
+                        _this.refDetector.detectChanges();
+                    });
                 };
                 PostComponent.prototype.updatePostHeight = function () {
                     var _this = this;
@@ -115,6 +126,10 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                     core_3.Output(), 
                     __metadata('design:type', Object)
                 ], PostComponent.prototype, "contentToPlay", void 0);
+                __decorate([
+                    core_2.Input(), 
+                    __metadata('design:type', Object)
+                ], PostComponent.prototype, "windowWidth", void 0);
                 PostComponent = __decorate([
                     core_1.Component({
                         selector: 'my-post',
@@ -123,7 +138,7 @@ System.register(["../../../static", "angular2/core", "./content/content.componen
                         directives: [content_component_1.PostContentComponent, comments_component_1.CommentsComponent],
                         providers: [],
                     }), 
-                    __metadata('design:paramtypes', [core_5.ElementRef])
+                    __metadata('design:paramtypes', [core_5.ElementRef, core_6.ChangeDetectorRef])
                 ], PostComponent);
                 return PostComponent;
             })();

@@ -6,7 +6,7 @@ from rest_framework_jwt.settings import api_settings
 
 
 def AngIndex(request):
-    return render(request, 'Angular2/index.html')
+    return render(request, 'Angular2/index_v2.html')
 
 
 def AngJasmine(request):

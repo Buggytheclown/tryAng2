@@ -33,7 +33,7 @@
 
             <div *ngFor="#post of posts; #ipost = index" class="blog-post _mypost">
                 <div *ngIf="post">
-                    <my-post [post]="post" (contentToPlay)="contentPlay(ipost, $event)"></my-post>
+                    <my-post [windowWidth]="windowWidth" [post]="post" (contentToPlay)="contentPlay(ipost, $event)"></my-post>
                 </div>
             </div><!-- endFor post  /.blog-post -->
 

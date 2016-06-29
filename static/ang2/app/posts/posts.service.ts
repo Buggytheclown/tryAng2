@@ -1,7 +1,6 @@
 import {Injectable} from "angular2/core";
 import {Http} from "angular2/http";
 import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/delay';
 import {Headers} from "angular2/http";
 import {AuthHttp} from 'angular2-jwt';
 import {headersUnsafe} from "../helpers/headersUnsafe";

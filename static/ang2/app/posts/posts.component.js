@@ -8,7 +8,7 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
     var __metadata = (this && this.__metadata) || function (k, v) {
         if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
     };
-    var core_1, static_1, posts_service_1, sb_windowToolsY_1, router_1, post_component_1, core_2, core_3, searchbar_component_1, angular2_jwt_1, elementInView_1, header_1, friendlist_component_1;
+    var core_1, static_1, posts_service_1, sb_windowToolsY_1, router_1, post_component_1, core_2, core_3, searchbar_component_1, angular2_jwt_1, elementInView_1, header_1, friendlist_component_1, core_4, core_5;
     var PostsComponent;
     return {
         setters:[
@@ -16,6 +16,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 core_1 = core_1_1;
                 core_2 = core_1_1;
                 core_3 = core_1_1;
+                core_4 = core_1_1;
+                core_5 = core_1_1;
             },
             function (static_1_1) {
                 static_1 = static_1_1;
@@ -62,6 +64,8 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                     this.outOfPosts = false;
                     this.viewedPosts = [];
                     this.newViewedPosts = [];
+                    this.windowWidth = new core_4.EventEmitter();
+                    this.windowWidthPass = false;
                     // ____CONFIG____
                     this.SMOOTH_INTERVAL_PX = 50;
                     this.SMOOTH_INTERVAL_TIME = 200;
@@ -80,6 +84,11 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 ;
                 PostsComponent.prototype.ngOnInit = function () {
                     var _this = this;
+                    window.onresize = function () { _setWindowWidth(_this); };
+                    function _setWindowWidth(_mythis) {
+                        _mythis.setWindowWidth();
+                    }
+                    ;
                     this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
                     //on refresh and close save viewed posts
                     window.onbeforeunload = function () { closingCode(_this); };
@@ -103,6 +112,10 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 ;
                 PostsComponent.prototype.ngAfterViewInit = function () {
                     this.initMove();
+                };
+                PostsComponent.prototype.setWindowWidth = function () {
+                    this.windowWidth.emit(window.innerWidth);
+                    //console.log(this.windowWidth);
                 };
                 PostsComponent.prototype.ngOnDestroy = function () {
                     this.saveViewedPostsID();
@@ -302,6 +315,10 @@ System.register(["angular2/core", "../../static", "./posts.service", "../helpers
                 PostsComponent.prototype.authenticated = function () {
                     return angular2_jwt_1.tokenNotExpired();
                 };
+                __decorate([
+                    core_5.Output(), 
+                    __metadata('design:type', Object)
+                ], PostsComponent.prototype, "windowWidth", void 0);
                 __decorate([
                     core_2.ViewChildren(post_component_1.PostComponent), 
                     __metadata('design:type', core_3.QueryList)

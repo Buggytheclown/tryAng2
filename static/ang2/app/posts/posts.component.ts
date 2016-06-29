@@ -20,6 +20,8 @@ import {Renderer} from "angular2/core";
 import {elementInView} from "../helpers/elementInView";
 import {HeaderComponent} from "../header/header";
 import {FriendlistComponent} from "../friendlist/friendlist.component";
+import {EventEmitter} from "angular2/core";
+import {Output} from "angular2/core";
 
 @Component({
     selector: 'my-posts',
@@ -40,6 +42,8 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     outOfPosts:boolean = false;
     viewedPosts:Array<number> = [];
     newViewedPosts:Array<number> = [];
+    @Output() windowWidth = new EventEmitter();
+    windowWidthPass: boolean = false;
 
     // ____CONFIG____
     SMOOTH_INTERVAL_PX:number = 50;
@@ -65,6 +69,10 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
     };
 
     ngOnInit() {
+        window.onresize = ()=> {_setWindowWidth(this)};
+        function _setWindowWidth(_mythis){
+            _mythis.setWindowWidth();
+        };
         this.getPosts(this.getPostsStart, this.getPostsEnd, this.routeDate);
         //on refresh and close save viewed posts
         window.onbeforeunload = ()=> {closingCode(this)};
@@ -90,6 +98,11 @@ export class PostsComponent implements OnInit, AfterViewInit, OnDestroy {
 
     ngAfterViewInit() {
         this.initMove();
+    }
+
+    setWindowWidth(){
+            this.windowWidth.emit(window.innerWidth);
+            //console.log(this.windowWidth);
     }
 
     ngOnDestroy() {

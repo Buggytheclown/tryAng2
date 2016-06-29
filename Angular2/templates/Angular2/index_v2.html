@@ -1,0 +1,36 @@
+{% load static %}
+<html>
+<head>
+    <title>Angular 2 QuickStart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- systemJS loader and config -->
+    <script src={% static "ang2/jspm_packages/system.js" %}></script>
+    <script src={% static "ang2/config.js" %}></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href={% static 'css/bootstrap.min.css' %}>
+
+    <!-- Optional theme -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <link rel="stylesheet" href={% static 'css/bootstrap-theme.min.css' %}>
+
+    <!-- Font awesome -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src={% static 'js/bootstrap.min.js' %}></script>
+</head>
+<body>
+    <!-- our angular2 component -->
+    <my-main>
+        <div style="margin-left: 50%; margin-top: 25%;">
+            <i class="fa fa-spinner fa-4x fa-spin"></i>
+        </div>
+    </my-main>
+
+    <!-- import and run our app -->
+    <script>
+      System.import("{% static 'ang2/app/boot.js' %}")
+                .then(null, console.error.bind(console));
+    </script>
+</body>
+</html>

@@ -13,6 +13,7 @@ import {tokenNotExpired} from "angular2-jwt";
 import {CommentsComponent} from "../../comments/comments.component";
 import {ViewChild} from "angular2/core";
 import {copyToClipboard} from "../../helpers/copyTextToClipboard";
+import {ChangeDetectorRef} from "angular2/core";
 
 @Component({
     selector: 'my-post',
@@ -25,13 +26,17 @@ import {copyToClipboard} from "../../helpers/copyTextToClipboard";
 export class PostComponent implements OnInit, AfterViewInit {
     @Input() post:Posts;
     @Output() contentToPlay = new EventEmitter();
+    @Input() windowWidth;
+    windowWidthVal:number = 500;
+    navCollapse:boolean=false;
+    navCollapseHide:boolean=true;
     postShow:string = 'content';
     height:number;
     doTrunk:boolean = true;
     contentImgLoadedDo:boolean = true;
     linkCopyed:boolean = false;
 
-    constructor(public element:ElementRef) {
+    constructor(public element:ElementRef, private refDetector: ChangeDetectorRef) {
     }
 
     ngAfterViewInit() {
@@ -39,6 +44,11 @@ export class PostComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.navCollapse = window.innerWidth < this.windowWidthVal;
+        this.windowWidth.subscribe((val)=> {
+            this.navCollapse = val < this.windowWidthVal;
+            this.refDetector.detectChanges();
+        })
     }
 
     updatePostHeight() {
@@ -100,7 +110,9 @@ export class PostComponent implements OnInit, AfterViewInit {
             setTimeout(()=> {
                 this.linkCopyed = false
             }, 1500)
-        } else {console.log('Oops, unable to copy')}
+        } else {
+            console.log('Oops, unable to copy')
+        }
     }
 
 

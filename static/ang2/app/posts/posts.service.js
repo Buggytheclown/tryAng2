@@ -1,4 +1,4 @@
-System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxjs/add/operator/delay', 'angular2-jwt', "../helpers/headersUnsafe"], function(exports_1) {
+System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'angular2-jwt', "../helpers/headersUnsafe"], function(exports_1) {
     var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
         var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
         if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -19,7 +19,6 @@ System.register(["angular2/core", "angular2/http", 'rxjs/add/operator/map', 'rxj
                 http_1 = http_1_1;
             },
             function (_1) {},
-            function (_2) {},
             function (angular2_jwt_1_1) {
                 angular2_jwt_1 = angular2_jwt_1_1;
             },
